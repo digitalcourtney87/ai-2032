@@ -58,7 +58,7 @@ export function StatusPanel({ view, before }: Props) {
                 <Icon name={TRACK_ICON[track]} />
                 {TRACK_LABEL[track]}
               </span>
-              <span className="inline-flex gap-0.5" aria-label={`level ${view.tracks[track]} of 3`}>
+              <span className="inline-flex gap-0.5" role="img" aria-label={`level ${view.tracks[track]} of 3`}>
                 {[0, 1, 2].map((index) => (
                   <span
                     key={index}
