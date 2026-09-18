@@ -31,7 +31,7 @@ export function Assumptions({ scenarioId }: { scenarioId: string }) {
       </p>
 
       <section aria-label="Hidden effects of each option">
-        <h5 className="font-semibold">What each option in {pub.scenarios[scenarioId]?.title} did out of sight</h5>
+        <h3 className="font-semibold">What each option in {pub.scenarios[scenarioId]?.title} did out of sight</h3>
         <ul className="mt-2 space-y-3">
           {options.map((option) => (
             <li key={option.id} className="border-l-2 border-rule pl-3">
@@ -58,7 +58,7 @@ export function Assumptions({ scenarioId }: { scenarioId: string }) {
       </section>
 
       <section aria-label="World profile odds">
-        <h5 className="font-semibold">How the hidden world is drawn</h5>
+        <h3 className="font-semibold">How the hidden world is drawn</h3>
         <div className="overflow-x-auto">
           <table className="mt-2 w-full text-left">
             <thead>

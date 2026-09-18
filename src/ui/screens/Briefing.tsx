@@ -34,7 +34,7 @@ export function Briefing({ view, scenario, onContinue }: Props) {
 
       {assessment && (
         <section aria-label="Assessment">
-          <h3 className="text-sm font-semibold">{crisis ? "Unconfirmed report" : "Assessment"}</h3>
+          <h2 className="text-sm font-semibold">{crisis ? "Unconfirmed report" : "Assessment"}</h2>
           <p className="mt-1">{assessment.text}</p>
           {!crisis && (
             <p className="mt-1 text-xs text-muted">Assessments are sometimes wrong. How often depends on the evidence rating and on your State Capacity.</p>
@@ -43,7 +43,7 @@ export function Briefing({ view, scenario, onContinue }: Props) {
       )}
 
       <section aria-label="The options on the table">
-        <h3 className="text-sm font-semibold">The options on the table</h3>
+        <h2 className="text-sm font-semibold">The options on the table</h2>
         <ul className="mt-2 space-y-1 text-sm">
           {open.map((choice) => (
             <li key={choice.id}>
@@ -58,9 +58,9 @@ export function Briefing({ view, scenario, onContinue }: Props) {
       </section>
 
       <section aria-label="Advisers" className="space-y-4">
-        <h3 className="text-sm font-semibold">
+        <h2 className="text-sm font-semibold">
           {crisis ? `Your advisers are in open disagreement: ${positions} different recommendations` : "Your advisers"}
-        </h3>
+        </h2>
         {ADVISER_ORDER.map((id) => (
           <AdviserCard
             key={id}

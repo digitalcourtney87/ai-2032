@@ -43,7 +43,10 @@ export function App() {
         initialSeed={seedFromUrl()}
         onStart={(seedCode) => {
           // The seed code lives in the URL so a run can be shared and reproduced.
-          window.history.replaceState(null, "", `?seed=${encodeURIComponent(seedCode)}`);
+          const params = new URLSearchParams(window.location.search);
+          params.set("seed", seedCode);
+          params.delete("facilitator");
+          window.history.replaceState(null, "", `?${params.toString()}`);
           setStage("briefing");
           start(seedCode);
         }}
@@ -57,7 +60,14 @@ export function App() {
         view={view}
         rankings={rankings}
         whatIf={whatIf}
-        onRestart={() => { window.history.replaceState(null, "", window.location.pathname); reset(); }}
+        onRestart={() => {
+          // Play again keeps a facilitator's edited assumptions but drops the seed, for a new world.
+          const params = new URLSearchParams(window.location.search);
+          params.delete("seed");
+          const query = params.toString();
+          window.history.replaceState(null, "", query ? `?${query}` : window.location.pathname);
+          reset();
+        }}
       />
     );
   }

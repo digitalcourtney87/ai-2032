@@ -26,9 +26,9 @@ export function WorldPanel({ view }: { view: DisplayedState }) {
           const forecasts = debrief.factForecasts.filter((f) => f.fact === fact);
           return (
             <li key={fact} className="border-l-2 border-rule pl-4">
-              <h4 className="font-semibold">
+              <h3 className="font-semibold">
                 {label.name}: {value ? label.whenTrue : label.whenFalse}
-              </h4>
+              </h3>
               <p className="text-sm text-muted">
                 In a {PROFILE_LABEL[world.profile].toLowerCase()}, &ldquo;{label.whenTrue.toLowerCase()}&rdquo; is drawn {odds[fact]}% of the time.
               </p>

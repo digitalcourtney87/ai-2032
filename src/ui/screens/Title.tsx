@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from "react";
+import { Facilitator } from "./Facilitator";
 import { Button } from "../components/Button";
 import { newSeedCode } from "../format";
+import { overrideCount } from "../useGame";
 
 interface Props {
   /** A seed code carried in the URL, for workshop play. */
@@ -10,6 +12,7 @@ interface Props {
 
 export function Title({ initialSeed, onStart }: Props) {
   const [seed, setSeed] = useState(initialSeed ?? "");
+  const facilitator = new URLSearchParams(window.location.search).get("facilitator") === "1";
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -30,6 +33,13 @@ export function Title({ initialSeed, onStart }: Props) {
         that your evidence only partly reveals, and outcomes are drawn from stated probabilities. Good decisions can end badly.
       </p>
       <p className="mt-4 text-sm text-muted">About 25 minutes. There is no correct AI policy to find.</p>
+
+      {overrideCount > 0 && (
+        <p className="mt-6 rounded-sm border border-ink p-3 text-sm" role="note">
+          <span className="font-semibold">This session uses edited assumptions.</span> A facilitator has changed {overrideCount} of the
+          game&rsquo;s probabilities. The debrief shows every number in use.
+        </p>
+      )}
 
       <form onSubmit={submit} className="mt-8 border-t border-rule pt-6">
         <label htmlFor="seed" className="block font-semibold">
@@ -53,6 +63,8 @@ export function Title({ initialSeed, onStart }: Props) {
           Begin
         </Button>
       </form>
+
+      {facilitator && <Facilitator seedCode={seed} />}
 
       <p className="mt-10 border-t border-rule pt-4 text-xs text-muted">
         The Frontier Technology Risk Unit and its advisers are fictional. This game is not endorsed by any government body.

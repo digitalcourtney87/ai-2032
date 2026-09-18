@@ -13,7 +13,7 @@ export function NeverSawPanel({ view }: { view: DisplayedState }) {
   return (
     <div className="space-y-5">
       <section aria-label="Options that stayed locked">
-        <h4 className="font-semibold">Options that stayed locked</h4>
+        <h3 className="font-semibold">Options that stayed locked</h3>
         {locked.length === 0 ? (
           <p className="mt-1 text-sm">None. Every prepared option you met was open to you.</p>
         ) : (
@@ -31,7 +31,7 @@ export function NeverSawPanel({ view }: { view: DisplayedState }) {
       </section>
 
       <section aria-label="Crises you did not meet">
-        <h4 className="font-semibold">Crises you did not meet</h4>
+        <h3 className="font-semibold">Crises you did not meet</h3>
         <p className="mt-1 text-sm text-muted">
           One unscheduled crisis interrupts every run. Which one depends on which severe event fires first; if none does, a warning arrives that may be a false alarm.
         </p>

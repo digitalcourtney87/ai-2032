@@ -35,9 +35,9 @@ export function QualityPanel({ view, rankings }: Props) {
           const chosen = scenario?.choices.find((c) => c.id === record.choiceId);
           return (
             <li key={record.turn} className="border-l-2 border-rule pl-4" data-testid="decision-review">
-              <h4 className="font-semibold">
+              <h3 className="font-semibold">
                 Turn {record.turn}, {scenario?.title}: option {record.choiceId}
-              </h4>
+              </h3>
               <p className="text-sm text-muted">{chosen?.text}</p>
               <p className="mt-1 font-serif text-lg" data-testid="luck-tag">
                 {ranking && rank > 0 ? luckTag(sound, luck.fortunate).replace(/^./, (c) => c.toUpperCase()) : "Weighing the options you had…"}

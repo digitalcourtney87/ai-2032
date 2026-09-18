@@ -14,9 +14,9 @@ interface Props {
 export function AdviserCard({ adviser, stance, recommends, memory, forecast }: Props) {
   return (
     <article className="border-l-2 border-rule pl-4">
-      <h4 className="font-semibold">
+      <h3 className="font-semibold">
         {adviser.name} <span className="font-normal text-muted">&middot; {adviser.role}</span>
-      </h4>
+      </h3>
       {memory && <p className="mt-1 text-sm italic">&ldquo;{memory}&rdquo;</p>}
       <p className="mt-1 text-sm">&ldquo;{stance}&rdquo;</p>
       <p className="mt-1 text-xs text-muted">

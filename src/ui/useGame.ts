@@ -13,11 +13,18 @@ import {
   type GameState,
   type OptionEstimate,
 } from "../engine";
-import { assumptionsOf, loadContent, publicContent } from "../content";
+import { applyOverrides, assumptionsOf, countOverrides, decodeOverrides, loadContent, publicContent } from "../content";
 import type { WorkerRequest, WorkerResponse } from "../workers/counterfactual.worker";
 
 // Content is validated once, when the module loads. Malformed content fails loudly here.
-const content = loadContent();
+// A facilitator's edits arrive in the URL beside the seed code (DECISIONS.md, decision 7),
+// so the page and everyone it is shared with play the same edited assumptions.
+const bundled = loadContent();
+/** The published assumptions before any facilitator edit, so the editor can show what changed. */
+export const defaults = assumptionsOf(bundled);
+export const overrides = decodeOverrides(new URLSearchParams(window.location.search).get("cfg"));
+export const overrideCount = countOverrides(overrides);
+const content = applyOverrides(bundled, overrides);
 export const pub = publicContent(content);
 /** The hidden half of the content. Imported by debrief screens only. */
 export const published = assumptionsOf(content);
@@ -80,6 +87,8 @@ export function useGame() {
         waiting.current.get(event.data.id)?.(event.data);
         waiting.current.delete(event.data.id);
       };
+      // Messages are handled in order, so every later request sees the facilitator's numbers.
+      worker.current.postMessage({ id: nextId.current++, kind: "configure", overrides });
     }
     const id = nextId.current++;
     return new Promise((resolve) => {

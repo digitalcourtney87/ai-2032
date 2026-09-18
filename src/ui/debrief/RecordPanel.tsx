@@ -44,7 +44,7 @@ export function RecordPanel({ view }: { view: DisplayedState }) {
       </p>
 
       <section aria-label="Further reading">
-        <h4 className="font-semibold">Further reading for {ending?.title}</h4>
+        <h3 className="font-semibold">Further reading for {ending?.title}</h3>
         <p className="text-sm text-muted">Where the evidence is contested, a source that supports this ending&rsquo;s concern is paired with one that challenges it.</p>
         <ul className="mt-2 space-y-3 text-sm">
           {ending?.furtherReading.map((source) => (

@@ -16,7 +16,7 @@ export function IntelFile({ reports, heading = "Intelligence file" }: Props) {
   if (reports.length === 0) return null;
   return (
     <section aria-label={heading}>
-      <h3 className="text-sm font-semibold">{heading}</h3>
+      <h2 className="text-sm font-semibold">{heading}</h2>
       <ul className="mt-2 space-y-2 text-sm">
         {reports.map((report, index) => (
           <li key={index} className="border-l-2 border-rule pl-3">

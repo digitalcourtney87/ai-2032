@@ -27,7 +27,7 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
       {scenario.isCrisis && <p className="text-sm font-semibold">No analysis can be commissioned in a crisis.</p>}
       {!scenario.isCrisis && (
         <section aria-label="Commission analysis" className="rounded-sm border border-rule p-4">
-          <h3 className="font-semibold">Commission analysis</h3>
+          <h2 className="font-semibold">Commission analysis</h2>
           {purchased ? (
             <>
               <p className="mt-1">{purchased.text}</p>

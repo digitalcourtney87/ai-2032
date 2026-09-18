@@ -19,9 +19,9 @@ export function Forecast({ view, scenario, onForecast }: Props) {
   return (
     <div className="space-y-6">
       <section aria-labelledby="forecast-question">
-        <h3 id="forecast-question" className="text-xl">
+        <h2 id="forecast-question" className="text-xl">
           {scenario.forecastQuestion}
-        </h3>
+        </h2>
         <p className="mt-1 text-sm text-muted">
           Resolves by {formatMonth(scenario.resolvesBy)}. Your forecasts are scored for calibration at the end, alongside your advisers&rsquo;.
         </p>
@@ -47,7 +47,7 @@ export function Forecast({ view, scenario, onForecast }: Props) {
       </section>
 
       <section aria-label="Adviser estimates">
-        <h3 className="text-sm font-semibold">Your advisers&rsquo; estimates</h3>
+        <h2 className="text-sm font-semibold">Your advisers&rsquo; estimates</h2>
         <ul className="mt-2 grid gap-1 text-sm sm:grid-cols-2">
           {ADVISER_ORDER.map((id) => (
             <li key={id} className="flex justify-between border-b border-rule py-1">

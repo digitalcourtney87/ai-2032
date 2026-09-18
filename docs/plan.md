@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `89%` (31 of 35 steps)
+**Overall Progress:** `100%` of build steps (35 of 35). The items only people can complete are listed at the end and remain open.
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -90,11 +90,11 @@ Decided by the builder, logged, open to challenge:
   - [x] 🟩 Copy rules enforced by unit tests on every sentence builder (prefix, no right or wrong, causal links with their probability change); Copy run summary control, no network call
   - [x] 🟩 Gate: Playwright against the production bundle. 1,000 reruns finish in under 3 seconds while the main thread keeps painting; the Brier score shown equals a hand calculation from the forecasts shown. Commit and push.
 
-- [ ] 🟥 **Phase 7: Polish and facilitator mode**
-  - [ ] 🟥 Responsive layout, full keyboard operation, `prefers-reduced-motion`, light and dark, WCAG 2.2 AA
-  - [ ] 🟥 Facilitator editor behind `?facilitator=1`; overrides and seed round-trip through the URL
-  - [ ] 🟥 Bundle-size check (under 16 MB); README and `DECISIONS.md` completed
-  - [ ] 🟥 Gate: axe reports no serious violations; the same seed code reproduces an identical run start to finish. Commit. **STOP: completion report.**
+- [x] 🟩 **Phase 7: Polish and facilitator mode**
+  - [x] 🟩 Responsive layout (no sideways scroll at 360px), full keyboard operation with focus following each step, `prefers-reduced-motion`, light and dark, WCAG 2.2 AA
+  - [x] 🟩 Facilitator editor behind `?facilitator=1`; overrides and seed round-trip through the URL; the worker and View assumptions use the edited numbers
+  - [x] 🟩 Bundle-size check (under 1 MB against a 16 MB limit); README and `DECISIONS.md` completed
+  - [x] 🟩 Gate: axe reports no violations at any impact on any screen, in light and dark; the same seed code reproduces an identical run start to finish in the browser. Commit and push.
 
 ## Owned by the designer, not the build
 

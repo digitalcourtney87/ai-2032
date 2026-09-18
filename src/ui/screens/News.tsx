@@ -20,7 +20,7 @@ export function News({ view, resolvedTurn, onContinue }: Props) {
   return (
     <div className="space-y-6">
       <section aria-live="polite" aria-label="Headlines">
-        <h3 className="text-xl">What the world noticed</h3>
+        <h2 className="text-xl">What the world noticed</h2>
         <ul className="mt-3 space-y-3">
           {view.headlines.map((headline, index) => (
             <li key={index} className="border-l-4 border-ink pl-4 font-serif text-lg">
