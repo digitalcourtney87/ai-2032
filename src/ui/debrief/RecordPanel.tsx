@@ -19,7 +19,7 @@ export function RecordPanel({ view }: { view: DisplayedState }) {
           {ORDER.map((key) => (
             <tr key={key} className="border-b border-rule">
               <th scope="row" className="py-1 pr-2 text-left font-normal">{METRIC_LABEL[key]}</th>
-              <td className="py-1 text-right tabular-nums font-semibold">{Math.round(truth[key])}</td>
+              <td className="py-1 text-right font-mono font-semibold">{Math.round(truth[key])}</td>
               <td className="py-1 pl-3 text-xs text-muted">
                 {key === "systemicRisk" || key === "cooperation"
                   ? `you were shown ${view.estimates[key].low}–${view.estimates[key].high}`
@@ -34,7 +34,7 @@ export function RecordPanel({ view }: { view: DisplayedState }) {
         {(["control", "prosperity", "legitimacy"] as const).map((key) => (
           <div key={key}>
             <dt className="capitalize text-muted">{key}</dt>
-            <dd className="text-2xl font-semibold tabular-nums">{Math.round(debrief.composites[key])}</dd>
+            <dd className="font-mono text-2xl font-semibold">{Math.round(debrief.composites[key])}</dd>
           </div>
         ))}
       </dl>

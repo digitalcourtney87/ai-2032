@@ -1,10 +1,17 @@
 import { EstimateBand } from "./EstimateBand";
+import { Icon, type IconName } from "./Icon";
 import { MetricBar } from "./MetricBar";
 import { METRIC_MEANING, TRACK_LABEL } from "../format";
 import type { DisplayedState, Track } from "../../engine";
 
 const EXACT = ["nationalSecurity", "economy", "publicTrust", "innovation", "socialStability"] as const;
 const TRACKS: Track[] = ["evaluation", "provenance", "diplomacy", "defensiveCyber"];
+const TRACK_ICON: Record<Track, IconName> = {
+  evaluation: "evaluation",
+  provenance: "provenance",
+  diplomacy: "diplomacy",
+  defensiveCyber: "defensiveCyber",
+};
 
 interface Props {
   view: DisplayedState;
@@ -15,10 +22,13 @@ interface Props {
 /** The state of the nation as the Director can see it: never the true hidden values. */
 export function StatusPanel({ view, before }: Props) {
   return (
-    <aside aria-label="State of the nation" className="space-y-5 rounded-sm border border-rule bg-panel p-4">
-      <div className="flex items-baseline justify-between">
-        <h2 className="text-lg">Political Capital</h2>
-        <span className="text-2xl font-semibold tabular-nums" aria-label={`${view.politicalCapital} Political Capital`}>
+    <aside aria-label="State of the nation" className="space-y-5 p-4">
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 className="flex items-center gap-2 text-sm font-semibold">
+          <Icon name="capital" />
+          Political Capital
+        </h2>
+        <span className="font-mono text-2xl" aria-label={`${view.politicalCapital} Political Capital`}>
           {view.politicalCapital}
         </span>
       </div>
@@ -34,7 +44,7 @@ export function StatusPanel({ view, before }: Props) {
         <EstimateBand metric="cooperation" estimate={view.estimates.cooperation} />
         <div className="flex items-baseline justify-between text-sm">
           <span title={METRIC_MEANING.stateCapacity}>State Capacity</span>
-          <span className="font-semibold">{view.stateCapacity}</span>
+          <span className="font-mono font-medium">{view.stateCapacity}</span>
         </div>
         <p className="text-xs text-muted">Higher State Capacity narrows the bands above and makes your evidence more reliable.</p>
       </section>
@@ -43,11 +53,19 @@ export function StatusPanel({ view, before }: Props) {
         <h3 className="text-sm font-semibold">Standing investments</h3>
         <ul className="mt-2 space-y-1 text-sm">
           {TRACKS.map((track) => (
-            <li key={track} className="flex justify-between">
-              <span>{TRACK_LABEL[track]}</span>
-              <span className="tabular-nums" aria-label={`level ${view.tracks[track]} of 3`}>
-                {"■".repeat(view.tracks[track])}
-                {"□".repeat(3 - view.tracks[track])}
+            <li key={track} className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2">
+                <Icon name={TRACK_ICON[track]} />
+                {TRACK_LABEL[track]}
+              </span>
+              <span className="inline-flex gap-0.5" role="img" aria-label={`level ${view.tracks[track]} of 3`}>
+                {[0, 1, 2].map((index) => (
+                  <span
+                    key={index}
+                    className={`inline-block size-2 border border-current ${index < view.tracks[track] ? "bg-current" : "bg-transparent"}`}
+                    aria-hidden="true"
+                  />
+                ))}
               </span>
             </li>
           ))}

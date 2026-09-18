@@ -1,22 +1,64 @@
 @import "tailwindcss";
 
-/* Sober briefing-document aesthetic (spec Section 14): off-white paper,
-   near-black ink, one accent, a serif for headings, system sans for body.
-   No gradients, no game chrome. Colours are tokens so dark mode is a swap. */
+/* Inspector / print-layout system (DECISIONS.md, decision 13).
+   Amends spec Section 14's serif-on-paper look. Off-white paper sits on a
+   greyer canvas; hierarchy is scale, weight, hairline rules and inversion.
+   No gradients, no box-shadow, no serif. */
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("./fonts/IBMPlexSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("./fonts/IBMPlexSans-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("./fonts/IBMPlexSans-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("./fonts/IBMPlexMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("./fonts/IBMPlexMono-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
+  --canvas: #e4e0d6;
   --paper: #f7f5f0;
-  --panel: #efece4;
   --ink: #16181d;
   --muted: #535862;
   --rule: #cfcabd;
   --accent: #1f4e79;
   --on-accent: #ffffff;
+  --radius: 0px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --canvas: #0c0d10;
     --paper: #14161a;
-    --panel: #1c1f25;
     --ink: #ecebe6;
     --muted: #a7acb6;
     --rule: #3a3f48;
@@ -26,15 +68,16 @@
 }
 
 @theme inline {
-  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --color-canvas: var(--canvas);
   --color-paper: var(--paper);
-  --color-panel: var(--panel);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-rule: var(--rule);
   --color-accent: var(--accent);
   --color-on-accent: var(--on-accent);
+  --radius: 0px;
 }
 
 html {
@@ -42,15 +85,32 @@ html {
 }
 
 body {
-  background: var(--paper);
+  background: var(--canvas);
   color: var(--ink);
   font-family: var(--font-sans);
   line-height: 1.55;
 }
 
 h1, h2, h3 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
+  font-weight: 600;
   line-height: 1.2;
+}
+
+.font-mono {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+input, select, textarea {
+  border-radius: 1px;
+}
+
+/* Plates are ink-on-paper drawings; invert the values in dark mode and
+   rotate hue so the optional navy accent stays a blue, not a yellow. */
+@media (prefers-color-scheme: dark) {
+  img.figure-raster {
+    filter: invert(1) hue-rotate(180deg);
+  }
 }
 
 /* One visible focus style everywhere, for keyboard operation (WCAG 2.4.7). */

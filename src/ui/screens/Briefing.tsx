@@ -1,6 +1,8 @@
+import { SCENARIO_PLATES } from "../art/plates";
 import { AdviserCard } from "../components/AdviserCard";
 import { Button } from "../components/Button";
 import { EvidenceTag } from "../components/EvidenceTag";
+import { Figure } from "../components/Figure";
 import { IntelFile } from "../components/IntelFile";
 import { ADVISER_ORDER, formatEffects, LEVER_LABEL } from "../format";
 import { pub } from "../useGame";
@@ -21,9 +23,11 @@ export function Briefing({ view, scenario, onContinue }: Props) {
   const crisis = scenario.isCrisis;
   const open = scenario.choices.filter((c) => ctx.choices.find((o) => o.id === c.id)?.status !== "locked");
   const positions = new Set(ADVISER_ORDER.map((id) => scenario.advisers[id].recommends)).size;
+  const plate = SCENARIO_PLATES[scenario.id];
 
   return (
     <div className="space-y-6">
+      {plate && <Figure src={plate.src} figure={plate.figure} caption={plate.caption} state="720pt" />}
       <p className="text-lg">{scenario.briefing}</p>
       <EvidenceTag evidence={scenario.evidenceStrength} severity={scenario.severity} reduced={crisis} />
       {crisis && (
@@ -34,7 +38,7 @@ export function Briefing({ view, scenario, onContinue }: Props) {
 
       {assessment && (
         <section aria-label="Assessment">
-          <h2 className="text-sm font-semibold">{crisis ? "Unconfirmed report" : "Assessment"}</h2>
+          <h2 className="font-mono text-[10px] uppercase tracking-wider text-muted">{crisis ? "Unconfirmed report" : "Assessment"}</h2>
           <p className="mt-1">{assessment.text}</p>
           {!crisis && (
             <p className="mt-1 text-xs text-muted">Assessments are sometimes wrong. How often depends on the evidence rating and on your State Capacity.</p>
@@ -73,7 +77,7 @@ export function Briefing({ view, scenario, onContinue }: Props) {
       </section>
 
       {!crisis && (
-      <details className="rounded-sm border border-rule p-4">
+      <details className="border border-rule p-4">
         <summary className="cursor-pointer font-semibold">Real-world evidence behind this fictional scenario</summary>
         <dl className="mt-3 space-y-2 text-sm">
           <div>

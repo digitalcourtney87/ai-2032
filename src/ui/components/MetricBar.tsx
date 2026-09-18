@@ -14,13 +14,13 @@ export function MetricBar({ metric, value, delta }: Props) {
     <div>
       <div className="flex items-baseline justify-between gap-2 text-sm">
         <span title={METRIC_MEANING[metric]}>{METRIC_LABEL[metric]}</span>
-        <span className="tabular-nums">
-          <span className="font-semibold">{value}</span>
+        <span className="font-mono">
+          <span className="font-medium">{value}</span>
           {delta !== undefined && delta !== 0 && <span className="ml-1 text-muted">({signed(delta)})</span>}
         </span>
       </div>
-      <div className="mt-1 h-2 rounded-sm bg-rule" role="img" aria-label={`${METRIC_LABEL[metric]}: ${value} out of 100`}>
-        <div className="h-2 rounded-sm bg-ink" style={{ width: `${value}%` }} />
+      <div className="mt-1 h-1.5 bg-rule" role="img" aria-label={`${METRIC_LABEL[metric]}: ${value} out of 100`}>
+        <div className="h-1.5 bg-ink" style={{ width: `${value}%` }} />
       </div>
     </div>
   );

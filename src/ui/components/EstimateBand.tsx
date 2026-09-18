@@ -17,13 +17,13 @@ export function EstimateBand({ metric, estimate }: Props) {
     <div>
       <div className="flex items-baseline justify-between gap-2 text-sm">
         <span title={METRIC_MEANING[metric]}>{METRIC_LABEL[metric]}</span>
-        <span className="tabular-nums text-muted">
+        <span className="font-mono text-muted">
           {low}&ndash;{high}
         </span>
       </div>
-      <div className="relative mt-1 h-2 rounded-sm bg-rule" role="img" aria-label={label}>
-        <div className="absolute h-2 rounded-sm bg-muted" style={{ left: `${low}%`, width: `${Math.max(1, high - low)}%` }} />
-        <div className="absolute -top-1 h-4 w-0.5 bg-ink" style={{ left: `${mid}%` }} />
+      <div className="relative mt-1 h-1.5 bg-rule" role="img" aria-label={label}>
+        <div className="absolute h-1.5 bg-muted" style={{ left: `${low}%`, width: `${Math.max(1, high - low)}%` }} />
+        <div className="absolute -top-1 h-3.5 w-px bg-ink" style={{ left: `${mid}%` }} />
       </div>
       <p className="mt-1 text-xs text-muted">Estimate. Midpoint {mid}; the true value lies somewhere in the band.</p>
     </div>

@@ -39,7 +39,7 @@ export function QualityPanel({ view, rankings }: Props) {
                 Turn {record.turn}, {scenario?.title}: option {record.choiceId}
               </h3>
               <p className="text-sm text-muted">{chosen?.text}</p>
-              <p className="mt-1 font-serif text-lg" data-testid="luck-tag">
+              <p className="mt-1 font-mono text-lg" data-testid="luck-tag">
                 {ranking && rank > 0 ? luckTag(sound, luck.fortunate).replace(/^./, (c) => c.toUpperCase()) : "Weighing the options you had…"}
               </p>
               {!record.succeeded && <p className="text-sm">The option did not take effect: its conditions were not met, and the cost was still paid.</p>}

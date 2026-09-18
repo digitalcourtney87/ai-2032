@@ -28,7 +28,7 @@ Balance is tuned in the JSON under `src/content/`, never in the engine. Every ch
 
 ## Deploying
 
-`npm run build` writes a self-contained bundle to `dist/` (under 1 MB). It uses relative paths, so it runs from any static host or sub-path. There is nothing to configure and no server to run.
+`npm run build` writes a self-contained bundle to `dist/` (about 2 MB, well under the 16 MB limit). It uses relative paths, so it runs from any static host or sub-path. There is nothing to configure and no server to run.
 
 ## Seed codes
 

@@ -15,12 +15,12 @@ interface Props {
 export function IntelFile({ reports, heading = "Intelligence file" }: Props) {
   if (reports.length === 0) return null;
   return (
-    <section aria-label={heading}>
+    <section aria-label={heading} className="border border-rule p-3">
       <h2 className="text-sm font-semibold">{heading}</h2>
       <ul className="mt-2 space-y-2 text-sm">
         {reports.map((report, index) => (
-          <li key={index} className="border-l-2 border-rule pl-3">
-            <span className="block text-xs uppercase tracking-wide text-muted">
+          <li key={index} className="border-t border-rule pt-2 first:border-t-0 first:pt-0">
+            <span className="block font-mono text-[10px] uppercase tracking-wider text-muted">
               Turn {report.turn} &middot; {SOURCE_LABEL[report.source]}
             </span>
             {report.text}
