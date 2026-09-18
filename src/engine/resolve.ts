@@ -81,6 +81,7 @@ export function holds(condition: Condition, state: GameState): boolean {
   if (condition.flag !== undefined) result &&= state.flags.includes(condition.flag);
   if (condition.seedFact) result &&= state.world[condition.seedFact];
   if (condition.draw) result &&= drawHolds(state.world.seed, condition.draw);
+  if (condition.any) result &&= condition.any.some((c) => holds(c, state));
   return condition.not ? !result : result;
 }
 

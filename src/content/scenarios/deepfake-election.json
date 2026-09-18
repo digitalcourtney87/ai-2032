@@ -1,0 +1,144 @@
+{
+  "id": "deepfake-election",
+  "date": "2029-05",
+  "title": "The Deepfake Election",
+  "briefing": "Three days before a general election, audio appears to show a senior politician admitting corruption. It has 14 million views. Forensic analysis cannot yet say whether it is real.",
+  "isCrisis": true,
+  "domain": "information",
+  "evidenceStrength": "weak",
+  "severity": "high",
+  "forecast": {
+    "question": "Chance the recording is authentic.",
+    "resolvesBy": "2029-06",
+    "resolution": [{ "draw": { "key": "recording-authentic", "probability": 30 } }]
+  },
+  "briefingSignal": {
+    "about": [{ "draw": { "key": "recording-authentic", "probability": 30 } }],
+    "leansTrue": "First forensic read, low confidence: no synthesis artefacts found so far. The recording may be authentic.",
+    "leansFalse": "First forensic read, low confidence: spectral irregularities consistent with synthesis. The recording may be fabricated."
+  },
+  "adviserViews": {
+    "shah": { "stance": "Forensics needs 48 hours we do not have. Anything we assert now, we assert without evidence.", "recommends": "A" },
+    "harcourt": { "stance": "If this is a hostile operation, silence is the outcome it was designed to produce. Say what we know and how we will find out.", "recommends": "B" },
+    "chen": { "stance": "Whatever you do, do not be the government that leaned on platforms three days before a vote.", "recommends": "B" },
+    "okafor": { "stance": "Fourteen million views and rising. Slow it down and label it; do not take it down.", "recommends": "C" }
+  },
+  "choices": [
+    {
+      "id": "A",
+      "text": "Say nothing until forensic verification.",
+      "lever": "wait",
+      "politicalCost": 0,
+      "restrictive": false,
+      "stance": 1,
+      "visibleEffects": { "publicTrust": -2 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            { "draw": { "key": "recording-authentic", "probability": 30 }, "not": true },
+            { "draw": { "key": "forensics-in-time", "probability": 40 }, "not": true }
+          ],
+          "effects": { "socialStability": -6 }
+        }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["s5-said-nothing"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Government declines to comment on the recording until forensic analysis is complete."
+    },
+    {
+      "id": "B",
+      "text": "State that the recording is unverified and explain the forensic process.",
+      "lever": "convening",
+      "politicalCost": 2,
+      "restrictive": false,
+      "stance": 2,
+      "visibleEffects": { "publicTrust": 2 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        { "when": [{ "draw": { "key": "recording-authentic", "probability": 30 } }], "effects": { "publicTrust": -7 } }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["s5-unverified-statement"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Officials say the recording is unverified and set out how it is being tested."
+    },
+    {
+      "id": "C",
+      "text": "Ask platforms to add friction and labels, not removal.",
+      "lever": "marketAccess",
+      "politicalCost": 3,
+      "restrictive": true,
+      "stance": 3,
+      "visibleEffects": { "socialStability": 3, "publicTrust": -2 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s5-platform-friction"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "free-speech-challenge", "minDelay": 1, "maxDelay": 2 }],
+      "requires": [],
+      "headline": "Platforms add sharing friction and an 'unverified' label to the recording at the government's request."
+    },
+    {
+      "id": "D",
+      "text": "Emergency provenance rules for political media.",
+      "lever": "domesticLaw",
+      "politicalCost": 4,
+      "restrictive": true,
+      "stance": 4,
+      "visibleEffects": { "publicTrust": -1, "socialStability": 2 },
+      "hiddenEffects": { "stateCapacity": 3 },
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s5-provenance-rules"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Emergency provenance rules for political media are laid before Parliament; they will not bind before polling day."
+    },
+    {
+      "id": "E",
+      "text": "Publish an authentication result within 12 hours.",
+      "lever": "publicInvestment",
+      "politicalCost": 2,
+      "restrictive": false,
+      "visibleEffects": { "publicTrust": 5, "socialStability": 4 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        {
+          "when": [{ "draw": { "key": "authentication-correct", "probability": 90 }, "not": true }],
+          "effects": { "publicTrust": -8, "socialStability": -4 }
+        }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["s5-rapid-authentication"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [{ "track": { "key": "provenance", "minLevel": 2 } }],
+      "headline": "The national provenance service publishes an authentication result within 12 hours."
+    }
+  ],
+  "evidencePanel": {
+    "known": "A study of the 2024 UK and European elections found no evidence that AI content changed results, but signs of damage to trust in the information environment.",
+    "unknown": "Whether this recording is real, and whether anyone will believe the answer when it comes.",
+    "whyItMatters": "Every option is a bet on authenticity made before the evidence arrives.",
+    "sources": [
+      {
+        "label": "CETaS, AI-Enabled Influence Operations: Threat Analysis of the 2024 UK and European Elections",
+        "url": "https://cetas.turing.ac.uk/publications/ai-enabled-influence-operations-threat-analysis-2024-uk-and-european-elections",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  }
+}

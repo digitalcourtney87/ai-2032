@@ -55,6 +55,8 @@ export interface Condition {
    * percentage chance. Every condition that names the same key agrees.
    */
   draw?: { key: string; probability: number };
+  /** ext: at least one of these holds ("strategic or unresolved" in the Unknown Frontier ending). */
+  any?: Condition[];
   /** ext (B5): negates the whole condition ("if transitional", "if artefact"). */
   not?: boolean;
 }
@@ -198,7 +200,8 @@ export interface Ending {
   /** Higher wins when several endings qualify. */
   priority: number;
   when: Condition[];
-  furtherReading: { label: string; url: string; type: string; stance: "supports" | "challenges" | "context"; reviewed: string }[];
+  /** Spec Section 15, plus `why`: the spec's "Why read it" column. */
+  furtherReading: { label: string; url: string; type: string; stance: "supports" | "challenges" | "context"; why: string; reviewed: string }[];
 }
 
 /** Every tunable rule and number. Facilitator overrides patch this and the event bases. */

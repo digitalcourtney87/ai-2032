@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `29%` (10 of 35 steps)
+**Overall Progress:** `40%` (14 of 35 steps)
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -59,12 +59,12 @@ Decided by the builder, logged, open to challenge:
   - [x] 🟩 Tests: every row of the handoff Section 6 engine table, keyed-draw invariance (different action order, same event dice), seeded property test (1,000 seeds, no throw, no NaN, exactly one ending)
   - [x] 🟩 Gate: all Phase 1 tests green (59 tests). Commit.
 
-- [ ] 🟥 **Phase 2: Content and schema**
-  - [ ] 🟥 Zod schemas: `Scenario` (with `briefingSignal`), `Choice` (with `stance`), `EventDef`, `Adviser`, `Ending` (with `furtherReading`), config; loader that fails loudly
-  - [ ] 🟥 Author JSON: six scenarios, three interrupt variants (cyber, bio, false alarm), final decision, event registry, advisers, endings with Section 15 reading lists
-  - [ ] 🟥 Content tests: schema, no free option, no dominance, distinct levers, hidden ratio, reference integrity, complete stance ranks, source review-date warning
-  - [ ] 🟥 Provisional-numbers table in `DECISIONS.md`
-  - [ ] 🟥 Gate: all content parses and tests pass. Commit. **STOP: designer signs off the provisional numbers.**
+- [x] 🟩 **Phase 2: Content and schema**
+  - [x] 🟩 Zod schemas: `Scenario` (with `briefingSignal`), `Choice` (with `stance`), `EventDef`, `Adviser`, `Ending` (with `furtherReading`), config; loader that fails loudly
+  - [x] 🟩 Author JSON: six scenarios, three interrupt variants (cyber, bio, false alarm), final decision, event registry, advisers, endings with Section 15 reading lists
+  - [x] 🟩 Content tests: schema, no free option, no dominance, distinct levers, hidden ratio, reference integrity, complete stance ranks, source review-date warning
+  - [x] 🟩 Provisional-numbers table in `DECISIONS.md` (sections C and D)
+  - [ ] 🟨 Gate: all content parses and tests pass (130 tests green, committed). **STOPPED: awaiting designer sign-off of `DECISIONS.md` sections C and D.**
 
 - [ ] 🟥 **Phase 3: Balance harness**
   - [ ] 🟥 `simulate.ts` and `scripts/balance.ts`: 10,000 paired-seed games per profile for the three fixed strategies; report names the scenarios where a strategy runs away

@@ -1,0 +1,117 @@
+{
+  "id": "attribution-gap",
+  "date": "2027-01",
+  "title": "The Attribution Gap",
+  "briefing": "A UK logistics firm is breached. Responders say an AI agent executed most of the intrusion. The developer disputes the figure and outside experts split on how autonomous it was.",
+  "isCrisis": false,
+  "domain": "cyber",
+  "evidenceStrength": "moderate",
+  "severity": "high",
+  "forecast": {
+    "question": "Chance of a disruptive AI-enabled attack on UK critical infrastructure by the end of 2029.",
+    "resolvesBy": "2029-12",
+    "resolution": { "eventId": "infra-attack" }
+  },
+  "briefingSignal": {
+    "about": [{ "seedFact": "cyberOffenceLed" }],
+    "leansTrue": "Assessment: across recent cases, offensive tooling built on frontier models is improving faster than the defences operators can deploy. The balance currently favours the attacker.",
+    "leansFalse": "Assessment: across recent cases, defenders using the same models are closing intrusions about as fast as attackers can automate them. The balance is not clearly with the attacker."
+  },
+  "adviserViews": {
+    "shah": { "stance": "The autonomy figure is contested; do not price a disputed number as fact. Get the reporting first.", "recommends": "A" },
+    "harcourt": { "stance": "We do not get to run the experiment twice. Evaluate before these systems reach UK users.", "recommends": "C" },
+    "chen": { "stance": "Market-access conditions will cost us launches. A reporting pact gets the data without the delay.", "recommends": "A" },
+    "okafor": { "stance": "Operators outside government carry this risk too, and most cannot afford to defend themselves.", "recommends": "D" }
+  },
+  "choices": [
+    {
+      "id": "A",
+      "text": "Voluntary incident-reporting pact with developers and insurers.",
+      "lever": "convening",
+      "politicalCost": 2,
+      "restrictive": false,
+      "stance": 1,
+      "visibleEffects": { "innovation": 1, "nationalSecurity": 1 },
+      "hiddenEffects": { "stateCapacity": 3 },
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s1-voluntary-pact"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Developers and insurers sign a voluntary AI incident-reporting pact with government."
+    },
+    {
+      "id": "B",
+      "text": "Agent security standards for all government procurement.",
+      "lever": "procurement",
+      "politicalCost": 3,
+      "restrictive": true,
+      "stance": 3,
+      "visibleEffects": { "nationalSecurity": 3, "economy": -1 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [{ "eventId": "infra-attack", "delta": -6 }],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s1-procurement-standards"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Government sets agent security standards for everything it buys; the private sector is not covered."
+    },
+    {
+      "id": "C",
+      "text": "Pre-deployment cyber evaluation as a condition of UK market access.",
+      "lever": "marketAccess",
+      "politicalCost": 4,
+      "restrictive": true,
+      "stance": 4,
+      "visibleEffects": { "nationalSecurity": 4, "innovation": -3 },
+      "hiddenEffects": { "stateCapacity": 4 },
+      "probabilityModifiers": [{ "eventId": "infra-attack", "delta": -10 }],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s1-market-access-evaluation"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "developer-delay", "minDelay": 1, "maxDelay": 1 }],
+      "requires": [],
+      "headline": "Frontier models must pass a government cyber evaluation before they are offered to UK users."
+    },
+    {
+      "id": "D",
+      "text": "Fund defensive AI tooling for infrastructure operators.",
+      "lever": "publicInvestment",
+      "politicalCost": 3,
+      "restrictive": false,
+      "stance": 2,
+      "visibleEffects": { "nationalSecurity": 1, "innovation": 2, "economy": -2 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": { "key": "defensiveCyber", "delta": 1 },
+      "flagsAdded": ["s1-defensive-tooling"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Treasury funds defensive AI tooling for water, energy and transport operators."
+    }
+  ],
+  "evidencePanel": {
+    "known": "An AI model automated most of a real intrusion lifecycle in a case reported in 2025.",
+    "unknown": "How much of that operation was truly autonomous rather than human-directed.",
+    "whyItMatters": "The autonomy fraction changes how far ahead of defence the offence sits.",
+    "sources": [
+      {
+        "label": "Anthropic, Disrupting the first reported AI-orchestrated cyber espionage campaign (2025)",
+        "url": "https://assets.anthropic.com/m/ec212e6566a0d47/original/Disrupting-the-first-reported-AI-orchestrated-cyber-espionage-campaign.pdf",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "NCSC, Impact of AI on cyber threat from now to 2027",
+        "url": "https://www.ncsc.gov.uk/report/impact-ai-cyber-threat-now-2027",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  }
+}

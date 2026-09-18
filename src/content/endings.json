@@ -1,0 +1,168 @@
+[
+  {
+    "id": "responsible-ai-power",
+    "title": "The Responsible AI Power",
+    "text": "By 2032 the UK can see the frontier, respond to it, and still grow. The state kept enough expertise to understand what it was regulating, and the economy kept enough momentum to pay for it. None of this was guaranteed by your choices alone: the same decisions, in a harder world or with worse luck, end somewhere else.",
+    "priority": 1,
+    "when": [
+      { "composite": { "key": "control", "op": ">=", "value": 55 } },
+      { "composite": { "key": "prosperity", "op": ">=", "value": 55 } }
+    ],
+    "furtherReading": [
+      {
+        "label": "International AI Safety Report 2026",
+        "url": "https://internationalaisafetyreport.org/publication/international-ai-safety-report-2026",
+        "type": "Expert synthesis, February 2026",
+        "stance": "context",
+        "why": "The shared evidence base on capabilities and risks, including the dilemma of acting early on thin evidence versus waiting.",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "AISI Frontier AI Trends Report",
+        "url": "https://aisi.gov.uk/frontier-ai-trends-report",
+        "type": "UK government, December 2025",
+        "stance": "context",
+        "why": "What state capacity looks like in practice: two years of government testing across more than 30 frontier systems.",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  },
+  {
+    "id": "fortress",
+    "title": "The Fortress",
+    "text": "By 2032 the UK is secure, well-informed and falling behind. The state can evaluate systems it increasingly has to import, and the firms that might have built them have gone where the rules were lighter. Whether that trade was worth making depends on a counterfactual nobody can run: the incidents that did not happen.",
+    "priority": 1,
+    "when": [
+      { "composite": { "key": "control", "op": ">=", "value": 55 } },
+      { "composite": { "key": "prosperity", "op": ">=", "value": 55 }, "not": true }
+    ],
+    "furtherReading": [
+      {
+        "label": "The future of European competitiveness (Draghi report)",
+        "url": "https://commission.europa.eu/topics/competitiveness/draghi-report_en",
+        "type": "European Commission, September 2024",
+        "stance": "supports",
+        "why": "The case that regulatory burden and fragmentation widened Europe's innovation gap with the US and China.",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "GDPR and the Lost Generation of Innovative Apps",
+        "url": "https://www.nber.org/papers/w30028",
+        "type": "NBER working paper, 2022",
+        "stance": "supports",
+        "why": "A measured cost of precaution: about a third of apps exited and new entry roughly halved. It does not value the privacy gained, which is the counter-argument.",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "Sovereignty in the Age of AI",
+        "url": "https://institute.global/insights/tech-and-digitalisation/sovereignty-in-the-age-of-ai-strategic-choices-structural-dependencies",
+        "type": "Tony Blair Institute, January 2026",
+        "stance": "context",
+        "why": "Argues that isolation and self-sufficiency weaken national agency rather than protect it.",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  },
+  {
+    "id": "deregulated-frontier",
+    "title": "The Deregulated Frontier",
+    "text": "By 2032 the UK is one of the best places in the world to build and deploy advanced AI, and one of the least able to say what that AI is doing. Growth is real. So is the exposure. The bet was that capability would not convert into harm faster than the state could learn; the debrief shows how that bet went in this world, not whether it was wise.",
+    "priority": 1,
+    "when": [
+      { "composite": { "key": "control", "op": ">=", "value": 55 }, "not": true },
+      { "composite": { "key": "prosperity", "op": ">=", "value": 55 } }
+    ],
+    "furtherReading": [
+      {
+        "label": "Impact of AI on cyber threat from now to 2027",
+        "url": "https://www.ncsc.gov.uk/report/impact-ai-cyber-threat-now-2027",
+        "type": "NCSC assessment, 2025",
+        "stance": "supports",
+        "why": "Official UK judgement that AI will raise the frequency and intensity of intrusions, written in probability-yardstick language.",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "Disrupting the first reported AI-orchestrated cyber espionage campaign",
+        "url": "https://assets.anthropic.com/m/ec212e6566a0d47/original/Disrupting-the-first-reported-AI-orchestrated-cyber-espionage-campaign.pdf",
+        "type": "Developer report, November 2025",
+        "stance": "supports",
+        "why": "The real case behind Scenario 1, including the disputed claim about how autonomous the operation was.",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "Dual-Use Foundation Models with Widely Available Model Weights",
+        "url": "https://www.ntia.gov/issues/artificial-intelligence/open-model-weights-report",
+        "type": "US NTIA, July 2024",
+        "stance": "challenges",
+        "why": "The counter-case: a marginal-risk analysis that recommended monitoring open weights rather than restricting them.",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  },
+  {
+    "id": "dependent-state",
+    "title": "The Dependent State",
+    "text": "By 2032 the UK neither shapes the frontier nor understands it well. It buys what others build, on terms others set, and learns about incidents from the press. This is where drift leads: capability advanced and expertise decayed every year, and the choices made did not outrun either. A middle power influences rather than controls, and influence has to be built before it is needed.",
+    "priority": 1,
+    "when": [
+      { "composite": { "key": "control", "op": ">=", "value": 55 }, "not": true },
+      { "composite": { "key": "prosperity", "op": ">=", "value": 55 }, "not": true }
+    ],
+    "furtherReading": [
+      {
+        "label": "Sovereignty in the Age of AI",
+        "url": "https://institute.global/insights/tech-and-digitalisation/sovereignty-in-the-age-of-ai-strategic-choices-structural-dependencies",
+        "type": "Tony Blair Institute, January 2026",
+        "stance": "context",
+        "why": "A framework for deciding which layers of the AI stack a middle power should control, steer or accept dependence on.",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "AI Opportunities Action Plan",
+        "url": "https://www.gov.uk/government/publications/ai-opportunities-action-plan/ai-opportunities-action-plan",
+        "type": "UK government, January 2025",
+        "stance": "context",
+        "why": "The stated ambition to be an AI maker rather than an AI taker, and the compute, talent and adoption measures behind it.",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  },
+  {
+    "id": "unknown-frontier",
+    "title": "The Unknown Frontier",
+    "text": "You built a state that can see clearly, kept systemic risk low, and declined to wave the 2032 system through. You did almost everything well, and you still cannot say whether the system is controllable. The research below demonstrates the relevant capabilities in constructed settings; none of it shows how often they occur in deployment. That gap is what this ending is about. It is not a failure of your unit. It is the state of the science.",
+    "priority": 2,
+    "when": [
+      { "metric": { "key": "stateCapacity", "op": ">=", "value": 70 } },
+      { "metric": { "key": "systemicRisk", "op": "<=", "value": 35 } },
+      { "flag": "final-cautious" },
+      { "any": [{ "seedFact": "sandbaggingStrategic" }, { "flag": "sandbagging-resolved", "not": true }] }
+    ],
+    "furtherReading": [
+      {
+        "label": "AI Sandbagging: Language Models can Strategically Underperform on Evaluations",
+        "url": "https://arxiv.org/abs/2406.07358v4",
+        "type": "Research paper, 2024",
+        "stance": "supports",
+        "why": "Defines sandbagging and shows models can be made to underperform selectively on dangerous-capability tests. The basis for Scenario 6.",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "Frontier Models are Capable of In-context Scheming",
+        "url": "https://arxiv.org/pdf/2412.04984",
+        "type": "Apollo Research, December 2024",
+        "stance": "supports",
+        "why": "Shows several frontier models can pursue a goal covertly in constructed agentic tests.",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "Alignment faking in large language models",
+        "url": "https://www.anthropic.com/research/alignment-faking",
+        "type": "Anthropic and Redwood Research, December 2024",
+        "stance": "supports",
+        "why": "A model behaving differently when it infers it is being trained, without being told to.",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  }
+]

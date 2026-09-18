@@ -1,0 +1,122 @@
+{
+  "id": "graduate-collapse",
+  "date": "2028-10",
+  "title": "The Graduate Collapse",
+  "briefing": "Graduate recruitment at large professional-services firms has fallen 22% in two years. Employers say AI now does much junior research, drafting and analysis. Unemployment is stable and productivity is rising.",
+  "isCrisis": false,
+  "domain": "labour",
+  "evidenceStrength": "moderate",
+  "severity": "high",
+  "forecast": {
+    "question": "Chance graduate hiring in professional services is still 20% below its 2026 level in 2032.",
+    "resolvesBy": "2032-10",
+    "resolution": { "eventId": "graduate-hiring-depressed" }
+  },
+  "briefingSignal": {
+    "about": [{ "seedFact": "labourShockStructural" }],
+    "leansTrue": "Assessment: firms are redesigning work around the absence of juniors, not pausing hiring. Analysts judge the fall is probably structural.",
+    "leansFalse": "Assessment: firms describe a hiring pause while they learn what the tools can do, and smaller employers are picking up graduates. Analysts judge the fall is probably transitional."
+  },
+  "adviserViews": {
+    "shah": { "stance": "Two years of data from one sector. Publish better data and find out which kind of shock this is before spending billions.", "recommends": "A" },
+    "harcourt": { "stance": "Not my brief, but a generation with no route into professional work is a security problem in ten years.", "recommends": "B" },
+    "chen": { "stance": "Productivity is rising and unemployment is flat. A levy on firms for becoming more productive is a tax on the recovery.", "recommends": "A" },
+    "okafor": { "stance": "The bottom rung of the ladder has gone and it is not coming back. Build the replacement now, at scale.", "recommends": "D" }
+  },
+  "choices": [
+    {
+      "id": "A",
+      "text": "Let the market adjust and publish quarterly labour data.",
+      "lever": "wait",
+      "politicalCost": 0,
+      "restrictive": false,
+      "stance": 1,
+      "visibleEffects": { "economy": 3, "socialStability": -4 },
+      "hiddenEffects": { "stateCapacity": 1 },
+      "probabilityModifiers": [{ "eventId": "graduate-hiring-depressed", "delta": 6 }],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s4-market-adjusts"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "labour-data-signal", "minDelay": 1, "maxDelay": 1 }],
+      "requires": [],
+      "headline": "Ministers decline to intervene in graduate hiring and commission quarterly labour data."
+    },
+    {
+      "id": "B",
+      "text": "Employer incentive for AI-augmented apprenticeships.",
+      "lever": "convening",
+      "politicalCost": 3,
+      "restrictive": false,
+      "stance": 2,
+      "visibleEffects": { "socialStability": 4, "economy": -2 },
+      "hiddenEffects": { "stateCapacity": 1 },
+      "probabilityModifiers": [{ "eventId": "graduate-hiring-depressed", "delta": -8 }],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s4-apprenticeships"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Large employers sign a compact on AI-augmented apprenticeships, backed by a government incentive."
+    },
+    {
+      "id": "C",
+      "text": "Levy on firms cutting junior intake, recycled into training.",
+      "lever": "domesticLaw",
+      "politicalCost": 5,
+      "restrictive": true,
+      "stance": 4,
+      "visibleEffects": { "socialStability": 5, "innovation": -4, "economy": -2 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s4-levy"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "offshoring", "minDelay": 1, "maxDelay": 2 }],
+      "requires": [],
+      "headline": "A levy on firms that cut junior intake becomes law; proceeds go to training."
+    },
+    {
+      "id": "D",
+      "text": "Large national retraining programme.",
+      "lever": "publicInvestment",
+      "politicalCost": 4,
+      "restrictive": false,
+      "stance": 3,
+      "visibleEffects": { "socialStability": 2, "publicTrust": 2, "economy": -3 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s4-retraining"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "retraining-outcome", "minDelay": 2, "maxDelay": 2 }],
+      "requires": [],
+      "headline": "Government launches a national retraining programme for displaced graduates."
+    }
+  ],
+  "evidencePanel": {
+    "known": "US payroll data show a double-digit relative fall in employment for 22 to 25 year olds in AI-exposed jobs. A separate study found no discernible economy-wide disruption in the 33 months after ChatGPT's release.",
+    "unknown": "Whether junior roles are being eliminated or deferred. Most of the evidence is from the United States.",
+    "whyItMatters": "A structural shock rewards early, expensive action. A transitional one makes the same action look like waste.",
+    "sources": [
+      {
+        "label": "Stanford Digital Economy Lab, Canaries in the Coal Mine? (2025)",
+        "url": "https://digitaleconomy.stanford.edu/publications/canaries-in-the-coal-mine/",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "Yale Budget Lab and Brookings, Evaluating the Impact of AI on the Labor Market (2025)",
+        "url": "https://budgetlab.yale.edu/research/evaluating-impact-ai-labor-market-current-state-affairs",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "IMF, Gen-AI: Artificial Intelligence and the Future of Work (2024)",
+        "url": "https://www.imf.org/en/Publications/Staff-Discussion-Notes/Issues/2024/01/14/Gen-AI-Artificial-Intelligence-and-the-Future-of-Work-542379",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  }
+}

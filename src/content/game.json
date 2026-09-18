@@ -1,0 +1,76 @@
+{
+  "sequence": [
+    "attribution-gap",
+    "open-weight-release",
+    "biology-result",
+    "graduate-collapse",
+    "deepfake-election",
+    "sandbagging-finding",
+    "threshold-2032"
+  ],
+  "config": {
+    "startingMetrics": {
+      "nationalSecurity": 50,
+      "economy": 50,
+      "publicTrust": 50,
+      "innovation": 50,
+      "socialStability": 50,
+      "systemicRisk": 20,
+      "cooperation": 45,
+      "stateCapacity": 40
+    },
+    "drift": {
+      "nationalSecurity": 0,
+      "economy": 1,
+      "publicTrust": 0,
+      "innovation": 0,
+      "socialStability": -1,
+      "systemicRisk": 3,
+      "cooperation": -1,
+      "stateCapacity": -2
+    },
+    "profiles": {
+      "benign": {
+        "weight": 30,
+        "facts": { "cyberOffenceLed": 25, "bioUpliftReal": 15, "sandbaggingStrategic": 10, "labourShockStructural": 30, "foreignPostureOpen": 70 }
+      },
+      "contested": {
+        "weight": 40,
+        "facts": { "cyberOffenceLed": 50, "bioUpliftReal": 35, "sandbaggingStrategic": 35, "labourShockStructural": 50, "foreignPostureOpen": 50 }
+      },
+      "hard": {
+        "weight": 30,
+        "facts": { "cyberOffenceLed": 75, "bioUpliftReal": 60, "sandbaggingStrategic": 60, "labourShockStructural": 70, "foreignPostureOpen": 25 }
+      }
+    },
+    "politicalCapital": {
+      "perTurn": 5,
+      "carryCap": 3,
+      "trustBonusAt": 60,
+      "trustPenaltyAt": 40,
+      "infoCost": 1,
+      "windowTurns": 2,
+      "windowDiscount": 2,
+      "windowMinCost": 1,
+      "boomEconomyAt": 65,
+      "boomSurcharge": 1
+    },
+    "band": { "base": 30, "perCapacityPoint": 0.25 },
+    "capacityLabels": { "adequateFrom": 35, "strongFrom": 65 },
+    "evidenceReliability": { "strong": 90, "moderate": 75, "weak": 60, "speculative": 50, "mixed": 60 },
+    "thinEvidencePenalty": 10,
+    "infoReliability": { "Thin": 65, "Adequate": 75, "Strong": 85 },
+    "oddsClamp": { "min": 2, "max": 95 },
+    "trackBonuses": {
+      "evaluation": { "stateCapacity": 4 },
+      "provenance": { "publicTrust": 1 },
+      "diplomacy": { "cooperation": 4 },
+      "defensiveCyber": { "nationalSecurity": 2 }
+    },
+    "falseAlarmScenarioId": "false-alarm",
+    "legitimacyBacklash": {
+      "below": 40,
+      "text": "Whatever the merits of the record, the public did not come with you. Trust in the unit, and in government's handling of AI, ended the period below the level at which ministers can defend it. The next Director inherits the policies and a mandate to unpick them."
+    }
+  }
+}

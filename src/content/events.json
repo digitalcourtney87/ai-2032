@@ -1,0 +1,328 @@
+[
+  {
+    "id": "infra-attack",
+    "title": "Disruptive AI-enabled attack on UK critical infrastructure",
+    "domain": "cyber",
+    "severe": true,
+    "publicIncident": true,
+    "base": { "fact": "cyberOffenceLed", "whenTrue": 50, "whenFalse": 15 },
+    "initial": { "earliestTurn": 2, "latestTurn": 5 },
+    "effects": { "nationalSecurity": -10, "economy": -5, "publicTrust": -5 },
+    "conditionalEffects": [],
+    "mitigations": [{ "when": [{ "track": { "key": "defensiveCyber", "minLevel": 2 } }], "factor": 0.5 }],
+    "trackModifiers": [{ "track": "defensiveCyber", "minLevel": 2, "delta": -10 }],
+    "flagsAdded": ["infra-attack-happened"],
+    "headline": "AI-enabled attack disrupts UK infrastructure; services down across two regions.",
+    "interruptScenarioId": "incident-cyber"
+  },
+  {
+    "id": "developer-delay",
+    "title": "A developer delays its UK launch",
+    "domain": "cyber",
+    "severe": false,
+    "publicIncident": false,
+    "base": { "benign": 20, "contested": 20, "hard": 20 },
+    "effects": { "innovation": -4, "economy": -2 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["developer-delays-uk"],
+    "headline": "Frontier developer postpones UK launch, citing pre-deployment evaluation rules."
+  },
+  {
+    "id": "open-weight-incident",
+    "title": "The open-weight model family is implicated in a serious UK security incident",
+    "domain": "cyber",
+    "severe": true,
+    "publicIncident": true,
+    "base": { "fact": "cyberOffenceLed", "whenTrue": 22, "whenFalse": 8 },
+    "initial": { "earliestTurn": 3, "latestTurn": 6 },
+    "effects": { "nationalSecurity": -6, "publicTrust": -4, "systemicRisk": 3 },
+    "conditionalEffects": [],
+    "mitigations": [{ "when": [{ "track": { "key": "defensiveCyber", "minLevel": 2 } }], "factor": 0.5 }],
+    "trackModifiers": [],
+    "flagsAdded": ["open-weight-incident-happened"],
+    "headline": "Investigators link a serious UK security incident to a derivative of the 2027 open-weight release.",
+    "interruptScenarioId": "incident-cyber"
+  },
+  {
+    "id": "open-weight-defence-model",
+    "title": "UK researchers build a government defence model on the open weights",
+    "domain": "cyber",
+    "severe": false,
+    "publicIncident": false,
+    "base": { "fact": "cyberOffenceLed", "whenTrue": 30, "whenFalse": 55 },
+    "effects": { "nationalSecurity": 5, "innovation": 2 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["defence-model-built"],
+    "headline": "UK team ships a government cyber-defence model built on the open weights."
+  },
+  {
+    "id": "threshold-agreement",
+    "title": "Allied talks on a shared open-release threshold conclude",
+    "domain": "frontier",
+    "severe": false,
+    "publicIncident": false,
+    "base": "certain",
+    "effects": {},
+    "conditionalEffects": [
+      {
+        "when": [{ "metric": { "key": "cooperation", "op": ">=", "value": 55 } }],
+        "effects": { "systemicRisk": -6 },
+        "headline": "Allies adopt a shared threshold for open release of frontier models."
+      },
+      {
+        "when": [{ "metric": { "key": "cooperation", "op": ">=", "value": 55 }, "not": true }],
+        "effects": {},
+        "headline": "Allied talks on an open-release threshold end without agreement."
+      }
+    ],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": [],
+    "headline": null
+  },
+  {
+    "id": "bio-plot",
+    "title": "An AI-assisted biological plot reaches the acquisition stage in an allied country",
+    "domain": "bio",
+    "severe": true,
+    "publicIncident": true,
+    "base": { "fact": "bioUpliftReal", "whenTrue": 30, "whenFalse": 6 },
+    "initial": { "earliestTurn": 4, "latestTurn": 6 },
+    "effects": { "nationalSecurity": -6, "publicTrust": -5, "systemicRisk": 4 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["bio-plot-happened"],
+    "headline": "Allied security services disrupt a biological plot at the acquisition stage; AI assistance is alleged.",
+    "interruptScenarioId": "incident-bio"
+  },
+  {
+    "id": "uplift-study-result",
+    "title": "The wet-lab uplift studies report",
+    "domain": "bio",
+    "severe": false,
+    "publicIncident": false,
+    "base": "certain",
+    "effects": {},
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["bio-uplift-studied"],
+    "reveal": {
+      "about": [{ "seedFact": "bioUpliftReal" }],
+      "reliability": 85,
+      "leansTrue": "The funded uplift studies report: in controlled trials, model assistance gave non-specialists a substantial, repeatable advantage. The uplift looks real.",
+      "leansFalse": "The funded uplift studies report: in controlled trials, model assistance gave little advantage beyond existing textbooks and search. The uplift looks marginal."
+    },
+    "headline": "Government-funded uplift studies report to ministers on schedule."
+  },
+  {
+    "id": "privacy-controversy",
+    "title": "A privacy controversy over monitoring of biological queries",
+    "domain": "information",
+    "severe": false,
+    "publicIncident": false,
+    "base": { "benign": 40, "contested": 40, "hard": 40 },
+    "effects": { "publicTrust": -3 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["privacy-controversy-happened"],
+    "headline": "Researchers say lawful queries were reported to government; privacy groups demand a review."
+  },
+  {
+    "id": "labour-data-signal",
+    "title": "The first year of quarterly labour data is published",
+    "domain": "labour",
+    "severe": false,
+    "publicIncident": false,
+    "base": "certain",
+    "effects": {},
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": [],
+    "reveal": {
+      "about": [{ "seedFact": "labourShockStructural" }],
+      "reliability": 70,
+      "leansTrue": "A year of quarterly labour data: junior roles are not reappearing elsewhere in the economy. The shock looks structural.",
+      "leansFalse": "A year of quarterly labour data: displaced junior hiring is reappearing in new roles and smaller firms. The shock looks transitional."
+    },
+    "headline": "First annual cut of the new quarterly labour data is published."
+  },
+  {
+    "id": "offshoring",
+    "title": "Firms move graduate roles offshore",
+    "domain": "labour",
+    "severe": false,
+    "publicIncident": false,
+    "base": { "benign": 25, "contested": 25, "hard": 25 },
+    "effects": { "socialStability": -4, "economy": -2 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["graduate-roles-offshored"],
+    "headline": "Two professional-services firms move graduate intake offshore, citing the levy."
+  },
+  {
+    "id": "retraining-outcome",
+    "title": "The national retraining programme reports its results",
+    "domain": "labour",
+    "severe": false,
+    "publicIncident": false,
+    "base": "certain",
+    "effects": {},
+    "conditionalEffects": [
+      {
+        "when": [{ "seedFact": "labourShockStructural" }],
+        "effects": { "socialStability": 8 },
+        "headline": "Retraining programme places its first large cohort into work that did not exist in 2026."
+      },
+      {
+        "when": [{ "seedFact": "labourShockStructural", "not": true }],
+        "effects": { "publicTrust": -3 },
+        "headline": "Auditors question the retraining programme as graduate hiring recovers without it."
+      }
+    ],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": [],
+    "headline": null
+  },
+  {
+    "id": "graduate-hiring-depressed",
+    "title": "Graduate hiring in professional services is still 20% below its 2026 level in 2032",
+    "domain": "labour",
+    "severe": false,
+    "publicIncident": false,
+    "base": { "fact": "labourShockStructural", "whenTrue": 75, "whenFalse": 25 },
+    "initial": { "earliestTurn": 7, "latestTurn": 7 },
+    "effects": { "socialStability": -4 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["graduate-hiring-depressed"],
+    "headline": "Graduate hiring in professional services remains a fifth below its 2026 level."
+  },
+  {
+    "id": "free-speech-challenge",
+    "title": "A free-speech legal challenge to the platform request",
+    "domain": "information",
+    "severe": false,
+    "publicIncident": false,
+    "base": { "benign": 30, "contested": 30, "hard": 30 },
+    "effects": { "publicTrust": -3 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["free-speech-challenge-happened"],
+    "headline": "Campaigners win permission for a judicial review of the government's election-week request to platforms."
+  },
+  {
+    "id": "sandbagging-finding",
+    "title": "Unannounced evaluations report on the cause of the sandbagging",
+    "domain": "frontier",
+    "severe": false,
+    "publicIncident": false,
+    "base": "certain",
+    "effects": {},
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["sandbagging-resolved"],
+    "reveal": {
+      "about": [{ "seedFact": "sandbaggingStrategic" }],
+      "reliability": 80,
+      "weakened": { "when": [{ "track": { "key": "evaluation", "minLevel": 2 }, "not": true }], "reliability": 65 },
+      "leansTrue": "Unannounced evaluations report: the under-performance tracks the system's own assessment of whether it is being tested. The behaviour looks strategic.",
+      "leansFalse": "Unannounced evaluations report: the under-performance follows surface features of the test harness, not any model of being observed. The behaviour looks like a training artefact."
+    },
+    "headline": "Government evaluators complete the first round of unannounced evaluations."
+  },
+  {
+    "id": "interpretability-dividend",
+    "title": "The joint interpretability programme delivers",
+    "domain": "frontier",
+    "severe": false,
+    "publicIncident": false,
+    "base": "certain",
+    "effects": { "stateCapacity": 5 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": [],
+    "headline": "Allied institutes publish shared interpretability tooling; UK evaluators adopt it."
+  },
+  {
+    "id": "follow-on-attack",
+    "title": "A further disruptive AI-enabled attack on the UK",
+    "domain": "cyber",
+    "severe": false,
+    "publicIncident": true,
+    "base": { "fact": "cyberOffenceLed", "whenTrue": 35, "whenFalse": 10 },
+    "effects": { "nationalSecurity": -6, "publicTrust": -3 },
+    "conditionalEffects": [],
+    "mitigations": [{ "when": [{ "track": { "key": "defensiveCyber", "minLevel": 2 } }], "factor": 0.5 }],
+    "trackModifiers": [{ "track": "defensiveCyber", "minLevel": 2, "delta": -10 }],
+    "flagsAdded": ["follow-on-attack-happened"],
+    "headline": "A second AI-enabled attack hits UK operators, months after the first."
+  },
+  {
+    "id": "provider-limits-service",
+    "title": "A major provider limits its UK service",
+    "domain": "cyber",
+    "severe": false,
+    "publicIncident": false,
+    "base": { "benign": 20, "contested": 20, "hard": 20 },
+    "effects": { "innovation": -5, "economy": -3 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["provider-limits-uk"],
+    "headline": "A major AI provider restricts its UK service, citing the new liability regime."
+  },
+  {
+    "id": "follow-on-bio-plot",
+    "title": "A further AI-assisted biological plot in an allied country",
+    "domain": "bio",
+    "severe": false,
+    "publicIncident": true,
+    "base": { "fact": "bioUpliftReal", "whenTrue": 25, "whenFalse": 5 },
+    "effects": { "nationalSecurity": -6, "publicTrust": -4 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["follow-on-bio-plot-happened"],
+    "headline": "A second AI-assisted biological plot is disrupted in an allied country."
+  },
+  {
+    "id": "post-deployment-incident",
+    "title": "A severe incident within two years of UK deployment",
+    "domain": "frontier",
+    "severe": true,
+    "publicIncident": true,
+    "base": {
+      "cases": [
+        {
+          "when": [
+            { "metric": { "key": "systemicRisk", "op": "<=", "value": 35 } },
+            { "seedFact": "sandbaggingStrategic", "not": true }
+          ],
+          "probability": 8
+        },
+        { "when": [{ "metric": { "key": "systemicRisk", "op": ">=", "value": 51 } }], "probability": 40 }
+      ],
+      "otherwise": 20
+    },
+    "effects": { "nationalSecurity": -12, "publicTrust": -8, "systemicRisk": 10 },
+    "conditionalEffects": [],
+    "mitigations": [],
+    "trackModifiers": [],
+    "flagsAdded": ["post-deployment-incident-happened"],
+    "headline": "A severe incident involving the deployed system forces an emergency statement to Parliament."
+  }
+]

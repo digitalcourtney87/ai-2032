@@ -1,0 +1,121 @@
+{
+  "id": "false-alarm",
+  "date": "2031-06",
+  "title": "The Warning",
+  "briefing": "Credible intelligence indicates an imminent AI-enabled attack on UK infrastructure. The source has been right before and wrong before. There is no time to commission analysis, and the advice in the room is not agreed.",
+  "isCrisis": true,
+  "domain": "cyber",
+  "evidenceStrength": "weak",
+  "severity": "veryHigh",
+  "forecast": {
+    "question": "Chance the intelligence is right and an attack is attempted.",
+    "resolvesBy": "2031-12",
+    "resolution": [{ "draw": { "key": "alarm-real", "probability": 40 } }]
+  },
+  "briefingSignal": {
+    "about": [{ "draw": { "key": "alarm-real", "probability": 40 } }],
+    "leansTrue": "Late read, low confidence: a second channel reports matching preparations. The warning may be sound.",
+    "leansFalse": "Late read, low confidence: no second channel corroborates the report. The warning may be mistaken."
+  },
+  "adviserViews": {
+    "shah": { "stance": "A single source with a mixed record. Prepare quietly; do not spend credibility you will need for a real one.", "recommends": "A" },
+    "harcourt": { "stance": "If it is real and we did nothing, there is no explaining that afterwards. Warn operators and shut down what is exposed.", "recommends": "C" },
+    "chen": { "stance": "A precautionary shutdown costs the economy the same whether or not anything was coming.", "recommends": "A" },
+    "okafor": { "stance": "Cry wolf once and the next warning is ignored. Raise the standards, which helps either way.", "recommends": "B" }
+  },
+  "choices": [
+    {
+      "id": "A",
+      "text": "Hold the intelligence closely and prepare under existing law.",
+      "lever": "wait",
+      "politicalCost": 1,
+      "restrictive": false,
+      "stance": 1,
+      "visibleEffects": { "publicTrust": -1 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 } }], "effects": { "nationalSecurity": -8, "publicTrust": -4 } }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["alarm-held-closely"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "No public statement is made; operators are briefed in confidence."
+    },
+    {
+      "id": "B",
+      "text": "Emergency agent security standards.",
+      "lever": "marketAccess",
+      "politicalCost": 3,
+      "restrictive": true,
+      "stance": 2,
+      "visibleEffects": { "nationalSecurity": 4, "innovation": -3 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 } }], "effects": { "nationalSecurity": -3 } },
+        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 }, "not": true }], "effects": { "publicTrust": -2 } }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["alarm-emergency-standards"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Emergency agent security standards are imposed, citing an unspecified threat."
+    },
+    {
+      "id": "C",
+      "text": "Public warning and precautionary shutdown of exposed services.",
+      "lever": "restriction",
+      "politicalCost": 5,
+      "restrictive": true,
+      "stance": 3,
+      "visibleEffects": { "nationalSecurity": 6, "economy": -4 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 } }], "effects": { "publicTrust": 4 } },
+        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 }, "not": true }], "effects": { "publicTrust": -5 } }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["alarm-public-warning"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Government issues a public warning and shuts down exposed services as a precaution."
+    },
+    {
+      "id": "D",
+      "text": "Task the government incident-response model to test the intelligence.",
+      "lever": "publicInvestment",
+      "politicalCost": 2,
+      "restrictive": false,
+      "visibleEffects": { "nationalSecurity": 4, "publicTrust": 2 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 } }], "effects": { "nationalSecurity": -3 } }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["alarm-response-model"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [{ "track": { "key": "evaluation", "minLevel": 3 } }],
+      "headline": "The government's incident-response model sweeps exposed networks overnight."
+    }
+  ],
+  "evidencePanel": {
+    "known": "The UK's official assessment is that AI will raise the frequency and intensity of intrusions.",
+    "unknown": "Whether this warning is one of them. Players sometimes prepare for nothing, and that is part of the lesson.",
+    "whyItMatters": "Acting on a false alarm costs credibility. Ignoring a true one costs far more. You must choose before you know which this is.",
+    "sources": [
+      {
+        "label": "NCSC, Impact of AI on cyber threat from now to 2027",
+        "url": "https://www.ncsc.gov.uk/report/impact-ai-cyber-threat-now-2027",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  }
+}

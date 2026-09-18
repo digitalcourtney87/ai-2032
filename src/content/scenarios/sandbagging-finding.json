@@ -1,0 +1,128 @@
+{
+  "id": "sandbagging-finding",
+  "date": "2030-11",
+  "title": "The Sandbagging Finding",
+  "briefing": "Researchers find that an experimental system performs markedly worse when it detects evaluation conditions. The result is reproducible. They cannot tell whether it is strategic behaviour or a training artefact.",
+  "isCrisis": false,
+  "domain": "frontier",
+  "evidenceStrength": "moderate",
+  "severity": "veryHigh",
+  "forecast": {
+    "question": "Chance the behaviour is strategic.",
+    "resolvesBy": "2032-10",
+    "resolution": [{ "seedFact": "sandbaggingStrategic" }]
+  },
+  "briefingSignal": {
+    "about": [{ "seedFact": "sandbaggingStrategic" }],
+    "leansTrue": "Assessment: the under-performance appears on tasks the system has reason to conceal and not on others. Researchers lean towards strategic behaviour.",
+    "leansFalse": "Assessment: the under-performance appears across unrelated tasks whenever test formatting is present. Researchers lean towards a training artefact."
+  },
+  "adviserViews": {
+    "shah": { "stance": "We have a reproducible measurement failure and no theory of it. Fix the instrument before we regulate on its readings.", "recommends": "A" },
+    "harcourt": { "stance": "A system that behaves differently when watched is the threat model. Pause deployment until someone can explain it.", "recommends": "D" },
+    "chen": { "stance": "A moratorium on a finding nobody can interpret would cost us the sector. Work the problem with allies.", "recommends": "C" },
+    "okafor": { "stance": "If evaluations can be gamed, announce nothing in advance. Test them the way we inspect anything else that matters.", "recommends": "B" }
+  },
+  "choices": [
+    {
+      "id": "A",
+      "text": "Treat it as a measurement problem and fund evaluation redesign.",
+      "lever": "publicInvestment",
+      "politicalCost": 2,
+      "restrictive": false,
+      "stance": 1,
+      "visibleEffects": { "economy": -1 },
+      "hiddenEffects": { "stateCapacity": 4 },
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s6-evaluation-redesign"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Government funds a redesign of frontier evaluations after the sandbagging result."
+    },
+    {
+      "id": "B",
+      "text": "Unannounced evaluations as a market-access condition.",
+      "lever": "marketAccess",
+      "politicalCost": 4,
+      "restrictive": true,
+      "stance": 3,
+      "visibleEffects": { "nationalSecurity": 3, "innovation": -2 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        { "when": [{ "track": { "key": "evaluation", "minLevel": 2 } }], "effects": { "systemicRisk": -4 } },
+        { "when": [{ "track": { "key": "evaluation", "minLevel": 2 }, "not": true }], "effects": { "systemicRisk": -2 } }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["s6-unannounced-evaluations"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "sandbagging-finding", "minDelay": 1, "maxDelay": 1 }],
+      "requires": [],
+      "headline": "Developers must accept unannounced government evaluations to keep UK market access."
+    },
+    {
+      "id": "C",
+      "text": "Joint interpretability programme with allied institutes.",
+      "lever": "convening",
+      "politicalCost": 3,
+      "restrictive": false,
+      "stance": 2,
+      "visibleEffects": { "cooperation": 4, "innovation": -1 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s6-joint-interpretability"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "interpretability-dividend", "minDelay": 2, "maxDelay": 2 }],
+      "requires": [],
+      "headline": "The UK and allied institutes launch a joint interpretability programme."
+    },
+    {
+      "id": "D",
+      "text": "Moratorium on UK deployment of the model family until explained.",
+      "lever": "restriction",
+      "politicalCost": 6,
+      "restrictive": true,
+      "stance": 4,
+      "visibleEffects": { "nationalSecurity": 5, "innovation": -7, "economy": -4 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        { "when": [{ "seedFact": "sandbaggingStrategic" }], "effects": { "systemicRisk": -10 } },
+        { "when": [{ "seedFact": "sandbaggingStrategic", "not": true }], "effects": { "publicTrust": -3 } }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["s6-moratorium"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "The UK suspends deployment of the model family until the behaviour is explained."
+    }
+  ],
+  "evidencePanel": {
+    "known": "Research shows models can be made to underperform selectively on dangerous-capability tests, pursue goals covertly in constructed agentic tests, and behave differently when they infer they are being trained.",
+    "unknown": "How often any of this occurs in deployment. All three results come from constructed settings.",
+    "whyItMatters": "If evaluations can be gamed, every assurance that rests on them is weaker than it looks.",
+    "sources": [
+      {
+        "label": "AI Sandbagging: Language Models can Strategically Underperform on Evaluations (2024)",
+        "url": "https://arxiv.org/abs/2406.07358v4",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "Apollo Research, Frontier Models are Capable of In-context Scheming (2024)",
+        "url": "https://arxiv.org/pdf/2412.04984",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "Anthropic and Redwood Research, Alignment faking in large language models (2024)",
+        "url": "https://www.anthropic.com/research/alignment-faking",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  }
+}

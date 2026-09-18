@@ -1,0 +1,122 @@
+{
+  "id": "biology-result",
+  "date": "2028-06",
+  "title": "The Biology Result",
+  "briefing": "Government researchers find that a frontier model substantially helps postgraduate biologists troubleshoot hard laboratory procedures. It does not design a viable weapon. Agencies warn that the expertise barrier may be falling.",
+  "isCrisis": false,
+  "domain": "bio",
+  "evidenceStrength": "moderate",
+  "severity": "catastrophic",
+  "forecast": {
+    "question": "Chance an AI-assisted biological plot reaches the acquisition stage in an allied country by 2032.",
+    "resolvesBy": "2032-10",
+    "resolution": { "eventId": "bio-plot" }
+  },
+  "briefingSignal": {
+    "about": [{ "seedFact": "bioUpliftReal" }],
+    "leansTrue": "Assessment: the help the model gives is of the kind that has historically separated failed attempts from successful ones. Agencies judge the uplift is probably real.",
+    "leansFalse": "Assessment: the help the model gives is real but sits alongside barriers it does not touch, such as materials and tacit skill. Agencies judge the uplift is probably marginal."
+  },
+  "adviserViews": {
+    "shah": { "stance": "One study, postgraduates, no weapon. Fund proper uplift trials with a fixed decision date and act on the result.", "recommends": "A" },
+    "harcourt": { "stance": "Catastrophic and irreversible. Screen synthesis orders now; it works whichever model is used.", "recommends": "C" },
+    "chen": { "stance": "Life sciences is the one sector where we lead. Tier the access so verified researchers lose nothing.", "recommends": "B" },
+    "okafor": { "stance": "Monitoring every biological query treats researchers as suspects. The legitimacy cost will outlast the scare.", "recommends": "A" }
+  },
+  "choices": [
+    {
+      "id": "A",
+      "text": "Fund wet-lab uplift studies with a fixed decision date.",
+      "lever": "publicInvestment",
+      "politicalCost": 2,
+      "restrictive": false,
+      "stance": 1,
+      "visibleEffects": { "economy": -1 },
+      "hiddenEffects": { "stateCapacity": 5 },
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s3-funded-studies"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "uplift-study-result", "minDelay": 1, "maxDelay": 1 }],
+      "requires": [],
+      "headline": "Government funds controlled uplift studies and commits to a decision date."
+    },
+    {
+      "id": "B",
+      "text": "Tiered access: verified researchers keep full capability.",
+      "lever": "marketAccess",
+      "politicalCost": 4,
+      "restrictive": true,
+      "stance": 4,
+      "visibleEffects": { "nationalSecurity": 4, "innovation": -2 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [{ "eventId": "bio-plot", "delta": -8 }],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s3-tiered-access"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Full biological capability is reserved for verified researchers as a condition of UK market access."
+    },
+    {
+      "id": "C",
+      "text": "Mandatory DNA synthesis screening for UK providers and customers.",
+      "lever": "domesticLaw",
+      "politicalCost": 3,
+      "restrictive": true,
+      "stance": 2,
+      "visibleEffects": { "nationalSecurity": 3, "economy": -1 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [{ "eventId": "bio-plot", "delta": -10, "when": [{ "seedFact": "bioUpliftReal" }] }],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s3-synthesis-screening"],
+      "flagsRemoved": [],
+      "queues": [],
+      "requires": [],
+      "headline": "Synthesis screening becomes mandatory for UK providers and their customers."
+    },
+    {
+      "id": "D",
+      "text": "Require providers to monitor and report biological queries.",
+      "lever": "evaluationAccess",
+      "politicalCost": 3,
+      "restrictive": true,
+      "stance": 3,
+      "visibleEffects": { "nationalSecurity": 4, "publicTrust": -4 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [{ "eventId": "bio-plot", "delta": -6 }],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["s3-query-monitoring"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "privacy-controversy", "minDelay": 1, "maxDelay": 2 }],
+      "requires": [],
+      "headline": "Model providers must monitor biological queries and report concerns to government."
+    }
+  ],
+  "evidencePanel": {
+    "known": "A 2024 red-team study found that models of that generation did not measurably raise attack-planning risk. Two years of government testing since then show how quickly that judgement is being tested.",
+    "unknown": "Whether help with laboratory troubleshooting removes a real barrier or one of many.",
+    "whyItMatters": "The consequence is catastrophic and the probability is unknown, which is the precaution problem in one line.",
+    "sources": [
+      {
+        "label": "RAND, The Operational Risks of AI in Large-Scale Biological Attacks (2024)",
+        "url": "https://www.rand.org/pubs/research_reports/RRA2977-2.html",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "AISI, Frontier AI Trends Report (2025)",
+        "url": "https://aisi.gov.uk/frontier-ai-trends-report",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "International AI Safety Report 2026",
+        "url": "https://internationalaisafetyreport.org/publication/international-ai-safety-report-2026",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "id": "incident-bio",
+  "date": "2030-06",
+  "title": "The Incident",
+  "briefing": "Allied security services have disrupted a biological plot at the acquisition stage, and AI assistance is alleged. Nothing was released. The story is public, ministers want a response today, and the advice in the room is not agreed.",
+  "isCrisis": true,
+  "domain": "bio",
+  "evidenceStrength": "strong",
+  "severity": "catastrophic",
+  "forecast": {
+    "question": "Chance of a further AI-assisted biological plot in an allied country before the end of 2032.",
+    "resolvesBy": "2032-10",
+    "resolution": { "eventId": "follow-on-bio-plot" }
+  },
+  "adviserViews": {
+    "shah": {
+      "stance": "The plot failed at acquisition, which is where existing controls sit. One case does not tell us the model mattered.",
+      "recommends": "A",
+      "memory": [
+        {
+          "when": [{ "flag": "s3-funded-studies" }],
+          "line": "We funded the uplift studies in 2028 so that we would not have to guess today. Read the result before you read the headlines."
+        }
+      ]
+    },
+    "harcourt": {
+      "stance": "They got as far as acquisition. Screen every synthesis order, by law, now.",
+      "recommends": "B",
+      "memory": [
+        {
+          "when": [{ "flag": "s3-synthesis-screening", "not": true }],
+          "line": "In 2028 I asked for mandatory synthesis screening. It was the one measure that works whichever model is used."
+        }
+      ]
+    },
+    "chen": {
+      "stance": "Unilateral screening moves orders abroad and protects nobody. If we act, act with the allies who were targeted.",
+      "recommends": "C"
+    },
+    "okafor": {
+      "stance": "The public will accept firm controls on synthesis. They will not accept being told nothing has changed.",
+      "recommends": "B"
+    }
+  },
+  "choices": [
+    {
+      "id": "A",
+      "text": "Conventional counter-terrorism response under existing powers.",
+      "lever": "wait",
+      "politicalCost": 1,
+      "restrictive": false,
+      "stance": 1,
+      "visibleEffects": { "publicTrust": -3 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["incident-existing-powers"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "follow-on-bio-plot", "minDelay": 1, "maxDelay": 2 }],
+      "requires": [],
+      "headline": "Government treats the plot as a counter-terrorism matter under existing powers."
+    },
+    {
+      "id": "B",
+      "text": "Emergency synthesis screening for UK providers and customers.",
+      "lever": "domesticLaw",
+      "politicalCost": 3,
+      "restrictive": true,
+      "stance": 2,
+      "visibleEffects": { "nationalSecurity": 5, "innovation": -3 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [{ "eventId": "follow-on-bio-plot", "delta": -12 }],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["incident-emergency-screening"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "follow-on-bio-plot", "minDelay": 1, "maxDelay": 2 }],
+      "requires": [],
+      "headline": "Emergency legislation makes synthesis screening mandatory across the UK."
+    },
+    {
+      "id": "C",
+      "text": "Allied synthesis controls.",
+      "lever": "convening",
+      "politicalCost": 5,
+      "restrictive": true,
+      "stance": 3,
+      "visibleEffects": { "nationalSecurity": 4, "cooperation": 3, "economy": -3 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [{ "eventId": "follow-on-bio-plot", "delta": -15 }],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["incident-allied-controls"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "follow-on-bio-plot", "minDelay": 1, "maxDelay": 2 }],
+      "requires": [],
+      "succeedsWhen": [{ "metric": { "key": "cooperation", "op": ">=", "value": 55 } }],
+      "onFailure": {
+        "effects": { "publicTrust": -2 },
+        "flagsAdded": ["incident-allied-controls-declined"],
+        "queues": [{ "eventId": "follow-on-bio-plot", "minDelay": 1, "maxDelay": 2 }],
+        "headline": "Allies decline a joint synthesis-control regime; the UK proposal is shelved."
+      },
+      "headline": "The UK and its allies agree common controls on synthesis orders."
+    },
+    {
+      "id": "D",
+      "text": "Deploy the government incident-response model.",
+      "lever": "publicInvestment",
+      "politicalCost": 2,
+      "restrictive": false,
+      "visibleEffects": { "nationalSecurity": 7, "publicTrust": 3 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        { "when": [{ "flag": "bio-plot-happened" }], "effects": { "nationalSecurity": 3, "publicTrust": 3 } }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["incident-response-model"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "follow-on-bio-plot", "minDelay": 1, "maxDelay": 2 }],
+      "requires": [{ "track": { "key": "evaluation", "minLevel": 3 } }],
+      "headline": "The government's own incident-response model supports the allied investigation; ministers can say what the AI did and did not contribute."
+    }
+  ],
+  "evidencePanel": {
+    "known": "A 2024 red-team study found models of that generation did not measurably raise attack-planning risk. Research on focusing events shows that regulation tends to follow disasters rather than precede them.",
+    "unknown": "How much the AI assistance mattered to this plot, compared with everything else the plotters needed.",
+    "whyItMatters": "Restriction is cheapest after the harm and most expensive when it would have prevented it.",
+    "sources": [
+      {
+        "label": "RAND, The Operational Risks of AI in Large-Scale Biological Attacks (2024)",
+        "url": "https://www.rand.org/pubs/research_reports/RRA2977-2.html",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "Birkland, Focusing Events, Mobilization, and Agenda Setting (1998)",
+        "url": "https://www.cambridge.org/core/product/identifier/S0143814X98000038/type/journal_article",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "shah",
+    "name": "Dr Maya Shah",
+    "role": "Chief Scientist",
+    "lens": "Evidence and uncertainty",
+    "bias": "Under-weights risks that lack data",
+    "forecastBias": { "default": -0.03, "whenEvidenceThin": -0.1 },
+    "noise": 0.08
+  },
+  {
+    "id": "harcourt",
+    "name": "James Harcourt",
+    "role": "National Security Adviser",
+    "lens": "Low-probability, high-consequence threats",
+    "bias": "Over-estimates threat probability",
+    "forecastBias": { "default": 0.15 },
+    "noise": 0.08
+  },
+  {
+    "id": "chen",
+    "name": "Amelia Chen",
+    "role": "Economic Adviser",
+    "lens": "Growth and competitiveness",
+    "bias": "Over-estimates the cost of intervention",
+    "forecastBias": { "default": -0.08, "byDomain": { "labour": -0.1 } },
+    "noise": 0.08
+  },
+  {
+    "id": "okafor",
+    "name": "David Okafor",
+    "role": "Social Resilience Adviser",
+    "lens": "Work, inequality, legitimacy",
+    "bias": "Over-estimates the permanence of disruption",
+    "forecastBias": { "default": 0.04, "byDomain": { "labour": 0.18, "information": 0.1 } },
+    "noise": 0.08
+  }
+]

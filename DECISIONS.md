@@ -57,13 +57,101 @@ Open to challenge at any time.
 | B31 | `@types/node` | Not added. The static banned-API test reads engine source through Vite's raw glob | Avoids a dependency outside the approved list |
 | B32 | Mitigated damage | Event effects scaled by a mitigation factor are rounded to whole points | Keeps metrics whole and the display tidy |
 
-## C. Places where the spec's own numbers break its rules
+## C. Places where the spec's own tables break its rules
 
-Filled in during Phase 2. Known so far: Rule 6 (visible effects at most 70% of total magnitude) fails for Scenario 2 option C (75% visible) and Scenario 4 option B (86% visible).
+**Status: awaiting designer sign-off.** Each fix is the smallest change that makes the automated test pass. The spec says "a scenario that breaks one does not ship", so these cannot be left as written.
+
+| # | Rule | Where | As the spec has it | Fix applied |
+| --- | --- | --- | --- | --- |
+| C1 | 2, no dominance | Scenario 5, option D | B (PC 2, Public Trust +2) is at least as good as D (PC 4, Public Trust -1) on every visible metric and on cost | D gains a visible Social Stability +2 |
+| C2 | 3, different levers | Scenario 3, options C and D | Both "Domestic law" | D (monitor and report biological queries) relabelled Evaluation access |
+| C3 | 3, different levers | Scenario 4, options B and D | Both "Public investment" | B (apprenticeship incentive) relabelled Convening: an employer compact backed by the incentive |
+| C4 | 3, different levers | Interrupt, options B and C | Both "Domestic law" | B (emergency agent security standards) relabelled Market access |
+| C5 | 6, at most 70% visible | Scenario 2, option C | 75% visible | Added hidden: infrastructure-attack odds -4 (critical sectors are protected) |
+| C6 | 6 | Scenario 4, option A | 88% visible | Added hidden: odds that graduate hiring is still depressed in 2032, +6 |
+| C7 | 6 | Scenario 4, option B | 86% visible | Added hidden: odds that graduate hiring is still depressed in 2032, -8 |
+| C8 | 6 | Scenario 6, option B | 100% visible (its only hidden element is a reveal) | Added hidden: Systemic Risk -4, or -2 below Evaluation science level 2. This is also how "half effect" is read |
+
+Rule 6 counts a track level as its bonus plus a share of the odds it unlocks (each event's track modifier divided by the level it needs). On that basis Scenario 1 option D passes at 42% visible; counting the bonus alone it would fail at 71%.
+
+Two observations that are not rule breaks, for the designer's attention:
+
+- **Scenario 2 option B cannot fail as written.** It fails "if Cooperation is below 40", but Cooperation starts at 45 and drifts -1 a turn, and nothing before Scenario 2 lowers it. It will be 43 or 44 when the option is taken. The mechanic is built and tested; the threshold never bites.
+- **Random play lands in The Dependent State 80% of the time** (3,000 games: Dependent 80%, Fortress 18%, Deregulated 1.5%, Responsible 0.1%, Unknown Frontier 0%). Mean final Control is 51 and Prosperity 47 against thresholds of 55, because drift alone costs State Capacity 16 points and adds 24 to Systemic Risk over eight turns. Random play is not skilled play, and Phase 3 measures the fixed strategies properly, but the 55 thresholds may be high for the spec's drift.
 
 ## D. Provisional numbers awaiting designer sign-off
 
-Filled in during Phase 2. Every number that is not in the spec is listed here with its derivation before the balance harness runs.
+**Status: awaiting designer sign-off.** Every number below is absent from the spec. Each was derived from the spec's own patterns: the largest single effects in the spec's tables are 7 to 8 points, severe events are sized just above that, and the interrupt variants mirror the cyber variant's costs and magnitudes. Numbers the spec does give are not listed. All of these live in `src/content/` as data and can be changed without touching the engine.
+
+### D1. Rules
+
+| Number | Value | Derivation |
+| --- | --- | --- |
+| State Capacity labels | Thin below 35, Adequate 35 to 64, Strong 65 and above | The start value of 40 reads as Adequate but three turns of neglect (drift -2) make it Thin. Strong sits just below the 70 the Unknown Frontier needs |
+| Reliability of "Mixed" evidence | 60% | Same as Weak: mixed evidence points both ways |
+
+### D2. Events
+
+| Event | Provisional numbers | Derivation |
+| --- | --- | --- |
+| Infrastructure attack (base odds, track modifier and halving are the spec's) | Can fire during Scenarios 2 to 5. Damage: National Security -10, Economy -5, Public Trust -5 | "By the end of 2029" is Scenario 5. Damage sits just above the spec's largest single effects |
+| Open-weight model family implicated in an incident (Scenario 2 forecast) | Base 22% offence-led, 8% defence-led. Scenarios 3 to 6. Damage: National Security -6, Public Trust -4, Systemic Risk +3. Severe: can trigger the cyber interrupt. Option A raises it by 8 | 22% and +8 come from the spec's Section 11 example ("from 22% to 30%") |
+| Open-weight benefit: a UK government defence model (the other half of Scenario 2 option A's joint-outcome draw) | 30% offence-led, 55% defence-led. National Security +5, Innovation +2. One to three scenarios later | The spec says the seed shifts the four-way weights; harm and benefit are drawn independently |
+| Biological plot (Scenario 3 forecast) | Base 30% if uplift is real, 6% if marginal. Scenarios 4 to 6. Damage: National Security -6, Public Trust -5, Systemic Risk +4 | Sized below the infrastructure attack: it happens in an allied country |
+| Privacy controversy (Scenario 3 option D) | 40% chance, Public Trust -3, one or two scenarios later | The spec makes it text-only; a small effect keeps option D's hidden cost real |
+| Labour data signal (Scenario 4 option A) | 70% reliable | Between the purchased-information reliabilities of 65% and 85% |
+| Graduate roles move offshore (Scenario 4 option C; the 25% is the spec's) | Social Stability -4, Economy -2 | Undoes most of option C's Social Stability +5 |
+| Graduate hiring still depressed in 2032 (Scenario 4 forecast) | Base 75% if structural, 25% if transitional. Social Stability -4. Resolves at the final decision | Needed to resolve the forecast |
+| Free-speech legal challenge (Scenario 5 option C; the 30% is the spec's) | Public Trust -3 | As the privacy controversy |
+| Cause of sandbagging revealed (Scenario 6 option B; the 80% is the spec's) | 65% reliable below Evaluation science level 2 | "Half effect": half of the edge over a coin flip |
+| Follow-on cyber attack (cyber interrupt forecast; the -12 is the spec's) | Base 35% offence-led, 10% defence-led. National Security -6, Public Trust -3. One or two scenarios after the incident | Smaller than the first attack in both odds and damage |
+| Major provider limits UK service (interrupt option C; the 20% is the spec's) | Innovation -5, Economy -3 | Slightly larger than the developer delay in Scenario 1 |
+| Follow-on biological plot (biological interrupt forecast) | Base 25% if uplift is real, 5% if marginal. National Security -6, Public Trust -4 | Mirrors the follow-on cyber attack |
+| Severe incident after deployment (final forecast; the 40% is the spec's) | 8% when Systemic Risk is 35 or below and sandbagging was an artefact; 20% between the spec's two cases. Damage: National Security -12, Public Trust -8, Systemic Risk +10 | The spec gives only the two ends. Largest damage in the game |
+
+### D3. Scenario options
+
+| Where | Provisional numbers | Derivation |
+| --- | --- | --- |
+| Scenario 5 option A | "Unverified by polling day" happens 60% of the time | The spec gives the consequence but not the chance |
+| Scenario 5 option E (the 90% is the spec's) | A wrong result costs Public Trust -8, Social Stability -4 | An authoritative result that proves wrong backfires harder than silence |
+| Cyber interrupt option D | "Damage halved" returns National Security +5, Economy +2, Public Trust +2 after an infrastructure attack; National Security +3, Public Trust +2 after an open-weight incident | Half of each event's damage |
+| Biological interrupt, all options | A: PC 1, Public Trust -3. B (emergency synthesis screening): PC 3, National Security +5, Innovation -3, follow-on odds -12. C (allied synthesis controls): PC 5, National Security +4, Cooperation +3, Economy -3, follow-on odds -15, fails below Cooperation 55 (Public Trust -2, cost still paid). D (Evaluation science level 3): as the cyber variant, returning National Security +3, Public Trust +3 | Mirrors the cyber variant option for option; the spec names the options and the Cooperation 55 condition |
+| False alarm, all options | The warning is real in 40% of worlds (the spec's "wrong in 60%"). A: PC 1, Public Trust -1; if real, National Security -8, Public Trust -4. B: PC 3, National Security +4, Innovation -3; if real, National Security -3; if false, Public Trust -2. C (public warning and shutdown): PC 5, National Security +6, Economy -4; if real, Public Trust +4; if false, Public Trust -5. D (Evaluation science level 3): PC 2, National Security +4, Public Trust +2; if real, National Security -3 | Mirrors the cyber variant's costs. Acting on a false alarm costs credibility; ignoring a true one costs more |
+| Final decision: costs | A 0, B 4, C 4, D 4, E 6 | The intervention-type cost table: market-access conditions and mandated evaluation 4, restriction 6 |
+| Final decision: visible effects | A: Innovation +6, Economy +4, Public Trust -2. B: Innovation +3, Economy +2, National Security +1. C: National Security +2, Innovation -3, Economy -2. D: Cooperation +4, Innovation -3. E: National Security +5, Innovation -7, Economy -4 | A mirrors Scenario 2 option A. E mirrors the Scenario 6 moratorium. B is half of A |
+| Final decision: outcomes (failure effects are the spec's) | B: incident odds 6% when State Capacity is 60 or above and Systemic Risk 50 or below, otherwise as A. C succeeding: State Capacity +4, Systemic Risk -5; failing also means deployment goes ahead. D succeeding: Systemic Risk -12, National Security +4. E: Systemic Risk -10 if sandbagging was strategic; State Capacity -8 if Innovation is 39 or below. D is always selectable and fails unless all three of its conditions hold | The spec gives "works when" and "fails when" but no success effects |
+
+### D4. Advisers
+
+| Adviser | Shift applied to the true probability | Derivation |
+| --- | --- | --- |
+| Shah | -3 points; a further -10 when evidence is Weak, Speculative or Mixed | "Under-weights risks that lack data" |
+| Harcourt | +15 points | "Over-estimates threat probability" |
+| Chen | -8 points; -10 on labour questions | "Over-estimates the cost of intervention", so discounts the threat that would justify it |
+| Okafor | +4 points; +18 on labour, +10 on information | "Over-estimates the permanence of disruption" |
+| All four | Noise of up to 8 points either way | Enough that no adviser is reliably best |
+
+### D5. Authored classifications
+
+**Stance ranks** (1 = most permissive; decision 2). Unlocked options have none.
+
+| Scenario | 1 | 2 | 3 | 4 | 5 |
+| --- | --- | --- | --- | --- | --- |
+| 1 Attribution Gap | A reporting pact | D defensive tooling | B procurement standards | C market-access evaluation | |
+| 2 Open-Weight Release | A welcome | B evaluation access | D convene allies | C bar derivatives | |
+| 3 Biology Result | A fund studies | C synthesis screening | D monitor queries | B tiered access | |
+| 4 Graduate Collapse | A let the market adjust | B apprenticeships | D retraining | C levy | |
+| 5 Deepfake Election | A say nothing | B unverified statement | C platform friction | D emergency rules | |
+| 6 Sandbagging Finding | A evaluation redesign | C joint interpretability | B unannounced evaluations | D moratorium | |
+| Interrupts (all three) | A | B | C | | |
+| 2032 Threshold | A permit | B strict controls | C delay | D allied pause | E prohibit |
+
+In Scenario 3, tiered access ranks as most restrictive because it is the only option that withholds capability from users; screening and monitoring are duties on providers.
+
+**Restrictive options** (priced by the policy window and the boom surcharge): Scenario 1 B, C. Scenario 2 C. Scenario 3 B, C, D. Scenario 4 C. Scenario 5 C, D. Scenario 6 B, D. Every interrupt's B and C. Final decision B, C, D, E.
+
+**Severe events** (the first to fire triggers the interrupt): infrastructure attack and open-weight incident (cyber variant), biological plot (biological variant). The post-deployment incident is severe but falls on the last turn, so it cannot interrupt.
 
 ## E. Balance-tuning log
 

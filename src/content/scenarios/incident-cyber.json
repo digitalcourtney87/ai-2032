@@ -1,0 +1,145 @@
+{
+  "id": "incident-cyber",
+  "date": "2029-06",
+  "title": "The Incident",
+  "briefing": "A severe AI-enabled attack has hit the UK. Services are disrupted, the cause is public, and ministers want a response today. You have minutes, not months, and the advice in the room is not agreed.",
+  "isCrisis": true,
+  "domain": "cyber",
+  "evidenceStrength": "strong",
+  "severity": "veryHigh",
+  "forecast": {
+    "question": "Chance of a further disruptive AI-enabled attack on the UK before the end of 2032.",
+    "resolvesBy": "2032-10",
+    "resolution": { "eventId": "follow-on-attack" }
+  },
+  "adviserViews": {
+    "shah": {
+      "stance": "One incident tells us little about the base rate. Respond to the damage; do not legislate from the wreckage.",
+      "recommends": "A",
+      "memory": [
+        {
+          "when": [{ "flag": "s1-voluntary-pact" }],
+          "line": "James will say the 2027 pact caused this. From one incident, nobody in this room can know whether evaluation at the border would have stopped it."
+        }
+      ]
+    },
+    "harcourt": {
+      "stance": "This is the warning. Mandate agent security standards now, while Parliament will pass them.",
+      "recommends": "B",
+      "memory": [
+        {
+          "when": [{ "flag": "s1-voluntary-pact" }],
+          "line": "In 2027 I asked for evaluation before market access. We chose a reporting pact."
+        },
+        {
+          "when": [{ "flag": "s2-welcomed-release" }],
+          "line": "In 2027 we welcomed the open-weight release. I said then that every safeguard on it was optional."
+        }
+      ]
+    },
+    "chen": {
+      "stance": "Liability written in a week will be litigated for a decade, and a provider may simply leave. Use the law we have.",
+      "recommends": "A"
+    },
+    "okafor": {
+      "stance": "People lost power and water. They need to see that someone is accountable when a deployment is negligent.",
+      "recommends": "C"
+    }
+  },
+  "choices": [
+    {
+      "id": "A",
+      "text": "Respond under existing law with national cyber support.",
+      "lever": "wait",
+      "politicalCost": 1,
+      "restrictive": false,
+      "stance": 1,
+      "visibleEffects": { "publicTrust": -3 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["incident-existing-law"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "follow-on-attack", "minDelay": 1, "maxDelay": 2 }],
+      "requires": [],
+      "headline": "Government responds to the attack under existing law, with national cyber support for operators."
+    },
+    {
+      "id": "B",
+      "text": "Emergency agent security standards.",
+      "lever": "marketAccess",
+      "politicalCost": 3,
+      "restrictive": true,
+      "stance": 2,
+      "visibleEffects": { "nationalSecurity": 5, "innovation": -3 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [{ "eventId": "follow-on-attack", "delta": -12 }],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["incident-emergency-standards"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "follow-on-attack", "minDelay": 1, "maxDelay": 2 }],
+      "requires": [],
+      "headline": "Emergency agent security standards take effect for every system offered in the UK."
+    },
+    {
+      "id": "C",
+      "text": "Provider liability for negligent deployment.",
+      "lever": "domesticLaw",
+      "politicalCost": 5,
+      "restrictive": true,
+      "stance": 3,
+      "visibleEffects": { "nationalSecurity": 4, "economy": -3 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [],
+      "trackChange": null,
+      "flagsAdded": ["incident-provider-liability"],
+      "flagsRemoved": [],
+      "queues": [
+        { "eventId": "follow-on-attack", "minDelay": 1, "maxDelay": 2 },
+        { "eventId": "provider-limits-service", "minDelay": 1, "maxDelay": 2 }
+      ],
+      "requires": [],
+      "headline": "Providers become liable for negligent deployment of AI agents in the UK."
+    },
+    {
+      "id": "D",
+      "text": "Deploy the government incident-response model.",
+      "lever": "publicInvestment",
+      "politicalCost": 2,
+      "restrictive": false,
+      "visibleEffects": { "nationalSecurity": 7, "publicTrust": 3 },
+      "hiddenEffects": {},
+      "probabilityModifiers": [],
+      "conditionalEffects": [
+        { "when": [{ "flag": "infra-attack-happened" }], "effects": { "nationalSecurity": 5, "economy": 2, "publicTrust": 2 } },
+        { "when": [{ "flag": "open-weight-incident-happened" }], "effects": { "nationalSecurity": 3, "publicTrust": 2 } }
+      ],
+      "trackChange": null,
+      "flagsAdded": ["incident-response-model"],
+      "flagsRemoved": [],
+      "queues": [{ "eventId": "follow-on-attack", "minDelay": 1, "maxDelay": 2 }],
+      "requires": [{ "track": { "key": "evaluation", "minLevel": 3 } }],
+      "headline": "The government's own incident-response model is deployed to contain the attack; recovery is measured in hours."
+    }
+  ],
+  "evidencePanel": {
+    "known": "The UK's official assessment is that AI will raise the frequency and intensity of intrusions. Research on focusing events shows that regulation tends to follow disasters rather than precede them.",
+    "unknown": "Whether this attack marks a change in the base rate or one draw from the rate you already faced.",
+    "whyItMatters": "Restriction is cheapest after the harm and most expensive when it would have prevented it.",
+    "sources": [
+      {
+        "label": "NCSC, Impact of AI on cyber threat from now to 2027",
+        "url": "https://www.ncsc.gov.uk/report/impact-ai-cyber-threat-now-2027",
+        "reviewed": "2026-09-18"
+      },
+      {
+        "label": "Birkland, Focusing Events, Mobilization, and Agenda Setting (1998)",
+        "url": "https://www.cambridge.org/core/product/identifier/S0143814X98000038/type/journal_article",
+        "reviewed": "2026-09-18"
+      }
+    ]
+  }
+}
