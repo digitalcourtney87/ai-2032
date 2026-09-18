@@ -84,7 +84,9 @@ function beginTurn(state: GameState, content: Content, scenarioId: string, isInt
   const truth = forecastTruth(scenario, state, content);
   let rngState = state.rngState;
   const adviserForecasts = {} as Record<AdviserId, number>;
+  const adviserMemory = {} as Record<AdviserId, string | null>;
   for (const id of ADVISER_IDS) {
+    adviserMemory[id] = scenario.adviserViews[id].memory?.find((m) => allHold(m.when, state))?.line ?? null;
     const adviser = content.advisers.find((a) => a.id === id);
     if (!adviser) throw new Error(`Unknown adviser "${id}"`);
     const draw = mulberry32(rngState);
@@ -115,6 +117,7 @@ function beginTurn(state: GameState, content: Content, scenarioId: string, isInt
     isFinal: !isInterrupt && scenarioId === content.sequence[content.sequence.length - 1],
     choices,
     adviserForecasts,
+    adviserMemory,
     signalLeansTrue,
     canBuyInfo: canBuyInfo(scenario, state, content, choices),
     forecast: null,

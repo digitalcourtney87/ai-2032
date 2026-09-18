@@ -20,8 +20,8 @@
         "seedFact": "cyberOffenceLed"
       }
     ],
-    "leansTrue": "Assessment: red teams stripped the safeguards in days and the derivative materially sped up intrusion work. Openly available capability at this level is likely to help attackers more than defenders.",
-    "leansFalse": "Assessment: red teams stripped the safeguards in days, but defenders gained as much from the derivative as attackers did. Openly available capability at this level is not clearly a net gift to offence."
+    "leansTrue": "Red teams stripped the safeguards in days and the derivative materially sped up intrusion work. Openly available capability at this level is likely to help attackers more than defenders.",
+    "leansFalse": "Red teams stripped the safeguards in days, but defenders gained as much from the derivative as attackers did. Openly available capability at this level is not clearly a net gift to offence."
   },
   "adviserViews": {
     "shah": {

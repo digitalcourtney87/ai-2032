@@ -1,17 +1,68 @@
 @import "tailwindcss";
 
 /* Sober briefing-document aesthetic (spec Section 14): off-white paper,
-   near-black ink, one accent, a serif for headings, system sans for body. */
-@theme {
+   near-black ink, one accent, a serif for headings, system sans for body.
+   No gradients, no game chrome. Colours are tokens so dark mode is a swap. */
+:root {
+  --paper: #f7f5f0;
+  --panel: #efece4;
+  --ink: #16181d;
+  --muted: #535862;
+  --rule: #cfcabd;
+  --accent: #1f4e79;
+  --on-accent: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #14161a;
+    --panel: #1c1f25;
+    --ink: #ecebe6;
+    --muted: #a7acb6;
+    --rule: #3a3f48;
+    --accent: #8fb8de;
+    --on-accent: #10141a;
+  }
+}
+
+@theme inline {
   --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --color-paper: #f7f5f0;
-  --color-ink: #16181d;
-  --color-accent: #1f4e79;
+  --color-paper: var(--paper);
+  --color-panel: var(--panel);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+}
+
+html {
+  color-scheme: light dark;
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans);
+  line-height: 1.55;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  line-height: 1.2;
+}
+
+/* One visible focus style everywhere, for keyboard operation (WCAG 2.4.7). */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

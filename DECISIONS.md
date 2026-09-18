@@ -55,6 +55,9 @@ Open to challenge at any time.
 | B29 | Illegal actions | `reduce` throws. It never returns a half-applied state | Bugs surface at once; the property test plays only legal actions |
 | B30 | Pricing order | The boom surcharge (+1) applies first, then the policy-window discount (-2), then the minimum of 1. Only restrictive options are repriced | The spec gives both rules but not their order |
 | B31 | `@types/node` | Not added. The static banned-API test reads engine source through Vite's raw glob | Avoids a dependency outside the approved list |
+| B33 | Public content view | Components read scenarios only through `src/content/index.ts`, whose `publicContent()` strips hidden effects, modifiers, conditions and queued events. A lint rule blocks any other import from `src/content` into `src/ui` | The scenario JSON holds the hidden half of every option; a client-side game cannot encrypt it, but it can make rendering it a lint failure |
+| B34 | Adviser memory lines | Resolved by the engine when a turn begins and carried in the turn context, because they depend on hidden flags | Keeps condition evaluation out of the interface |
+| B35 | Interrupt dates | Interrupt turns show "Unscheduled" rather than a date | Their timing varies by run; scripted scenarios keep the spec's dates |
 | B32 | Mitigated damage | Event effects scaled by a mitigation factor are rounded to whole points | Keeps metrics whole and the display tidy |
 
 ## C. Places where the spec's own tables break its rules

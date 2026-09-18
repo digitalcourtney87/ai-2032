@@ -20,8 +20,8 @@
         "seedFact": "cyberOffenceLed"
       }
     ],
-    "leansTrue": "Assessment: across recent cases, offensive tooling built on frontier models is improving faster than the defences operators can deploy. The balance currently favours the attacker.",
-    "leansFalse": "Assessment: across recent cases, defenders using the same models are closing intrusions about as fast as attackers can automate them. The balance is not clearly with the attacker."
+    "leansTrue": "Across recent cases, offensive tooling built on frontier models is improving faster than the defences operators can deploy. The balance currently favours the attacker.",
+    "leansFalse": "Across recent cases, defenders using the same models are closing intrusions about as fast as attackers can automate them. The balance is not clearly with the attacker."
   },
   "adviserViews": {
     "shah": {

@@ -20,8 +20,8 @@
         "seedFact": "labourShockStructural"
       }
     ],
-    "leansTrue": "Assessment: firms are redesigning work around the absence of juniors, not pausing hiring. Analysts judge the fall is probably structural.",
-    "leansFalse": "Assessment: firms describe a hiring pause while they learn what the tools can do, and smaller employers are picking up graduates. Analysts judge the fall is probably transitional."
+    "leansTrue": "Firms are redesigning work around the absence of juniors, not pausing hiring. Analysts judge the fall is probably structural.",
+    "leansFalse": "Firms describe a hiring pause while they learn what the tools can do, and smaller employers are picking up graduates. Analysts judge the fall is probably transitional."
   },
   "adviserViews": {
     "shah": {

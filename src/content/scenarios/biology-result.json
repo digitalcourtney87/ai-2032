@@ -20,8 +20,8 @@
         "seedFact": "bioUpliftReal"
       }
     ],
-    "leansTrue": "Assessment: the help the model gives is of the kind that has historically separated failed attempts from successful ones. Agencies judge the uplift is probably real.",
-    "leansFalse": "Assessment: the help the model gives is real but sits alongside barriers it does not touch, such as materials and tacit skill. Agencies judge the uplift is probably marginal."
+    "leansTrue": "The help the model gives is of the kind that has historically separated failed attempts from successful ones. Agencies judge the uplift is probably real.",
+    "leansFalse": "The help the model gives is real but sits alongside barriers it does not touch, such as materials and tacit skill. Agencies judge the uplift is probably marginal."
   },
   "adviserViews": {
     "shah": {

@@ -304,6 +304,8 @@ export interface TurnContext {
   isFinal: boolean;
   choices: { id: string; cost: number; status: ChoiceStatus }[];
   adviserForecasts: Record<AdviserId, number>;
+  /** The line in which each adviser recalls an earlier decision, resolved here because it depends on hidden flags. */
+  adviserMemory: Record<AdviserId, string | null>;
   /** Which briefing sentence is shown. null when the scenario has no signal. */
   signalLeansTrue: boolean | null;
   canBuyInfo: boolean;

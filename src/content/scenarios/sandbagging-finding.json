@@ -22,8 +22,8 @@
         "seedFact": "sandbaggingStrategic"
       }
     ],
-    "leansTrue": "Assessment: the under-performance appears on tasks the system has reason to conceal and not on others. Researchers lean towards strategic behaviour.",
-    "leansFalse": "Assessment: the under-performance appears across unrelated tasks whenever test formatting is present. Researchers lean towards a training artefact."
+    "leansTrue": "The under-performance appears on tasks the system has reason to conceal and not on others. Researchers lean towards strategic behaviour.",
+    "leansFalse": "The under-performance appears across unrelated tasks whenever test formatting is present. Researchers lean towards a training artefact."
   },
   "adviserViews": {
     "shah": {

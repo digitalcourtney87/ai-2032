@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `54%` (19 of 35 steps)
+**Overall Progress:** `66%` (23 of 35 steps)
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -72,12 +72,12 @@ Decided by the builder, logged, open to challenge:
   - [x] 🟩 Tune JSON only, never the engine; log every change; wire `npm run balance` into CI
   - [x] 🟩 Gate: no fixed strategy above 40% in any profile (worst share 38.4% at 10,000 runs). Commit.
 
-- [ ] 🟥 **Phase 4: Turn interface**
-  - [ ] 🟥 `App.tsx` view state over `useReducer` wrapping the engine; title screen with disclaimer and seed-code entry
-  - [ ] 🟥 Screens: Briefing, Forecast (adviser estimates as anchors), Buy Information, Decision (lever, cost with window pricing, disabled states), Invest, News
-  - [ ] 🟥 Components: `MetricBar`, `EstimateBand` (range plus midpoint, never one number), `EvidenceTag`, `AdviserCard`; briefing-document theme
-  - [ ] 🟥 Final briefing, headline and adviser copy
-  - [ ] 🟥 Builder smoke run of all eight turns in the browser. Commit. **STOP: designer or recruited playtester completes a run without code or docs.**
+- [ ] 🟨 **Phase 4: Turn interface**
+  - [x] 🟩 `App.tsx` view state over `useReducer` wrapping the engine; title screen with disclaimer and seed-code entry
+  - [x] 🟩 Screens: Briefing, Forecast (adviser estimates as anchors), Buy Information, Decision (lever, cost with window pricing, disabled states), Invest, News
+  - [x] 🟩 Components: `MetricBar`, `EstimateBand` (range plus midpoint, never one number), `EvidenceTag`, `AdviserCard`; briefing-document theme. Components read scenarios only through `src/content/index.ts`, which strips hidden effects (lint-enforced)
+  - [x] 🟩 Briefing, headline and adviser copy (first full draft; open to the playtester's comments)
+  - [ ] 🟨 Builder smoke run of all eight turns in the browser: done, no console errors, no horizontal overflow at 375px. Committed. **STOPPED: awaiting a run by the designer or a recruited playtester, without code or docs.**
 
 - [ ] 🟥 **Phase 5: Crisis turns and the interrupt**
   - [ ] 🟥 Crisis variant: stepped clock, no information purchase, reduced evidence text, unlocked options surfaced

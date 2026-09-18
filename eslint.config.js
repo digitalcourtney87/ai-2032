@@ -54,6 +54,7 @@ export default tseslint.config(
         {
           patterns: [
             { group: ["**/engine/*", "!**/engine/index"], message: "Import the engine only through src/engine/index.ts." },
+            { group: ["**/content/*", "!**/content/index"], message: "Import content only through src/content/index.ts, which hides hidden effects from components." },
           ],
         },
       ],
