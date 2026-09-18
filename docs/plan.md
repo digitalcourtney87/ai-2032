@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `69%` (24 of 35 steps)
+**Overall Progress:** `77%` (27 of 35 steps)
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -79,10 +79,10 @@ Decided by the builder, logged, open to challenge:
   - [x] 🟩 Briefing, headline and adviser copy (first full draft; open to the playtester's comments)
   - [x] 🟩 Builder smoke run of all eight turns in the browser: no console errors, no horizontal overflow at 375px. Gate: the designer completed a playtest run on 2026-09-18 with nothing to report.
 
-- [ ] 🟥 **Phase 5: Crisis turns and the interrupt**
-  - [ ] 🟥 Crisis variant: stepped clock, no information purchase, reduced evidence text, unlocked options surfaced
-  - [ ] 🟥 Interrupt drawn from the queue (cyber or bio) with the false-alarm fallback at turn 7
-  - [ ] 🟥 Gate: both crisis turns render differently from normal turns; an unlocked option appears only when its threshold is met. Commit.
+- [x] 🟩 **Phase 5: Crisis turns and the interrupt**
+  - [x] 🟩 Crisis variant: stepped clock, no information purchase, reduced evidence text, advisers flagged as in open disagreement, unlocked options surfaced first
+  - [x] 🟩 Interrupt drawn from the queue (cyber or bio) with the false-alarm fallback at turn 7 (engine, Phase 1; content, Phase 2)
+  - [x] 🟩 Gate: four Playwright tests in a real browser. Both crisis turns render differently from normal turns; an unlocked option appears only when its threshold is met. Commit and push.
 
 - [ ] 🟥 **Phase 6: Debrief and counterfactuals**
   - [ ] 🟥 Six panels: world reveal, calibration (Recharts chart, adviser Brier scores), quality versus luck, governance record with further reading, what you never saw, what if

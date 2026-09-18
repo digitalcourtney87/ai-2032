@@ -19,6 +19,7 @@ npm install
 | `npm run lint` | ESLint, including the engine-isolation and banned-API rules |
 | `npm run build` | Type check, then produce the static bundle in `dist/` |
 | `npm run preview` | Serve the built bundle locally |
+| `npm run e2e` | Playwright browser tests against the production bundle. First run `npx playwright install chromium` |
 | `npm run balance` | Play 10,000 simulated games per world profile for three fixed strategies. Fails if any strategy gives the best ending score in more than 40% of runs (spec Rule 7) |
 | `npm run balance -- --rules` | Also report, for each scenario, the worlds in which the waiting option and the most restrictive option are the best choice (spec Rules 4 and 5) |
 | `npm run balance -- --runs 2000` | A quicker reading while tuning numbers |

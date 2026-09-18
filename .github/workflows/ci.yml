@@ -17,9 +17,12 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run test
-      # The balance harness arrives in Phase 3; --if-present keeps CI green until then.
-      - run: npm run balance --if-present
+      - run: npm run balance
       - run: npm run build
+      - name: Browser tests (crisis turns, debrief, accessibility)
+        run: |
+          npx playwright install --with-deps chromium
+          npm run e2e
       - name: Bundle must stay under 16 MB
         run: |
           size_kb=$(du -sk dist | cut -f1)

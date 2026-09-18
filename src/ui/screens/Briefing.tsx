@@ -18,26 +18,37 @@ export function Briefing({ view, scenario, onContinue }: Props) {
   const ctx = view.current!;
   const assessment = view.intel.find((r) => r.turn === view.turn && r.source === "briefing" && r.scenarioId === scenario.id);
   const earlier = view.intel.filter((r) => r !== assessment);
+  const crisis = scenario.isCrisis;
+  const open = scenario.choices.filter((c) => ctx.choices.find((o) => o.id === c.id)?.status !== "locked");
+  const positions = new Set(ADVISER_ORDER.map((id) => scenario.advisers[id].recommends)).size;
 
   return (
     <div className="space-y-6">
       <p className="text-lg">{scenario.briefing}</p>
-      <EvidenceTag evidence={scenario.evidenceStrength} severity={scenario.severity} />
+      <EvidenceTag evidence={scenario.evidenceStrength} severity={scenario.severity} reduced={crisis} />
+      {crisis && (
+        <p className="text-sm font-semibold">
+          This is a crisis turn. There is no time to commission analysis or to review the evidence file. You decide on what is in front of you.
+        </p>
+      )}
 
       {assessment && (
         <section aria-label="Assessment">
-          <h3 className="text-sm font-semibold">Assessment</h3>
+          <h3 className="text-sm font-semibold">{crisis ? "Unconfirmed report" : "Assessment"}</h3>
           <p className="mt-1">{assessment.text}</p>
-          <p className="mt-1 text-xs text-muted">Assessments are sometimes wrong. How often depends on the evidence rating and on your State Capacity.</p>
+          {!crisis && (
+            <p className="mt-1 text-xs text-muted">Assessments are sometimes wrong. How often depends on the evidence rating and on your State Capacity.</p>
+          )}
         </section>
       )}
 
       <section aria-label="The options on the table">
         <h3 className="text-sm font-semibold">The options on the table</h3>
         <ul className="mt-2 space-y-1 text-sm">
-          {scenario.choices.filter((c) => ctx.choices.find((o) => o.id === c.id)?.status !== "locked").map((choice) => (
+          {open.map((choice) => (
             <li key={choice.id}>
               <span className="font-semibold">{choice.id}.</span> {choice.text}{" "}
+              {choice.unlock && <span className="font-semibold">Open to you because you prepared. </span>}
               <span className="text-muted">
                 ({LEVER_LABEL[choice.lever]}; {formatEffects(choice.visibleEffects)})
               </span>
@@ -47,7 +58,9 @@ export function Briefing({ view, scenario, onContinue }: Props) {
       </section>
 
       <section aria-label="Advisers" className="space-y-4">
-        <h3 className="text-sm font-semibold">Your advisers</h3>
+        <h3 className="text-sm font-semibold">
+          {crisis ? `Your advisers are in open disagreement: ${positions} different recommendations` : "Your advisers"}
+        </h3>
         {ADVISER_ORDER.map((id) => (
           <AdviserCard
             key={id}
@@ -59,6 +72,7 @@ export function Briefing({ view, scenario, onContinue }: Props) {
         ))}
       </section>
 
+      {!crisis && (
       <details className="rounded-sm border border-rule p-4">
         <summary className="cursor-pointer font-semibold">Real-world evidence behind this fictional scenario</summary>
         <dl className="mt-3 space-y-2 text-sm">
@@ -86,8 +100,9 @@ export function Briefing({ view, scenario, onContinue }: Props) {
           ))}
         </ul>
       </details>
+      )}
 
-      <IntelFile reports={earlier} heading="What you have been told so far" />
+      {!crisis && <IntelFile reports={earlier} heading="What you have been told so far" />}
 
       <Button onClick={onContinue}>Continue to your forecast</Button>
     </div>

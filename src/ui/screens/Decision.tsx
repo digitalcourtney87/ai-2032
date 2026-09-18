@@ -17,9 +17,14 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
   const ctx = view.current!;
   const purchased = view.intel.find((r) => r.turn === view.turn && r.source === "purchase");
+  const statusOf = (id: string) => ctx.choices.find((o) => o.id === id)!.status;
+  // Options opened by earlier investment come first: this is where preparation pays (spec Section 4).
+  const prepared = (id: string, unlock: unknown) => (unlock && statusOf(id) !== "locked" ? 0 : 1);
+  const ordered = [...scenario.choices].sort((a, b) => prepared(a.id, a.unlock) - prepared(b.id, b.unlock));
 
   return (
     <div className="space-y-6">
+      {scenario.isCrisis && <p className="text-sm font-semibold">No analysis can be commissioned in a crisis.</p>}
       {!scenario.isCrisis && (
         <section aria-label="Commission analysis" className="rounded-sm border border-rule p-4">
           <h3 className="font-semibold">Commission analysis</h3>
@@ -48,7 +53,7 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
           You have {view.politicalCapital} Political Capital. Visible effects apply at once. Every option also has effects you cannot see from here.
         </p>
         <div className="mt-4 space-y-3">
-          {scenario.choices.map((choice) => {
+          {ordered.map((choice) => {
             const option = ctx.choices.find((o) => o.id === choice.id)!;
             const available = option.status === "available";
             const inputId = `choice-${choice.id}`;

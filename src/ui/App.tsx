@@ -2,6 +2,7 @@
 // what is legal; this component only decides which screen shows it.
 
 import { useEffect, useRef, useState } from "react";
+import { CrisisClock } from "./components/CrisisClock";
 import { StatusPanel } from "./components/StatusPanel";
 import { formatMonth } from "./format";
 import { Briefing } from "./screens/Briefing";
@@ -85,7 +86,9 @@ export function App() {
       <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <main id="main">
           {scenario.isCrisis && (
-            <p className="mb-2 inline-block border border-ink px-2 py-0.5 text-xs font-semibold uppercase tracking-widest">Crisis</p>
+            <div className="mb-3">
+              <CrisisClock step={stepIndex} />
+            </div>
           )}
           <h1 ref={heading} tabIndex={-1} className="text-3xl outline-none sm:text-4xl">
             {scenario.title}
