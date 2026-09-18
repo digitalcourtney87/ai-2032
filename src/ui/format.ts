@@ -82,6 +82,40 @@ export const SEVERITY_LABEL: Record<Severity, string> = {
 
 export const ADVISER_ORDER: AdviserId[] = ["shah", "harcourt", "chen", "okafor"];
 
+/** The CSS custom property holding each adviser's signature colour (see theme.css). */
+export const ADVISER_VAR: Record<AdviserId, string> = {
+  shah: "--adviser-shah",
+  harcourt: "--adviser-harcourt",
+  chen: "--adviser-chen",
+  okafor: "--adviser-okafor",
+};
+
+/** The CSS custom property holding each severity level's colour (see theme.css). */
+export const SEVERITY_VAR: Record<Severity, string> = {
+  moderate: "--sev-moderate",
+  high: "--sev-high",
+  veryHigh: "--sev-very-high",
+  catastrophic: "--sev-catastrophic",
+  unknown: "--sev-unknown",
+};
+
+/** How many of a four-step gauge to fill. "Unknown" fills none: it is not a level. */
+export const SEVERITY_RANK: Record<Severity, number> = {
+  moderate: 1,
+  high: 2,
+  veryHigh: 3,
+  catastrophic: 4,
+  unknown: 0,
+};
+
+/** "Dr Maya Shah" becomes "MS": a first-and-last monogram for an adviser seal. */
+export function initials(name: string): string {
+  const parts = name.replace(/^(Dr|Mr|Ms|Mrs|Prof)\.?\s+/i, "").split(/\s+/).filter(Boolean);
+  const first = parts[0]?.[0] ?? "";
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
+  return (first + last).toUpperCase();
+}
+
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 /** "2027-09" becomes "September 2027". */

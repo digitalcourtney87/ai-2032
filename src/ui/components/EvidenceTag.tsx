@@ -1,5 +1,6 @@
 import { Icon } from "./Icon";
-import { EVIDENCE_LABEL, EVIDENCE_MEANING, SEVERITY_LABEL } from "../format";
+import { SeverityBadge } from "./SeverityBadge";
+import { EVIDENCE_LABEL, EVIDENCE_MEANING } from "../format";
 import type { EvidenceStrength, Severity } from "../../engine";
 
 interface Props {
@@ -26,7 +27,9 @@ export function EvidenceTag({ evidence, severity, reduced = false }: Props) {
       </div>
       <div>
         <dt className="font-mono text-[10px] uppercase tracking-wider text-muted">Severity if it goes wrong</dt>
-        <dd className="font-mono font-medium">{SEVERITY_LABEL[severity]}</dd>
+        <dd className="mt-1">
+          <SeverityBadge severity={severity} />
+        </dd>
       </div>
     </dl>
   );

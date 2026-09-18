@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { AdviserSeal } from "../components/AdviserSeal";
 import { Button } from "../components/Button";
+import { EffectChips } from "../components/EffectChips";
 import { Icon } from "../components/Icon";
-import { formatEffects, LEVER_LABEL, TRACK_LABEL } from "../format";
+import { ADVISER_ORDER, LEVER_LABEL, TRACK_LABEL } from "../format";
 import { pub } from "../useGame";
 import type { PublicScenario } from "../../content";
 import type { DisplayedState } from "../../engine";
@@ -59,8 +61,10 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
             const available = option.status === "available";
             const on = selected === choice.id;
             const inputId = `choice-${choice.id}`;
+            const backers = ADVISER_ORDER.filter((id) => scenario.advisers[id].recommends === choice.id).map((id) => pub.advisers.find((a) => a.id === id)!);
+            const dim = on ? "opacity-80" : "text-muted";
             return (
-              <div key={choice.id} className={`border p-4 ${on ? "border-ink bg-ink text-paper" : "border-rule"} ${available ? "" : "opacity-60"}`}>
+              <div key={choice.id} className={`border p-4 transition-colors ${on ? "border-ink bg-ink text-paper" : "border-rule hover:border-ink"} ${available ? "" : "opacity-60"}`}>
                 <div className="flex gap-3">
                   <input
                     id={inputId}
@@ -72,40 +76,49 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
                     onChange={() => setSelected(choice.id)}
                     aria-describedby={`${inputId}-detail`}
                   />
-                  <div>
-                    <label htmlFor={inputId} className="font-semibold">
-                      {choice.id}. {choice.text}
+                  <div className="min-w-0 flex-1">
+                    <label htmlFor={inputId} className="flex gap-2 font-semibold">
+                      <span className="font-mono">{choice.id}.</span>
+                      <span>{choice.text}</span>
                     </label>
-                    <p id={`${inputId}-detail`} className="mt-1 text-sm">
-                      <span className={on ? "opacity-80" : "text-muted"}>Lever:</span> {LEVER_LABEL[choice.lever]} &middot;{" "}
-                      <span className={on ? "opacity-80" : "text-muted"}>Cost:</span>{" "}
-                      <Icon name="capital" className="mx-0.5" />
-                      {option.cost} Political Capital
-                      <br />
-                      <span className={on ? "opacity-80" : "text-muted"}>Visible effects:</span> {formatEffects(choice.visibleEffects)}
-                      {choice.unlock && option.status !== "locked" && (
-                        <>
-                          <br />
-                          <Icon name="unlock" className="mr-1" />
-                          <span className="font-semibold">Open to you because of your investment in {TRACK_LABEL[choice.unlock.track]}.</span>
-                        </>
-                      )}
-                      {option.status === "unaffordable" && (
-                        <>
-                          <br />
-                          <span className="font-semibold">You do not have the Political Capital for this.</span>
-                        </>
-                      )}
-                      {option.status === "locked" && choice.unlock && (
-                        <>
-                          <br />
-                          <Icon name="lock" className="mr-1" />
-                          <span className="font-semibold">
-                            Locked: needs {TRACK_LABEL[choice.unlock.track]} at level {choice.unlock.level}.
+                    <div id={`${inputId}-detail`} className="mt-2 space-y-2 text-sm">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs">
+                        <span className="border border-rule px-1.5 py-0.5">{LEVER_LABEL[choice.lever]}</span>
+                        <span className="inline-flex items-center gap-1 border border-rule px-1.5 py-0.5">
+                          <Icon name="capital" />
+                          {option.cost} Political Capital
+                        </span>
+                      </div>
+                      <div>
+                        <p className={dim}>Visible effects</p>
+                        <div className="mt-1">
+                          <EffectChips effects={choice.visibleEffects} />
+                        </div>
+                      </div>
+                      {backers.length > 0 && (
+                        <div className="flex items-center gap-2" aria-label={`Backed by ${backers.map((a) => a.name).join(", ")}`}>
+                          <span className={dim}>Backed by</span>
+                          <span className="flex gap-1" aria-hidden="true">
+                            {backers.map((a) => (
+                              <AdviserSeal key={a.id} id={a.id} name={a.name} size="sm" />
+                            ))}
                           </span>
-                        </>
+                        </div>
                       )}
-                    </p>
+                      {choice.unlock && option.status !== "locked" && (
+                        <p className="font-semibold">
+                          <Icon name="unlock" className="mr-1" />
+                          Open to you because of your investment in {TRACK_LABEL[choice.unlock.track]}.
+                        </p>
+                      )}
+                      {option.status === "unaffordable" && <p className="font-semibold">You do not have the Political Capital for this.</p>}
+                      {option.status === "locked" && choice.unlock && (
+                        <p className="font-semibold">
+                          <Icon name="lock" className="mr-1" />
+                          Locked: needs {TRACK_LABEL[choice.unlock.track]} at level {choice.unlock.level}.
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

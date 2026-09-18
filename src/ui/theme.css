@@ -53,6 +53,19 @@
   --accent: #1f4e79;
   --on-accent: #ffffff;
   --radius: 0px;
+
+  /* Severity, low to high. Colour reinforces a text label, never replaces it (spec Section 14). */
+  --sev-moderate: #2f6f4f;
+  --sev-high: #b07a12;
+  --sev-very-high: #c0561d;
+  --sev-catastrophic: #b02a37;
+  --sev-unknown: #6b7280;
+
+  /* One signature colour per adviser, so the same person reads the same everywhere. */
+  --adviser-shah: #2f6feb;
+  --adviser-harcourt: #c0392b;
+  --adviser-chen: #b07a12;
+  --adviser-okafor: #0f8a7a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -64,6 +77,17 @@
     --rule: #3a3f48;
     --accent: #8fb8de;
     --on-accent: #10141a;
+
+    --sev-moderate: #6bbf92;
+    --sev-high: #e0b055;
+    --sev-very-high: #ea9a63;
+    --sev-catastrophic: #e97b86;
+    --sev-unknown: #9aa0ab;
+
+    --adviser-shah: #7fa9f4;
+    --adviser-harcourt: #ef8a80;
+    --adviser-chen: #e0b055;
+    --adviser-okafor: #4fc2b0;
   }
 }
 

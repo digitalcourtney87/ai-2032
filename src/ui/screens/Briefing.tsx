@@ -1,5 +1,6 @@
 import { SCENARIO_PLATES } from "../art/plates";
 import { AdviserCard } from "../components/AdviserCard";
+import { AdviserSeal } from "../components/AdviserSeal";
 import { Button } from "../components/Button";
 import { EvidenceTag } from "../components/EvidenceTag";
 import { Figure } from "../components/Figure";
@@ -48,16 +49,28 @@ export function Briefing({ view, scenario, onContinue }: Props) {
 
       <section aria-label="The options on the table">
         <h2 className="text-sm font-semibold">The options on the table</h2>
-        <ul className="mt-2 space-y-1 text-sm">
-          {open.map((choice) => (
-            <li key={choice.id}>
-              <span className="font-semibold">{choice.id}.</span> {choice.text}{" "}
-              {choice.unlock && <span className="font-semibold">Open to you because you prepared. </span>}
-              <span className="text-muted">
-                ({LEVER_LABEL[choice.lever]}; {formatEffects(choice.visibleEffects)})
-              </span>
-            </li>
-          ))}
+        <ul className="mt-2 space-y-2 text-sm">
+          {open.map((choice) => {
+            const backers = ADVISER_ORDER.filter((id) => scenario.advisers[id].recommends === choice.id).map((id) => pub.advisers.find((a) => a.id === id)!);
+            return (
+              <li key={choice.id} className="flex flex-wrap items-baseline gap-x-2">
+                <span>
+                  <span className="font-semibold">{choice.id}.</span> {choice.text}{" "}
+                  {choice.unlock && <span className="font-semibold">Open to you because you prepared. </span>}
+                  <span className="text-muted">
+                    ({LEVER_LABEL[choice.lever]}; {formatEffects(choice.visibleEffects)})
+                  </span>
+                </span>
+                {backers.length > 0 && (
+                  <span className="inline-flex translate-y-1 gap-1" aria-label={`Backed by ${backers.map((a) => a.name).join(", ")}`}>
+                    {backers.map((a) => (
+                      <AdviserSeal key={a.id} id={a.id} name={a.name} size="sm" />
+                    ))}
+                  </span>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </section>
 
