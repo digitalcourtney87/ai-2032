@@ -15,9 +15,12 @@ import type {
   Ending,
   GameConfig,
   GameState,
+  IntelReport,
+  IntelReview,
   LuckLink,
   MetricKey,
   Profile,
+  SeedFact,
 } from "./types";
 
 const PROFILES: Profile[] = ["benign", "contested", "hard"];
@@ -104,6 +107,7 @@ export function luckLinks(record: DecisionRecord, state: GameState, content: Con
       links.push({
         kind: "fact",
         id: `${record.scenarioId}:${record.choiceId}:${index}`,
+        when: conditional.when,
         probability: priorChance(conditional.when, content.config),
         happened: allHold(conditional.when, state),
         impact: scoreImpact(conditional.effects),
@@ -123,6 +127,18 @@ export function luckTag(sound: boolean, fortunate: boolean): string {
 }
 
 // ---------------------------------------------------------------- the debrief summary
+
+/** The single latent fact a set of conditions is about, if it is about exactly one. */
+function factOf(conditions: Condition[]): SeedFact | null {
+  const facts = conditions.map((c) => c.seedFact).filter((f): f is SeedFact => f !== undefined);
+  return conditions.length === 1 && facts.length === 1 ? facts[0]! : null;
+}
+
+/** What each report was about: the scenario's briefing signal, or the delivering event's reveal. */
+function subjectOf(report: IntelReport, content: Content): Condition[] {
+  if (report.source === "reveal" && report.eventId) return findEvent(content, report.eventId).reveal?.about ?? [];
+  return findScenario(content, report.scenarioId).briefingSignal?.about ?? [];
+}
 
 /** Computed once, at the final ADVANCE, while content is to hand. */
 export function buildDebrief(state: GameState, content: Content): DebriefSummary {
@@ -148,6 +164,15 @@ export function buildDebrief(state: GameState, content: Content): DebriefSummary
     forecasts,
     brier: brier(forecasts),
     adviserBrier,
+    intel: state.intel.map((report): IntelReview => {
+      const about = subjectOf(report, content);
+      return { ...report, correct: report.leansTrue === allHold(about, state), fact: factOf(about) };
+    }),
+    factForecasts: state.history.flatMap((record) => {
+      const { resolution } = findScenario(content, record.scenarioId).forecast;
+      const fact = Array.isArray(resolution) ? factOf(resolution) : null;
+      return fact ? [{ scenarioId: record.scenarioId, fact, forecast: record.forecast }] : [];
+    }),
     luck: state.history.map((record) => {
       const links = luckLinks(record, state, content);
       const delta = luckDelta(links);

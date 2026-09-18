@@ -266,6 +266,7 @@ export function rollDueEvents(state: GameState, content: Content, mayInterrupt: 
         turn: next.turn,
         scenarioId: queued.sourceScenarioId ?? next.current?.scenarioId ?? "",
         source: "reveal",
+        eventId: def.id,
         leansTrue,
         text: leansTrue ? def.reveal.leansTrue : def.reveal.leansFalse,
       };

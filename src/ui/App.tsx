@@ -24,7 +24,7 @@ function seedFromUrl(): string | null {
 }
 
 export function App() {
-  const { view, before, start, reset, act } = useGame();
+  const { view, before, rankings, start, reset, act, whatIf } = useGame();
   const [stage, setStage] = useState<Stage>("briefing");
   /** The turn and scenario whose consequences the news screen is reporting. */
   const [resolved, setResolved] = useState<{ turn: number; scenarioId: string } | null>(null);
@@ -52,7 +52,14 @@ export function App() {
   }
 
   if (stage === "debrief") {
-    return <Debrief view={view} onRestart={() => { window.history.replaceState(null, "", window.location.pathname); reset(); }} />;
+    return (
+      <Debrief
+        view={view}
+        rankings={rankings}
+        whatIf={whatIf}
+        onRestart={() => { window.history.replaceState(null, "", window.location.pathname); reset(); }}
+      />
+    );
   }
 
   const reporting = stage === "news" && resolved;

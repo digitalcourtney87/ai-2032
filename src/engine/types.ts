@@ -276,6 +276,8 @@ export interface DecisionRecord {
 export interface LuckLink {
   kind: "event" | "fact";
   id: string;
+  /** For a fact link: the hidden conditions the effect depended on. */
+  when?: Condition[];
   probability: number;
   happened: boolean;
   impact: number;
@@ -292,6 +294,10 @@ export interface DebriefSummary {
   brier: number;
   adviserBrier: Record<string, number>;
   luck: { scenarioId: string; turn: number; choiceId: string; links: LuckLink[]; delta: number; fortunate: boolean }[];
+  /** Every briefing assessment, purchased analysis and finding the player received, marked right or wrong. */
+  intel: IntelReview[];
+  /** Forecast questions that were about a latent fact, so the world panel can show them beside it. */
+  factForecasts: { scenarioId: string; fact: SeedFact; forecast: number }[];
 }
 
 export type ChoiceStatus = "available" | "locked" | "unaffordable";
@@ -323,6 +329,15 @@ export interface IntelReport {
   source: "briefing" | "purchase" | "reveal";
   leansTrue: boolean;
   text: string;
+  /** For a delayed finding: the event that delivered it. */
+  eventId?: string;
+}
+
+/** Shown only in the debrief: a report the player received, and whether it pointed the right way. */
+export interface IntelReview extends IntelReport {
+  correct: boolean;
+  /** The latent fact the report was about, when it was about one. */
+  fact: SeedFact | null;
 }
 
 /** The record of one event resolving. `probability` is the chance it faced when it rolled, 0..1. */
@@ -410,5 +425,29 @@ export interface SimResult {
   endings: Record<string, number>;
 }
 
-// Filled in during Phase 6.
-export type CounterfactualResult = Record<string, unknown>;
+/** What a batch of reruns looked like. Model output, never a finding. */
+export interface RunSummary {
+  meanScore: number;
+  medianMetrics: Record<MetricKey, number>;
+  /** Share of runs in which any severe event fired. */
+  seriousIncidentShare: number;
+  /** Share of runs reaching each ending, by ending id. */
+  endings: Record<string, number>;
+}
+
+/** One decision changed, everything else replayed as the player played it, on the same fresh seeds. */
+export interface CounterfactualResult {
+  runs: number;
+  profile: Profile;
+  scenarioId: string;
+  asPlayedChoiceId: string;
+  newChoiceId: string;
+  asPlayed: RunSummary;
+  changed: RunSummary;
+}
+
+/** An option's expected ending score, judged only on what the player could have known. */
+export interface OptionEstimate {
+  choiceId: string;
+  expectedScore: number;
+}

@@ -1,6 +1,6 @@
 // Labels and formatting shared by the screens. Plain functions, no state.
 
-import type { AdviserId, Effects, EvidenceStrength, Lever, MetricKey, Severity, Track } from "../engine";
+import type { AdviserId, Condition, Effects, EvidenceStrength, Lever, MetricKey, Profile, SeedFact, Severity, Track } from "../engine";
 
 export const METRIC_LABEL: Record<MetricKey, string> = {
   nationalSecurity: "National Security",
@@ -107,3 +107,42 @@ export function newSeedCode(): string {
   const chars = Array.from(bytes, (b) => alphabet[b % alphabet.length]);
   return `${chars.slice(0, 4).join("")}-${chars.slice(4).join("")}`;
 }
+
+// ---------------------------------------------------------------- the hidden world, named for the debrief
+
+
+export const PROFILE_LABEL: Record<Profile, string> = { benign: "Benign world", contested: "Contested world", hard: "Hard world" };
+
+export const FACT_LABEL: Record<SeedFact, { name: string; whenTrue: string; whenFalse: string }> = {
+  cyberOffenceLed: { name: "Cyber balance", whenTrue: "Offence-led", whenFalse: "Defence-led" },
+  bioUpliftReal: { name: "Biological uplift", whenTrue: "Real", whenFalse: "Marginal" },
+  sandbaggingStrategic: { name: "Sandbagging cause", whenTrue: "Strategic", whenFalse: "Training artefact" },
+  labourShockStructural: { name: "Labour shock", whenTrue: "Structural", whenFalse: "Transitional" },
+  foreignPostureOpen: { name: "Foreign posture", whenTrue: "Open to agreement", whenFalse: "Unilateral" },
+};
+
+const DRAW_LABEL: Record<string, string> = {
+  "recording-authentic": "the recording was authentic",
+  "forensics-in-time": "forensics finished before polling day",
+  "authentication-correct": "the authentication result was correct",
+  "alarm-real": "the warning was real",
+};
+
+/** A condition in words, for the published assumptions and the luck panel. */
+export function describeCondition(condition: Condition): string {
+  const parts: string[] = [];
+  if (condition.seedFact) {
+    const fact = FACT_LABEL[condition.seedFact];
+    parts.push(`${fact.name.toLowerCase()} is ${(condition.not ? fact.whenFalse : fact.whenTrue).toLowerCase()}`);
+  }
+  if (condition.draw) parts.push(`${condition.not ? "it is not the case that " : ""}${DRAW_LABEL[condition.draw.key] ?? condition.draw.key}`);
+  const negate = condition.not && !condition.seedFact && !condition.draw ? "not: " : "";
+  if (condition.metric) parts.push(`${negate}${METRIC_LABEL[condition.metric.key]} ${condition.metric.op === ">=" ? "at or above" : "at or below"} ${condition.metric.value}`);
+  if (condition.composite) parts.push(`${negate}${condition.composite.key} ${condition.composite.op === ">=" ? "at or above" : "at or below"} ${condition.composite.value}`);
+  if (condition.track) parts.push(`${negate}${TRACK_LABEL[condition.track.key]} at level ${condition.track.minLevel} or above`);
+  if (condition.flag !== undefined) parts.push(`${negate}an earlier decision or event`);
+  if (condition.any) parts.push(`${negate}${condition.any.map(describeCondition).join(" or ")}`);
+  return parts.join(" and ");
+}
+
+export const describeConditions = (conditions: Condition[]) => conditions.map(describeCondition).join(", and ");

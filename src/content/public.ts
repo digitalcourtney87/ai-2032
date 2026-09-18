@@ -2,7 +2,7 @@
 // probability modifiers and conditions, which no component may render. The
 // interface reads scenarios only through this view, which leaves them out.
 
-import type { AdviserId, Content, Domain, Effects, EvidenceStrength, Lever, Scenario, Severity, Track } from "../engine/types";
+import type { AdviserId, BaseProbability, Choice, Content, Domain, Effects, EventDef, EvidenceStrength, GameConfig, Lever, Scenario, Severity, Track } from "../engine/types";
 
 export interface PublicChoice {
   id: string;
@@ -82,6 +82,8 @@ export interface PublicContent {
   scenarios: Record<string, PublicScenario>;
   advisers: PublicAdviser[];
   endings: Record<string, PublicEnding>;
+  /** Event names, for headlines already seen and for the debrief. */
+  eventTitles: Record<string, string>;
   /** The closing paragraph added to any ending when Legitimacy is below the threshold. */
   backlashText: string;
   /** Scripted scenario ids in order, for dates and progress. */
@@ -95,9 +97,41 @@ export function publicContent(content: Content): PublicContent {
     scenarios: Object.fromEntries(content.scenarios.map((s) => [s.id, publicScenario(s)])),
     advisers: content.advisers.map(({ id, name, role, lens }) => ({ id, name, role, lens })),
     endings: Object.fromEntries(content.endings.map(({ id, title, text, furtherReading }) => [id, { id, title, text, furtherReading }])),
+    eventTitles: Object.fromEntries(content.events.map((e) => [e.id, e.title])),
     backlashText: content.config.legitimacyBacklash.text,
     sequence: content.sequence,
     infoCost: content.config.politicalCapital.infoCost,
     totalTurns: content.sequence.length + 1,
+  };
+}
+
+// ---------------------------------------------------------------- published assumptions
+
+/**
+ * The model's assumptions, published in the debrief and nowhere else (spec
+ * Sections 6 and 11). This is the hidden half of the content: only the debrief
+ * screens may import it, and only after the debrief has unlocked.
+ */
+export interface Assumptions {
+  profiles: GameConfig["profiles"];
+  events: Record<string, Pick<EventDef, "title" | "base" | "effects" | "conditionalEffects" | "trackModifiers" | "mitigations">>;
+  /** By scenario id: the hidden half of every option. */
+  options: Record<string, (Pick<Choice, "id" | "text" | "hiddenEffects" | "conditionalEffects" | "probabilityModifiers" | "succeedsWhen" | "onFailure">
+    & { queues: { eventId: string; base: BaseProbability | "certain" | undefined }[] })[]>;
+}
+
+export function assumptionsOf(content: Content): Assumptions {
+  const eventBase = (id: string) => content.events.find((e) => e.id === id)?.base;
+  return {
+    profiles: content.config.profiles,
+    events: Object.fromEntries(content.events.map((e) => [e.id, {
+      title: e.title, base: e.base, effects: e.effects, conditionalEffects: e.conditionalEffects,
+      trackModifiers: e.trackModifiers, mitigations: e.mitigations,
+    }])),
+    options: Object.fromEntries(content.scenarios.map((scenario) => [scenario.id, scenario.choices.map((c) => ({
+      id: c.id, text: c.text, hiddenEffects: c.hiddenEffects, conditionalEffects: c.conditionalEffects,
+      probabilityModifiers: c.probabilityModifiers, succeedsWhen: c.succeedsWhen, onFailure: c.onFailure,
+      queues: c.queues.map((q) => ({ eventId: q.eventId, base: q.baseProbability ?? eventBase(q.eventId) })),
+    }))])),
   };
 }

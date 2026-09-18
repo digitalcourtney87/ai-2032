@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `77%` (27 of 35 steps)
+**Overall Progress:** `89%` (31 of 35 steps)
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -84,11 +84,11 @@ Decided by the builder, logged, open to challenge:
   - [x] 🟩 Interrupt drawn from the queue (cyber or bio) with the false-alarm fallback at turn 7 (engine, Phase 1; content, Phase 2)
   - [x] 🟩 Gate: four Playwright tests in a real browser. Both crisis turns render differently from normal turns; an unlocked option appears only when its threshold is met. Commit and push.
 
-- [ ] 🟥 **Phase 6: Debrief and counterfactuals**
-  - [ ] 🟥 Six panels: world reveal, calibration (Recharts chart, adviser Brier scores), quality versus luck, governance record with further reading, what you never saw, what if
-  - [ ] 🟥 `counterfactual.worker.ts`: 1,000 paired-seed reruns and the soundness rollouts; read-only "View assumptions" table
-  - [ ] 🟥 Copy rules enforced, with a snapshot test for the "Under this game's assumptions" prefix; Copy run summary control
-  - [ ] 🟥 Gate: Playwright confirms 1,000 reruns in under 3 seconds with a responsive UI; calibration matches a hand-checked Brier score on a scripted run. Commit.
+- [x] 🟩 **Phase 6: Debrief and counterfactuals**
+  - [x] 🟩 Six panels: world reveal (with every briefing marked right or wrong), calibration (Recharts chart, adviser Brier scores), quality versus luck, governance record with further reading, what you never saw, what if
+  - [x] 🟩 `counterfactual.worker.ts`: 1,000 paired-seed reruns and the soundness rollouts (300 per option, prior-sampled worlds, neutral continuation); read-only "View assumptions" table
+  - [x] 🟩 Copy rules enforced by unit tests on every sentence builder (prefix, no right or wrong, causal links with their probability change); Copy run summary control, no network call
+  - [x] 🟩 Gate: Playwright against the production bundle. 1,000 reruns finish in under 3 seconds while the main thread keeps painting; the Brier score shown equals a hand calculation from the forecasts shown. Commit and push.
 
 - [ ] 🟥 **Phase 7: Polish and facilitator mode**
   - [ ] 🟥 Responsive layout, full keyboard operation, `prefers-reduced-motion`, light and dark, WCAG 2.2 AA

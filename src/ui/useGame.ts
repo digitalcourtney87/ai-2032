@@ -2,45 +2,120 @@
 // (handoff Section 2: no state library). The raw GameState never leaves this
 // file: components receive only `displayed(state)` (handoff invariant 3).
 
-import { useCallback, useMemo, useReducer } from "react";
-import { createGame, displayed, reduce, type Action, type DisplayedState, type GameState } from "../engine";
-import { loadContent, publicContent } from "../content";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import {
+  createGame,
+  displayed,
+  reduce,
+  type Action,
+  type CounterfactualResult,
+  type DisplayedState,
+  type GameState,
+  type OptionEstimate,
+} from "../engine";
+import { assumptionsOf, loadContent, publicContent } from "../content";
+import type { WorkerRequest, WorkerResponse } from "../workers/counterfactual.worker";
 
 // Content is validated once, when the module loads. Malformed content fails loudly here.
 const content = loadContent();
 export const pub = publicContent(content);
+/** The hidden half of the content. Imported by debrief screens only. */
+export const published = assumptionsOf(content);
+
+/** Rollouts per option for the "sound decision" verdict, and reruns per what-if (spec Section 11). */
+const SOUND_ROLLOUTS = 300;
+export const WHAT_IF_RUNS = 1000;
 
 interface Session {
   game: GameState | null;
   /** The view just before the last ADVANCE, so the news screen can show what changed. */
   before: DisplayedState | null;
+  /** The state at the moment of each decision, for judging it on what was knowable then. */
+  decisionStates: GameState[];
 }
 
 type SessionAction = { type: "START"; seedCode: string } | { type: "RESET" } | { type: "ENGINE"; actions: Action[] };
 
+const EMPTY: Session = { game: null, before: null, decisionStates: [] };
+
 function sessionReducer(session: Session, event: SessionAction): Session {
   switch (event.type) {
     case "START":
-      return { game: createGame(event.seedCode, content), before: null };
+      return { ...EMPTY, game: createGame(event.seedCode, content) };
     case "RESET":
-      return { game: null, before: null };
+      return EMPTY;
     case "ENGINE": {
-      let { game, before } = session;
+      let { game, before, decisionStates } = session;
       if (!game) return session;
       for (const action of event.actions) {
         if (action.type === "ADVANCE") before = displayed(game);
+        if (action.type === "DECIDE") decisionStates = [...decisionStates, game];
         game = reduce(game, action, content);
       }
-      return { game, before };
+      return { game, before, decisionStates };
     }
   }
 }
 
+/** For each decision, in order: every open option's expected ending score, best first. */
+export type Rankings = OptionEstimate[][];
+export interface WhatIfAnswer {
+  result: CounterfactualResult;
+  milliseconds: number;
+}
+
+type Ask = WorkerRequest extends infer R ? (R extends { id: number } ? Omit<R, "id"> : never) : never;
+
 export function useGame() {
-  const [session, dispatch] = useReducer(sessionReducer, { game: null, before: null });
+  const [session, dispatch] = useReducer(sessionReducer, EMPTY);
+  const [rankings, setRankings] = useState<Rankings | null>(null);
+  const worker = useRef<Worker | null>(null);
+  const waiting = useRef(new Map<number, (response: WorkerResponse) => void>());
+  const nextId = useRef(0);
+
+  const ask = useCallback((request: Ask): Promise<WorkerResponse> => {
+    if (!worker.current) {
+      worker.current = new Worker(new URL("../workers/counterfactual.worker.ts", import.meta.url), { type: "module" });
+      worker.current.onmessage = (event: MessageEvent<WorkerResponse>) => {
+        waiting.current.get(event.data.id)?.(event.data);
+        waiting.current.delete(event.data.id);
+      };
+    }
+    const id = nextId.current++;
+    return new Promise((resolve) => {
+      waiting.current.set(id, resolve);
+      worker.current!.postMessage({ ...request, id });
+    });
+  }, []);
+
+  useEffect(() => () => worker.current?.terminate(), []);
+
+  // When the game ends, judge every decision off the main thread.
+  const over = session.game?.phase === "debrief";
+  useEffect(() => {
+    if (!over) return;
+    let cancelled = false;
+    void ask({ kind: "soundness", decisionStates: session.decisionStates, rollouts: SOUND_ROLLOUTS }).then((response) => {
+      if (!cancelled && response.kind === "soundness") setRankings(response.estimates);
+    });
+    return () => { cancelled = true; };
+  }, [over, ask, session.decisionStates]);
+
   const view = useMemo(() => (session.game ? displayed(session.game) : null), [session.game]);
-  const start = useCallback((seedCode: string) => dispatch({ type: "START", seedCode }), []);
-  const reset = useCallback(() => dispatch({ type: "RESET" }), []);
+  const start = useCallback((seedCode: string) => { setRankings(null); dispatch({ type: "START", seedCode }); }, []);
+  const reset = useCallback(() => { setRankings(null); dispatch({ type: "RESET" }); }, []);
   const act = useCallback((...actions: Action[]) => dispatch({ type: "ENGINE", actions }), []);
-  return { view, before: session.before, start, reset, act };
+
+  const whatIf = useCallback(async (changeAt: number, newChoiceId: string): Promise<WhatIfAnswer> => {
+    const game = session.game;
+    if (!game || game.phase !== "debrief") throw new Error("What-if reruns open with the debrief");
+    const response = await ask({
+      kind: "whatIf", history: game.history, changeAt, newChoiceId, runs: WHAT_IF_RUNS,
+      profile: game.world.profile, baseSeed: game.world.seed,
+    });
+    if (response.kind !== "whatIf") throw new Error(response.kind === "error" ? response.message : "Unexpected reply");
+    return { result: response.result, milliseconds: response.milliseconds };
+  }, [ask, session.game]);
+
+  return { view, before: session.before, rankings, start, reset, act, whatIf };
 }
