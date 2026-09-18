@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `14%` (5 of 35 steps)
+**Overall Progress:** `29%` (10 of 35 steps)
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -52,12 +52,12 @@ Decided by the builder, logged, open to challenge:
   - [x] 🟩 `CLAUDE.md` (handoff Section 8), `DECISIONS.md` seeded from this plan, `README.md`, `docs/spec.md`, `docs/handoff.md`, CI workflow
   - [x] 🟩 Gate: `dev`, `build`, `test`, `lint` all succeed. Commit.
 
-- [ ] 🟥 **Phase 1: Engine core**
-  - [ ] 🟥 `rng.ts` (mulberry32, string hash, keyed draw), `types.ts` (spec Section 12 plus logged extensions), `seed.ts` (profile then five facts)
-  - [ ] 🟥 `reduce.ts` and `resolve.ts`: the eight-step resolution order, event queue, 2..95% clamp, Political Capital rules, policy windows, interrupt insertion
-  - [ ] 🟥 `display.ts` (bands, keyed noise, capacity label, truth hidden until debrief) and `scoring.ts` (Brier, composites, ending score, endings, luck)
-  - [ ] 🟥 Tests: every row of the handoff Section 6 engine table, keyed-draw invariance (different action order, same event dice), seeded property test (1,000 seeds, no throw, no NaN, exactly one ending)
-  - [ ] 🟥 Gate: all Phase 1 tests green. Commit.
+- [x] 🟩 **Phase 1: Engine core**
+  - [x] 🟩 `rng.ts` (mulberry32, string hash, keyed draw), `types.ts` (spec Section 12 plus logged extensions), `seed.ts` (profile then five facts)
+  - [x] 🟩 `reduce.ts` and `resolve.ts`: the eight-step resolution order, event queue, 2..95% clamp, Political Capital rules, policy windows, interrupt insertion
+  - [x] 🟩 `display.ts` (bands, keyed noise, capacity label, truth hidden until debrief) and `scoring.ts` (Brier, composites, ending score, endings, luck)
+  - [x] 🟩 Tests: every row of the handoff Section 6 engine table, keyed-draw invariance (different action order, same event dice), seeded property test (1,000 seeds, no throw, no NaN, exactly one ending)
+  - [x] 🟩 Gate: all Phase 1 tests green (59 tests). Commit.
 
 - [ ] 🟥 **Phase 2: Content and schema**
   - [ ] 🟥 Zod schemas: `Scenario` (with `briefingSignal`), `Choice` (with `stance`), `EventDef`, `Adviser`, `Ending` (with `furtherReading`), config; loader that fails loudly
