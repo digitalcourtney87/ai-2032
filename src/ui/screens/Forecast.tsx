@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "../components/Button";
+import { Icon } from "../components/Icon";
 import { ADVISER_ORDER, formatMonth, percent } from "../format";
 import { pub } from "../useGame";
 import type { PublicScenario } from "../../content";
@@ -20,6 +21,10 @@ export function Forecast({ view, scenario, onForecast }: Props) {
     <div className="space-y-6">
       <section aria-labelledby="forecast-question">
         <h2 id="forecast-question" className="text-xl">
+          <span className="mb-2 flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-wider text-muted">
+            <Icon name="forecast" />
+            Forecast
+          </span>
           {scenario.forecastQuestion}
         </h2>
         <p className="mt-1 text-sm text-muted">
@@ -27,7 +32,10 @@ export function Forecast({ view, scenario, onForecast }: Props) {
         </p>
 
         <label htmlFor="forecast" className="mt-5 block font-semibold">
-          Your probability: <output htmlFor="forecast" className="tabular-nums">{value}%</output>
+          Your probability:{" "}
+          <output htmlFor="forecast" className="font-mono tabular-nums">
+            {value}%
+          </output>
         </label>
         <input
           id="forecast"
@@ -39,7 +47,7 @@ export function Forecast({ view, scenario, onForecast }: Props) {
           onChange={(event) => setValue(Number(event.target.value))}
           className="mt-2 w-full accent-(--accent)"
         />
-        <div className="flex justify-between text-xs text-muted" aria-hidden="true">
+        <div className="flex justify-between font-mono text-[10px] uppercase tracking-wider text-muted" aria-hidden="true">
           <span>0% will not happen</span>
           <span>50%</span>
           <span>100% certain</span>
@@ -52,7 +60,7 @@ export function Forecast({ view, scenario, onForecast }: Props) {
           {ADVISER_ORDER.map((id) => (
             <li key={id} className="flex justify-between border-b border-rule py-1">
               <span>{pub.advisers.find((a) => a.id === id)!.name}</span>
-              <span className="font-semibold tabular-nums">{percent(ctx.adviserForecasts[id])}</span>
+              <span className="font-mono font-medium">{percent(ctx.adviserForecasts[id])}</span>
             </li>
           ))}
         </ul>

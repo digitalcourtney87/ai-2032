@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ENDING_PLATES } from "../art/plates";
 import { Button } from "../components/Button";
+import { Figure } from "../components/Figure";
 import { CalibrationPanel } from "../debrief/CalibrationPanel";
 import { runSummary, runSummaryText } from "../debrief/copy";
 import { NeverSawPanel } from "../debrief/NeverSawPanel";
@@ -21,7 +23,7 @@ function Panel({ number, title, children }: { number: number; title: string; chi
   return (
     <section aria-labelledby={`panel-${number}`} className="border-t border-rule pt-6">
       <h2 id={`panel-${number}`} className="text-2xl">
-        <span className="text-muted">{number}.</span> {title}
+        <span className="font-mono text-muted">{number}.</span> {title}
       </h2>
       <div className="mt-3">{children}</div>
     </section>
@@ -43,6 +45,7 @@ export function Debrief({ view, rankings, whatIf, onRestart }: Props) {
   const ending = pub.endings[debrief.endingId];
   const summary = runSummary(view, (id) => pub.scenarios[id]?.title ?? id, ending?.title ?? debrief.endingId);
   const summaryText = showJson ? JSON.stringify(summary, null, 2) : runSummaryText(summary);
+  const mark = ENDING_PLATES[debrief.endingId];
 
   async function copy() {
     // No network call: the summary goes to the clipboard and nowhere else (DECISIONS.md, decision 11).
@@ -55,9 +58,10 @@ export function Debrief({ view, rankings, whatIf, onRestart }: Props) {
   }
 
   return (
-    <main id="main" className="mx-auto max-w-3xl space-y-8 px-4 py-12">
+    <div className="space-y-8">
       <header>
-        <p className="text-sm uppercase tracking-widest text-muted">October 2032 &middot; Your record</p>
+        {mark && <Figure src={mark.src} figure={mark.figure} caption={mark.caption} state="48mm" className="mb-6 max-w-[12rem]" />}
+        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">October 2032 &middot; Your record</p>
         <h1 ref={heading} tabIndex={-1} className="mt-2 text-4xl outline-none">{ending?.title}</h1>
         <p className="mt-6 text-lg">{ending?.text}</p>
         {debrief.backlash && <p className="mt-4">{pub.backlashText}</p>}
@@ -78,9 +82,9 @@ export function Debrief({ view, rankings, whatIf, onRestart }: Props) {
         <h2 id="share" className="text-2xl">Your run summary</h2>
         <p className="mt-2 text-sm text-muted">
           Nothing about your run has been sent anywhere. If a facilitator has asked for your run, copy this and paste it to them. Anyone who
-          enters seed code <span className="font-semibold tracking-wider text-ink">{view.seedCode}</span> plays the same world and faces the same dice.
+          enters seed code <span className="font-mono font-medium tracking-wider text-ink">{view.seedCode}</span> plays the same world and faces the same dice.
         </p>
-        <pre className="mt-3 max-h-64 overflow-auto rounded-sm border border-rule bg-panel p-3 text-xs" tabIndex={0} aria-label="Run summary">{summaryText}</pre>
+        <pre className="mt-3 max-h-64 overflow-auto border border-rule bg-canvas p-3 font-mono text-xs" tabIndex={0} aria-label="Run summary">{summaryText}</pre>
         <div className="mt-3 flex flex-wrap gap-3">
           <Button onClick={copy}>Copy run summary</Button>
           <Button variant="quiet" onClick={() => { setShowJson(!showJson); setCopied(null); }}>{showJson ? "Show as text" : "Show as JSON"}</Button>
@@ -88,6 +92,6 @@ export function Debrief({ view, rankings, whatIf, onRestart }: Props) {
         </div>
         <p className="mt-2 text-sm" aria-live="polite">{copied ? `Copied as ${copied === "json" ? "JSON" : "text"}.` : ""}</p>
       </section>
-    </main>
+    </div>
   );
 }

@@ -47,7 +47,7 @@ export function WhatIfPanel({ view, whatIf }: Props) {
           <label htmlFor="what-if-decision" className="block text-sm font-semibold">The decision to change</label>
           <select
             id="what-if-decision"
-            className="mt-1 block w-full rounded-sm border border-rule bg-paper p-2"
+            className="mt-1 block w-full border border-rule bg-paper p-2"
             value={changeAt}
             onChange={(event) => { setChangeAt(Number(event.target.value)); setNewChoiceId(""); }}
           >
@@ -62,7 +62,7 @@ export function WhatIfPanel({ view, whatIf }: Props) {
           <label htmlFor="what-if-option" className="block text-sm font-semibold">What you might have done instead</label>
           <select
             id="what-if-option"
-            className="mt-1 block w-full rounded-sm border border-rule bg-paper p-2"
+            className="mt-1 block w-full border border-rule bg-paper p-2"
             value={chosenAlternative?.id ?? ""}
             onChange={(event) => setNewChoiceId(event.target.value)}
           >
@@ -88,7 +88,7 @@ export function WhatIfPanel({ view, whatIf }: Props) {
         )}
       </div>
 
-      <details className="rounded-sm border border-rule p-4">
+      <details className="border border-rule p-4">
         <summary className="cursor-pointer font-semibold">View assumptions</summary>
         <div className="mt-3">
           <Assumptions scenarioId={record.scenarioId} />

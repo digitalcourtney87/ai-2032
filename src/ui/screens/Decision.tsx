@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "../components/Button";
+import { Icon } from "../components/Icon";
 import { formatEffects, LEVER_LABEL, TRACK_LABEL } from "../format";
 import { pub } from "../useGame";
 import type { PublicScenario } from "../../content";
@@ -26,7 +27,7 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
     <div className="space-y-6">
       {scenario.isCrisis && <p className="text-sm font-semibold">No analysis can be commissioned in a crisis.</p>}
       {!scenario.isCrisis && (
-        <section aria-label="Commission analysis" className="rounded-sm border border-rule p-4">
+        <section aria-label="Commission analysis" className="border border-rule p-4">
           <h2 className="font-semibold">Commission analysis</h2>
           {purchased ? (
             <>
@@ -48,7 +49,7 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
       )}
 
       <fieldset>
-        <legend className="text-xl font-serif">Your decision</legend>
+        <legend className="text-xl font-semibold">Your decision</legend>
         <p className="mt-1 text-sm text-muted">
           You have {view.politicalCapital} Political Capital. Visible effects apply at once. Every option also has effects you cannot see from here.
         </p>
@@ -56,19 +57,17 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
           {ordered.map((choice) => {
             const option = ctx.choices.find((o) => o.id === choice.id)!;
             const available = option.status === "available";
+            const on = selected === choice.id;
             const inputId = `choice-${choice.id}`;
             return (
-              <div
-                key={choice.id}
-                className={`rounded-sm border p-4 ${selected === choice.id ? "border-accent bg-panel" : "border-rule"} ${available ? "" : "opacity-60"}`}
-              >
+              <div key={choice.id} className={`border p-4 ${on ? "border-ink bg-ink text-paper" : "border-rule"} ${available ? "" : "opacity-60"}`}>
                 <div className="flex gap-3">
                   <input
                     id={inputId}
                     type="radio"
                     name="choice"
-                    className="mt-1.5 size-4 accent-(--accent)"
-                    checked={selected === choice.id}
+                    className="mt-1.5 size-4 accent-current"
+                    checked={on}
                     disabled={!available}
                     onChange={() => setSelected(choice.id)}
                     aria-describedby={`${inputId}-detail`}
@@ -78,13 +77,16 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
                       {choice.id}. {choice.text}
                     </label>
                     <p id={`${inputId}-detail`} className="mt-1 text-sm">
-                      <span className="text-muted">Lever:</span> {LEVER_LABEL[choice.lever]} &middot; <span className="text-muted">Cost:</span>{" "}
+                      <span className={on ? "opacity-80" : "text-muted"}>Lever:</span> {LEVER_LABEL[choice.lever]} &middot;{" "}
+                      <span className={on ? "opacity-80" : "text-muted"}>Cost:</span>{" "}
+                      <Icon name="capital" className="mx-0.5" />
                       {option.cost} Political Capital
                       <br />
-                      <span className="text-muted">Visible effects:</span> {formatEffects(choice.visibleEffects)}
+                      <span className={on ? "opacity-80" : "text-muted"}>Visible effects:</span> {formatEffects(choice.visibleEffects)}
                       {choice.unlock && option.status !== "locked" && (
                         <>
                           <br />
+                          <Icon name="unlock" className="mr-1" />
                           <span className="font-semibold">Open to you because of your investment in {TRACK_LABEL[choice.unlock.track]}.</span>
                         </>
                       )}
@@ -97,6 +99,7 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
                       {option.status === "locked" && choice.unlock && (
                         <>
                           <br />
+                          <Icon name="lock" className="mr-1" />
                           <span className="font-semibold">
                             Locked: needs {TRACK_LABEL[choice.unlock.track]} at level {choice.unlock.level}.
                           </span>

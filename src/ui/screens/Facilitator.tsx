@@ -49,7 +49,7 @@ function NumberField({ id, label, value, changed, onChange }: NumberFieldProps) 
           step={1}
           value={value}
           onChange={(event) => onChange(Math.min(100, Math.max(0, Number(event.target.value) || 0)))}
-          className="w-20 rounded-sm border border-rule bg-paper px-2 py-1 text-right tabular-nums"
+          className="w-20 border border-rule bg-paper px-2 py-1 text-right font-mono tabular-nums"
         />
         <span aria-hidden="true">%</span>
       </span>
@@ -93,7 +93,7 @@ export function Facilitator({ seedCode }: { seedCode: string }) {
   const participantLink = linkFor(seedCode, draft, false);
 
   return (
-    <section aria-labelledby="facilitator" className="mt-10 rounded-sm border border-ink p-5">
+    <section aria-labelledby="facilitator" className="mt-10 border border-ink p-5">
       <h2 id="facilitator" className="text-2xl">Facilitator settings</h2>
       <p className="mt-2 text-sm">
         Every probability in this game is a design assumption. Edit any of them here, then share the participant link: everyone who opens

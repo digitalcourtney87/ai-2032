@@ -32,14 +32,18 @@ export function CalibrationPanel({ view }: { view: DisplayedState }) {
         >
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 10, right: 20, bottom: 30, left: 24 }}>
-              <CartesianGrid stroke="var(--rule)" />
-              <XAxis type="number" dataKey="forecast" domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} unit="%" stroke="var(--muted)"
+              <CartesianGrid stroke="var(--rule)" strokeDasharray="0" vertical={false} />
+              <XAxis type="number" dataKey="forecast" domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} unit="%" stroke="var(--ink)"
+                axisLine={{ stroke: "var(--ink)", strokeWidth: 1 }} tickLine={{ stroke: "var(--rule)" }}
+                tick={{ fill: "var(--muted)", fontSize: 11, fontFamily: "IBM Plex Mono, ui-monospace, monospace" }}
                 label={{ value: "What you forecast", position: "insideBottom", offset: -18, fill: "var(--muted)" }} />
-              <YAxis type="number" dataKey="observed" domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} unit="%" stroke="var(--muted)"
+              <YAxis type="number" dataKey="observed" domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} unit="%" stroke="var(--ink)"
+                axisLine={{ stroke: "var(--ink)", strokeWidth: 1 }} tickLine={{ stroke: "var(--rule)" }}
+                tick={{ fill: "var(--muted)", fontSize: 11, fontFamily: "IBM Plex Mono, ui-monospace, monospace" }}
                 width={52} label={{ value: "How often it happened", angle: -90, position: "insideLeft", offset: -14, fill: "var(--muted)", style: { textAnchor: "middle" } }} />
-              <ZAxis type="number" dataKey="count" range={[120, 480]} />
-              <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 100, y: 100 }]} stroke="var(--muted)" strokeDasharray="5 5" />
-              <Scatter data={bins} fill="var(--accent)" isAnimationActive={false} />
+              <ZAxis type="number" dataKey="count" range={[36, 160]} />
+              <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 100, y: 100 }]} stroke="var(--muted)" strokeDasharray="2 4" />
+              <Scatter data={bins} fill="var(--ink)" stroke="var(--ink)" isAnimationActive={false} />
             </ScatterChart>
           </ResponsiveContainer>
         </div>
@@ -61,7 +65,7 @@ export function CalibrationPanel({ view }: { view: DisplayedState }) {
           {debrief.forecasts.map((f) => (
             <tr key={f.turn} className="border-b border-rule align-top" data-testid="forecast-row" data-forecast={f.forecast} data-outcome={f.outcome}>
               <td className="py-1 pr-2">{pub.scenarios[f.scenarioId]?.forecastQuestion}</td>
-              <td className="py-1 pr-2 text-right tabular-nums">{percent(f.forecast)}</td>
+              <td className="py-1 pr-2 text-right font-mono">{percent(f.forecast)}</td>
               <td className="whitespace-nowrap py-1">{f.outcome === 1 ? "It happened" : "It did not happen"}</td>
             </tr>
           ))}
@@ -74,7 +78,7 @@ export function CalibrationPanel({ view }: { view: DisplayedState }) {
           {scores.map((row) => (
             <tr key={row.name} className={`border-b border-rule ${row.name === "You" ? "font-semibold" : ""}`}>
               <th scope="row" className="py-1 pr-2 text-left font-[inherit]">{row.name}</th>
-              <td className="py-1 text-right tabular-nums">{row.score.toFixed(3)}</td>
+              <td className="py-1 text-right font-mono">{row.score.toFixed(3)}</td>
             </tr>
           ))}
         </tbody>

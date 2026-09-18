@@ -5,13 +5,14 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export function Button({ variant = "primary", className = "", ...rest }: Props) {
-  const look = variant === "primary"
-    ? "bg-accent text-on-accent border-accent"
-    : "bg-transparent text-ink border-rule";
+  const look =
+    variant === "primary"
+      ? "bg-ink text-paper border-ink"
+      : "bg-transparent text-ink border-rule";
   return (
     <button
       type="button"
-      className={`min-h-11 rounded-sm border px-5 py-2 font-semibold transition-opacity disabled:cursor-not-allowed disabled:opacity-50 ${look} ${className}`}
+      className={`inline-flex min-h-11 items-center justify-center rounded-none border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${look} ${className}`}
       {...rest}
     />
   );

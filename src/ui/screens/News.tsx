@@ -23,7 +23,7 @@ export function News({ view, resolvedTurn, onContinue }: Props) {
         <h2 className="text-xl">What the world noticed</h2>
         <ul className="mt-3 space-y-3">
           {view.headlines.map((headline, index) => (
-            <li key={index} className="border-l-4 border-ink pl-4 font-serif text-lg">
+            <li key={index} className="border-l-2 border-ink pl-4 text-lg">
               {headline}
             </li>
           ))}
@@ -37,7 +37,7 @@ export function News({ view, resolvedTurn, onContinue }: Props) {
       <IntelFile reports={findings} heading="Findings delivered this turn" />
 
       {view.policyWindows.length > 0 && !over && (
-        <p className="rounded-sm border border-rule p-3 text-sm">
+        <p className="border border-rule p-3 text-sm">
           <span className="font-semibold">A policy window is open.</span> After a public incident, restrictive options in the same area cost
           2 less Political Capital for a short time. Restriction is cheapest after the harm.
         </p>

@@ -1,3 +1,5 @@
+import { Icon } from "./Icon";
+
 /**
  * The crisis clock is cosmetic (spec Sections 4 and 13: a simulated six-minute
  * clock, no real-time timers). It steps forward as the player moves through the
@@ -19,9 +21,10 @@ export function CrisisClock({ step }: Props) {
       role="img"
       aria-label={`Crisis turn. Simulated clock: ${remaining} remaining. The clock moves only as you move; take the time you need.`}
     >
-      <span className="text-xs font-semibold uppercase tracking-widest">Crisis</span>
-      <span className="font-serif text-xl tabular-nums">{remaining}</span>
-      <span className="text-xs text-muted">simulated</span>
+      <Icon name="crisis" className="self-center" />
+      <span className="font-mono text-[10px] font-medium uppercase tracking-widest">Crisis</span>
+      <span className="font-mono text-xl">{remaining}</span>
+      <span className="font-mono text-[10px] uppercase tracking-wider text-muted">simulated</span>
     </p>
   );
 }

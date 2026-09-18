@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { Button } from "../components/Button";
+import { Icon, type IconName } from "../components/Icon";
 import { TRACK_DETAIL, TRACK_LABEL } from "../format";
 import type { DisplayedState, Track } from "../../engine";
 
 const TRACKS: Track[] = ["evaluation", "provenance", "diplomacy", "defensiveCyber"];
+const TRACK_ICON: Record<Track, IconName> = {
+  evaluation: "evaluation",
+  provenance: "provenance",
+  diplomacy: "diplomacy",
+  defensiveCyber: "defensiveCyber",
+};
 
 interface Props {
   view: DisplayedState;
@@ -17,7 +24,7 @@ export function Invest({ view, onInvest }: Props) {
   return (
     <div className="space-y-6">
       <fieldset>
-        <legend className="text-xl font-serif">Standing investment</legend>
+        <legend className="text-xl font-semibold">Standing investment</legend>
         <p className="mt-1 text-sm text-muted">
           One point, every turn, into one track. It costs no Political Capital. You have seven points in the whole game and twelve levels to
           fill, so you cannot prepare for everything.
@@ -26,27 +33,30 @@ export function Invest({ view, onInvest }: Props) {
           {TRACKS.map((track) => {
             const level = view.tracks[track];
             const full = level >= 3;
+            const on = selected === track;
             const inputId = `track-${track}`;
             return (
-              <div key={track} className={`rounded-sm border p-4 ${selected === track ? "border-accent bg-panel" : "border-rule"} ${full ? "opacity-60" : ""}`}>
+              <div key={track} className={`border p-4 ${on ? "border-ink bg-ink text-paper" : "border-rule"} ${full ? "opacity-60" : ""}`}>
                 <div className="flex gap-3">
                   <input
                     id={inputId}
                     type="radio"
                     name="track"
-                    className="mt-1.5 size-4 accent-(--accent)"
-                    checked={selected === track}
+                    className="mt-1.5 size-4 accent-current"
+                    checked={on}
                     disabled={full}
                     onChange={() => setSelected(track)}
                     aria-describedby={`${inputId}-detail`}
                   />
                   <div>
                     <label htmlFor={inputId} className="font-semibold">
-                      {TRACK_LABEL[track]} <span className="font-normal text-muted">&middot; level {level} of 3</span>
+                      <Icon name={TRACK_ICON[track]} className="mr-1" />
+                      {TRACK_LABEL[track]}{" "}
+                      <span className={`font-mono font-normal ${on ? "opacity-80" : "text-muted"}`}>&middot; level {level} of 3</span>
                     </label>
                     <div id={`${inputId}-detail`} className="mt-1 text-sm">
                       <p>{TRACK_DETAIL[track].perLevel}</p>
-                      <ul className="text-muted">
+                      <ul className={on ? "opacity-80" : "text-muted"}>
                         {TRACK_DETAIL[track].unlocks.map((line) => (
                           <li key={line}>{line}</li>
                         ))}
