@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* Sober briefing-document aesthetic (spec Section 14): off-white paper,
+   near-black ink, one accent, a serif for headings, system sans for body. */
+@theme {
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-paper: #f7f5f0;
+  --color-ink: #16181d;
+  --color-accent: #1f4e79;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}

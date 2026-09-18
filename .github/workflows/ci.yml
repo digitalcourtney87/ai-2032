@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
+      # The balance harness arrives in Phase 3; --if-present keeps CI green until then.
+      - run: npm run balance --if-present
+      - run: npm run build
+      - name: Bundle must stay under 16 MB
+        run: |
+          size_kb=$(du -sk dist | cut -f1)
+          echo "dist is ${size_kb} KB"
+          test "$size_kb" -lt 16384

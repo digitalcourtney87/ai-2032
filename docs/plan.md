@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `0%`
+**Overall Progress:** `14%` (5 of 35 steps)
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -45,12 +45,12 @@ Decided by the builder, logged, open to challenge:
 
 ## Tasks
 
-- [ ] 🟥 **Phase 0: Scaffold**
-  - [ ] 🟥 `git init`; Vite + React 18 + TypeScript (`strict`, `noUncheckedIndexedAccess`) + Tailwind v4 + Vitest
-  - [ ] 🟥 ESLint with the engine-isolation rule and a banned-API rule (`Math.random`, `Date`, `crypto`, `performance`) for `src/engine`
-  - [ ] 🟥 Typed stubs in `src/engine/index.ts`; determinism test as an expected failure
-  - [ ] 🟥 `CLAUDE.md` (handoff Section 8), `DECISIONS.md` seeded from this plan, `README.md`, `docs/spec.md`, `docs/handoff.md`, CI workflow
-  - [ ] 🟥 Gate: `dev`, `build`, `test`, `lint` all succeed. Commit.
+- [x] 🟩 **Phase 0: Scaffold**
+  - [x] 🟩 `git init`; Vite + React 18 + TypeScript (`strict`, `noUncheckedIndexedAccess`) + Tailwind v4 + Vitest
+  - [x] 🟩 ESLint with the engine-isolation rule and a banned-API rule (`Math.random`, `Date`, `crypto`, `performance`) for `src/engine`
+  - [x] 🟩 Typed stubs in `src/engine/index.ts`; determinism test as an expected failure
+  - [x] 🟩 `CLAUDE.md` (handoff Section 8), `DECISIONS.md` seeded from this plan, `README.md`, `docs/spec.md`, `docs/handoff.md`, CI workflow
+  - [x] 🟩 Gate: `dev`, `build`, `test`, `lint` all succeed. Commit.
 
 - [ ] 🟥 **Phase 1: Engine core**
   - [ ] 🟥 `rng.ts` (mulberry32, string hash, keyed draw), `types.ts` (spec Section 12 plus logged extensions), `seed.ts` (profile then five facts)
