@@ -56,7 +56,30 @@
         "stateCapacity": 5
       },
       "probabilityModifiers": [],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "bioUpliftReal",
+              "not": true
+            }
+          ],
+          "effects": {
+            "innovation": 1
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "bioUpliftReal"
+            }
+          ],
+          "effects": {
+            "systemicRisk": 6,
+            "nationalSecurity": -4
+          }
+        }
+      ],
       "trackChange": null,
       "flagsAdded": [
         "s3-funded-studies"
@@ -90,7 +113,30 @@
           "delta": -8
         }
       ],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "bioUpliftReal"
+            }
+          ],
+          "effects": {
+            "systemicRisk": -8
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "bioUpliftReal",
+              "not": true
+            }
+          ],
+          "effects": {
+            "innovation": -4,
+            "economy": -3
+          }
+        }
+      ],
       "trackChange": null,
       "flagsAdded": [
         "s3-tiered-access"

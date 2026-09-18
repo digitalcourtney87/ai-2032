@@ -82,7 +82,30 @@
       },
       "hiddenEffects": {},
       "probabilityModifiers": [],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "sandbaggingStrategic",
+              "not": true
+            }
+          ],
+          "effects": {
+            "economy": 2
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "sandbaggingStrategic"
+            }
+          ],
+          "effects": {
+            "systemicRisk": 6,
+            "nationalSecurity": -5
+          }
+        }
+      ],
       "trackChange": null,
       "flagsAdded": [
         "final-permitted"
@@ -243,7 +266,7 @@
           "metric": {
             "key": "economy",
             "op": ">=",
-            "value": 50
+            "value": 48
           }
         }
       ],
@@ -344,7 +367,7 @@
             }
           ],
           "effects": {
-            "systemicRisk": -6
+            "systemicRisk": -10
           }
         },
         {
@@ -358,7 +381,19 @@
             }
           ],
           "effects": {
-            "stateCapacity": -4
+            "stateCapacity": -8
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "sandbaggingStrategic",
+              "not": true
+            }
+          ],
+          "effects": {
+            "publicTrust": -2,
+            "innovation": -2
           }
         }
       ],

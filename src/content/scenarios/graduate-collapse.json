@@ -62,7 +62,30 @@
           "delta": 6
         }
       ],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "labourShockStructural",
+              "not": true
+            }
+          ],
+          "effects": {
+            "economy": 4,
+            "innovation": 3
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "labourShockStructural"
+            }
+          ],
+          "effects": {
+            "socialStability": -5
+          }
+        }
+      ],
       "trackChange": null,
       "flagsAdded": [
         "s4-market-adjusts"
@@ -122,7 +145,31 @@
       },
       "hiddenEffects": {},
       "probabilityModifiers": [],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "labourShockStructural"
+            }
+          ],
+          "effects": {
+            "socialStability": 11,
+            "publicTrust": 4
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "labourShockStructural",
+              "not": true
+            }
+          ],
+          "effects": {
+            "economy": -5,
+            "innovation": -5
+          }
+        }
+      ],
       "trackChange": null,
       "flagsAdded": [
         "s4-levy"

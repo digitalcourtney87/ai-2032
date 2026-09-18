@@ -58,7 +58,30 @@
         "stateCapacity": 4
       },
       "probabilityModifiers": [],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "sandbaggingStrategic",
+              "not": true
+            }
+          ],
+          "effects": {
+            "innovation": 2,
+            "economy": 2
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "sandbaggingStrategic"
+            }
+          ],
+          "effects": {
+            "systemicRisk": 8
+          }
+        }
+      ],
       "trackChange": null,
       "flagsAdded": [
         "s6-evaluation-redesign"
@@ -176,7 +199,10 @@
             }
           ],
           "effects": {
-            "systemicRisk": -10
+            "systemicRisk": -10,
+            "nationalSecurity": 6,
+            "stateCapacity": 6,
+            "publicTrust": 3
           }
         },
         {
@@ -187,7 +213,7 @@
             }
           ],
           "effects": {
-            "publicTrust": -1
+            "publicTrust": -3
           }
         }
       ],

@@ -17,6 +17,7 @@ A log of every choice made where the spec (`docs/spec.md`) or the handoff (`docs
 | 9 | Pacing and commits | Commit on `main` at every green gate without asking. From the Phase 4 gate onwards, push each gate commit to GitHub (the designer asked for this on 2026-09-18; until then commits stayed local). Stop only at the Phase 2 sign-off, the Phase 4 playtest and completion | Phases 0 to 2 are engine and content work with nothing for the designer to inspect but test output |
 | 10 | Does a shared seed fix the dice? | Yes. Event rolls and briefing signals are keyed draws derived from `(seed, id)`, not from position in one stream. **This departs from the letter of handoff invariant 2** ("every draw calls the generator threaded through `rngState`") while keeping its intent: the engine stays pure and deterministic and the banned APIs stay banned. `rngState` remains for draws that are genuinely sequential | Everyone on a seed faces the same dice, so workshop comparisons measure decisions rather than luck; what-if reruns can pair seeds |
 | 11 | How is run data captured with no backend? | A "Copy run summary" control in the debrief (seed, choices, forecasts, investments, Brier score, ending, as text and JSON). No network call | The spec's kill criteria need per-run data; the tester chooses whether to share it |
+| 12 | Rules 4 and 5 conflict with Rule 7 as the spec words them (section E). Which reading wins? | Option B. Rule 7 is judged across all worlds pooled at their published weights (30 / 40 / 30), not per profile. Rules 4 and 5 are enforced per profile in every scripted scenario. Chosen by the designer on 2026-09-18 after the build | It is the only reading under which all seven rules can hold at once, and it matches the thesis that restriction is right in some worlds and wrong in others. A strategy may now dominate the profile it suits; none may dominate overall |
 
 ## B. Decided by the builder
 
@@ -108,11 +109,11 @@ Two observations that are not rule breaks, for the designer's attention:
 | Open-weight model family implicated in an incident (Scenario 2 forecast) | Base 22% offence-led, 8% defence-led. Scenarios 3 to 6. Damage: National Security -6, Public Trust -4, Systemic Risk +3. Severe: can trigger the cyber interrupt. Option A raises it by 8 | 22% and +8 come from the spec's Section 11 example ("from 22% to 30%") |
 | Open-weight benefit: a UK government defence model (the other half of Scenario 2 option A's joint-outcome draw) | 40% in every world. National Security +5, Innovation +2, and a further National Security +4 if offence leads. One to three scenarios later (tuned in E8; first drafted as 30% offence-led, 55% defence-led) | The spec says the seed shifts the four-way weights; harm and benefit are drawn independently. A defence model is worth most where offence leads |
 | Biological plot (Scenario 3 forecast) | Base 30% if uplift is real, 6% if marginal. Scenarios 4 to 6. Damage: National Security -6, Public Trust -5, Systemic Risk +4 | Sized below the infrastructure attack: it happens in an allied country |
-| Privacy controversy (Scenario 3 option D) | 40% chance, Public Trust -4 (tuned in E7; first drafted as -3), one or two scenarios later | The spec makes it text-only; a small effect keeps option D's hidden cost real |
+| Privacy controversy (Scenario 3 option D) | 40% chance, Public Trust -3, one or two scenarios later | The spec makes it text-only; a small effect keeps option D's hidden cost real |
 | Labour data signal (Scenario 4 option A) | 70% reliable | Between the purchased-information reliabilities of 65% and 85% |
 | Graduate roles move offshore (Scenario 4 option C; the 25% is the spec's) | Social Stability -4, Economy -2 | Undoes most of option C's Social Stability +5 |
 | Graduate hiring still depressed in 2032 (Scenario 4 forecast) | Base 75% if structural, 25% if transitional. Social Stability -4. Resolves at the final decision | Needed to resolve the forecast |
-| Free-speech legal challenge (Scenario 5 option C; the 30% is the spec's) | Public Trust -4 (tuned in E7; first drafted as -3) | As the privacy controversy |
+| Free-speech legal challenge (Scenario 5 option C; the 30% is the spec's) | Public Trust -3 | As the privacy controversy |
 | Cause of sandbagging revealed (Scenario 6 option B; the 80% is the spec's) | 65% reliable below Evaluation science level 2 | "Half effect": half of the edge over a coin flip |
 | Follow-on cyber attack (cyber interrupt forecast; the -12 is the spec's) | Base 35% offence-led, 10% defence-led. National Security -6, Public Trust -3. One or two scenarios after the incident | Smaller than the first attack in both odds and damage |
 | Major provider limits UK service (interrupt option C; the 20% is the spec's) | Innovation -5, Economy -3 | Slightly larger than the developer delay in Scenario 1 |
@@ -130,7 +131,7 @@ Two observations that are not rule breaks, for the designer's attention:
 | False alarm, all options | The warning is real in 40% of worlds (the spec's "wrong in 60%"). A: PC 1, Public Trust -1; if real, National Security -6, Public Trust -3; if false, Public Trust +2 (tuned in E2). B: PC 3, National Security +4, Innovation -3; if real, National Security -3; if false, Public Trust -2. C (public warning and shutdown): PC 5, National Security +6, Economy -4; if real, Public Trust +4; if false, Public Trust -5. D (Evaluation science level 3): PC 2, National Security +4, Public Trust +2; if real, National Security -3 | Mirrors the cyber variant's costs. Acting on a false alarm costs credibility; ignoring a true one costs more |
 | Final decision: costs | A 0, B 4, C 4, D 4, E 6 | The intervention-type cost table: market-access conditions and mandated evaluation 4, restriction 6 |
 | Final decision: visible effects | A: Innovation +6, Economy +4, Public Trust -2. B: Innovation +3, Economy +2, National Security +1. C: National Security +2, Innovation -3, Economy -2. D: Cooperation +4, Innovation -3. E: National Security +5, Innovation -7, Economy -4 | A mirrors Scenario 2 option A. E mirrors the Scenario 6 moratorium. B is half of A |
-| Final decision: outcomes (failure effects are the spec's) | B: incident odds 6% when State Capacity is 60 or above and Systemic Risk 50 or below, otherwise as A. C has three zones (E1): an economy below 50 is "weak" and forces the spec's reversal, which also means deployment goes ahead; an economy of 55 or above with Public Trust 50 or above earns State Capacity +4, Systemic Risk -5; in between, the delay holds and earns nothing. D succeeding: Systemic Risk -12, National Security +4. E: Systemic Risk -6 if sandbagging was strategic; State Capacity -4 if Innovation is 39 or below (tuned in E6; first drafted as -10 and -8). D is always selectable and fails unless all three of its conditions hold | The spec gives "works when" and "fails when" but no success effects |
+| Final decision: outcomes (failure effects are the spec's) | B: incident odds 6% when State Capacity is 60 or above and Systemic Risk 50 or below, otherwise as A. C has three zones (E1, E13): an economy below 48 is "weak" and forces the spec's reversal, which also means deployment goes ahead; an economy of 55 or above with Public Trust 50 or above earns State Capacity +4, Systemic Risk -5; in between, the delay holds and earns nothing. D succeeding: Systemic Risk -12, National Security +4. E: Systemic Risk -10 if sandbagging was strategic; State Capacity -8 if Innovation is 39 or below. The waiting option and the most restrictive option of every scripted scenario also carry the fact-conditional effects listed in E11. D is always selectable and fails unless all three of its conditions hold | The spec gives "works when" and "fails when" but no success effects |
 
 ### D4. Advisers
 
@@ -165,57 +166,71 @@ In Scenario 3, tiered access ranks as most restrictive because it is the only op
 
 ## E. Balance-tuning log
 
-Phase 3, 2026-09-18. Every change is to a number in `src/content/`; the engine was not touched. Win shares are permissive / middle / restrictive, as percentages of paired-seed runs in which each fixed strategy gave the best ending score.
+2026-09-18. Every change is to a number in `src/content/`, apart from E9, which changes how the harness judges Rule 7. The engine was not touched. Win shares are permissive / middle / restrictive: the percentage of paired-seed runs in which each fixed strategy gave the best ending score.
 
-**Result: Rule 7 passes at 10,000 runs per profile.**
+**Result: all seven option-design rules hold.** `npm run balance` enforces Rules 4, 5 and 7, and the content tests enforce Rules 1, 2, 3 and 6. The harness is deterministic, so the result is exact until content changes. It runs in CI.
 
-| Profile | Permissive | Middle | Restrictive | Mean ending scores |
+Rule 7, 10,000 paired runs per profile, judged pooled (decision 12):
+
+| Worlds | Permissive | Middle | Restrictive | Mean ending scores |
 | --- | --- | --- | --- | --- |
-| Benign | 36.5% | 38.4% | 25.1% | 47.1 / 47.6 / 46.8 |
-| Contested | 32.9% | 37.3% | 29.8% | 46.5 / 47.2 / 46.9 |
-| Hard | 29.1% | 37.0% | 33.9% | 46.0 / 46.8 / 46.9 |
+| Benign (30%) | 62.9% | 28.6% | 8.5% | 49.2 / 47.9 / 43.6 |
+| Contested (40%) | 33.1% | 31.5% | 35.4% | 46.1 / 47.7 / 46.7 |
+| Hard (30%) | 10.9% | 21.2% | 67.9% | 43.1 / 47.4 / 49.9 |
+| **All worlds, pooled** | **35.4%** | **27.5%** | **37.1%** | limit 40% |
 
-The harness is deterministic, so this result is exact until content changes. `npm run balance` runs in CI.
+Rules 4 and 5, 4,000 paired runs per profile. An option's value is its mean ending score when it is forced and every other decision is left to the neutral policy. The margin is the gap to the next-best option.
 
-| # | Change | Kind of number | Why | Win shares before | After |
-| --- | --- | --- | --- | --- | --- |
-| E0 | Starting point: section D as signed off | | | Benign 55/13/32, contested 45/14/41, hard 37/15/49 | |
-| E1 | Final decision option C gains a middle zone. It had failed whenever the economy was below 55 or Public Trust below 50. Now an economy below 50 is "weak" (the spec's forced reversal, Public Trust -8); 55 and above with Public Trust 50 and above earns the dividend; in between the delay holds and earns nothing | Provisional structure | The spec says C works at 55 and fails when the economy is "weak", and is silent in between. Always-middle takes C and was failing it in 100% of games, losing 2.7 points of ending score each time | As E0 | Benign 39/50/11, contested 33/45/21, hard 26/46/28 (with E2) |
-| E2 | False alarm option A: if the warning is real, National Security -6, Public Trust -3 (was -8, -4); if false, Public Trust +2 (was nothing) | Provisional | A was the worst option whether the alarm was real or false, so it was never a real choice | | |
-| E3 | Scenario 2 option B fails below Cooperation 45 (the spec says 40) | **Spec number** | Section C noted that the threshold of 40 can never bite. At 45, the starting level, B succeeds only if the player has invested in Diplomacy first, which makes it a gamble on the Cooperation metric as the spec intends | | |
-| E4 | Added, then withdrawn: one fact-conditional hidden effect on the waiting option and one on the most restrictive option in each fact-linked scenario | Additions | They made Rules 4 and 5 hold in every fact-linked scenario, and made Rule 7 unpassable. See "Rules 4 and 5" below | Benign 39/50/11, hard 26/46/28 | Benign 61/20/19, hard 16/10/74. Withdrawn |
-| E5 | Scenario 6 option D (moratorium): if the behaviour was an artefact, Public Trust -1 (the spec says -3) | **Spec number** | The moratorium's fact-conditional outcomes are the largest source of always-restrictive's tilt between benign and hard worlds. Softening the penalty lifts always-restrictive in benign worlds without lifting it in hard ones | Benign 40/39/21, contested 33/38/29, hard 24/35/40 | As the result table (with E6 to E8) |
-| E6 | Final decision option E: Systemic Risk -6 if sandbagging was strategic (was -10); State Capacity -4 if Innovation is 39 or below (was -8) | Provisional | As E5: flattens always-restrictive's tilt, and halves a penalty that always-restrictive triggers in every game | | |
-| E7 | Privacy controversy and free-speech challenge: Public Trust -4 (was -3) | Provisional | Both fall only on always-middle's options; always-middle led in every profile | | |
-| E8 | Open-weight defence model: 40% in every world, with a further National Security +4 if offence leads (was 30% offence-led, 55% defence-led, no bonus) | Provisional | The draft made always-permissive's one upside pay out mostly in benign worlds, where it already led. A defence model is plausibly worth most where offence leads | | |
-
-E5 to E8 were chosen from a grid of 144 configurations evaluated in memory; the seven best were re-run at 10,000 runs. The configuration adopted changes the fewest spec numbers among those with a worst share below 39%.
-
-### Rules 4 and 5: an open design question for the designer
-
-**Status: open. Rule 7 is the automated gate in both documents, and it passes. Rules 4 and 5 do not hold in most scenarios, and they cannot be made to hold alongside Rule 7 as the spec words them.**
-
-`npm run balance -- --rules` values every option by forcing it and playing every other decision with the neutral policy. On the shipped numbers:
-
-| Scenario | Rule 4: is the waiting option ever best? | Rule 5: is the most restrictive option ever best? |
+| Scenario | Rule 4: the waiting option is best in | Rule 5: the most restrictive option is best in |
 | --- | --- | --- |
-| 1 Attribution Gap | No | Only in the benign profile, by a margin inside the noise |
-| 2 Open-Weight Release | Yes, in every profile | No |
-| 3 Biology Result | Yes, in every profile | No |
-| 4 Graduate Collapse | No | No |
-| 5 Deepfake Election | No | Yes, in every profile |
-| 6 Sandbagging Finding | No | No |
-| 2032 Threshold | Only when sandbagging was an artefact | Yes, in every profile |
+| 1 Attribution Gap | Benign, by 0.23 (A) | Hard, by 0.22 (C) |
+| 2 Open-Weight Release | Benign, by 0.25 (A) | Hard, by 0.22 (C) |
+| 3 Biology Result | Benign, by 0.19 (A) | Hard, by 0.21 (B) |
+| 4 Graduate Collapse | Benign, by 0.20 (A) | Hard, by 0.20 (C) |
+| 5 Deepfake Election | Benign, by 0.28 (A) | Hard, by 0.21 (D) |
+| 6 Sandbagging Finding | Benign, by 0.29 (A) | Hard, by 0.42 (D) |
+| 2032 Threshold | Benign, by 0.27 (A) | Hard, by 0.40 (E) |
 
-Two findings explain this.
+In every scripted scenario a middle option is best in the contested profile. The three interrupt variants are reported but not enforced, because each is reached in only some games; in them the middle option (emergency standards, or screening) is best in every profile, which the spec's own cyber-variant numbers produce.
 
-1. **The spec's odds modifiers are additive, so their value does not depend on the world.** Cutting attack odds by 10 points is worth the same ending score whether the base is 50% or 15% (the clamp aside). An option's rank therefore barely moves between profiles. Only effects that are conditional on a latent fact ("plot odds -10 if uplift is real") make an option better in one world than another, and the spec has few of them.
-2. **Judged by profile, Rules 4 and 5 pull against Rule 7.** All five latent facts move with the profile. If in every scenario the most restrictive option is best in the hard profile, then always-restrictive is close to the best policy in hard worlds, and it wins far more than 40% of runs there. E4 tested this directly: with Rules 4 and 5 holding in every fact-linked scenario, always-permissive won 61% of benign runs and always-restrictive 74% of hard runs. The grid search confirmed it from the other side: every configuration within reach of Rule 7 had those fact-conditional effects at zero.
+### Why the rule had to be re-read
 
-Options for the designer (all are changes to JSON or to one line of the harness, not to the engine):
+Two findings from the first tuning round (E0 to E8) explain it.
 
-- **A. Keep the spec's wording; accept the current state.** Rule 7 passes. The game does not push a policy line through the fixed strategies, but in several scenarios the most restrictive option is never the best choice, which is a neutrality risk of its own.
-- **B. Judge Rule 7 across all worlds pooled, rather than per profile.** Then a strategy may dominate the profile it suits, which is what Rules 4 and 5 ask for. The E4 effects can be restored and re-tuned so that the pooled shares stay under 40% (E4 as first drafted gave pooled shares of 38 / 15 / 47, so it needs rebalancing, not redesign).
-- **C. Judge Rules 4 and 5 by latent fact rather than by profile** ("restriction is best when offence leads") and restore smaller fact-conditional effects. This lessens the conflict but does not remove it, because facts and profiles are correlated.
+1. **The spec's odds modifiers are additive, so their value does not depend on the world.** Cutting attack odds by 10 points is worth the same ending score whether the base is 50% or 15% (the clamp aside). An option's rank therefore barely moves between profiles. Only effects that are conditional on a latent fact ("plot odds -10 if uplift is real") make an option better in one world than another, and the spec has few of them. On the spec's numbers, Rules 4 and 5 failed in most scenarios: the Scenario 6 moratorium, for example, was never the best choice in any world.
+2. **Judged per profile, Rules 4 and 5 pull against Rule 7.** All five latent facts move with the profile. If in every scenario the most restrictive option is best in the hard profile, then always-restrictive is close to the best policy in hard worlds, and it wins far more than 40% of runs there. E4 tested this directly (61% and 74%), and a grid search confirmed it from the other side: every configuration within reach of a per-profile Rule 7 had the fact-conditional effects at zero.
 
-The builder's recommendation is B: it is the only reading under which all seven rules can hold at once, and it matches the thesis that restriction is right in some worlds and wrong in others. Until the designer decides, the game ships on option A.
+The designer chose option B (decision 12): judge Rule 7 across all worlds pooled. A strategy may dominate the profile it suits, which is what Rules 4 and 5 ask for; none may dominate overall.
+
+### Change log
+
+| # | Change | Kind of number | Why |
+| --- | --- | --- | --- |
+| E0 | Starting point: section D as signed off. Per-profile shares: benign 55/13/32, contested 45/14/41, hard 37/15/49 | | |
+| E1 | Final decision option C gains a middle zone. It had failed whenever the economy was below 55 or Public Trust below 50. Now a "weak" economy forces the spec's reversal (Public Trust -8, and deployment goes ahead); 55 and above with Public Trust 50 and above earns the dividend; in between the delay holds and earns nothing. "Weak" was first set at below 50 and is now below 48 (E13) | Provisional structure | The spec says C works at 55 and fails when the economy is "weak", and is silent in between. Always-middle takes C and was failing it in 100% of games |
+| E2 | False alarm option A: if the warning is real, National Security -6, Public Trust -3 (was -8, -4); if false, Public Trust +2 (was nothing) | Provisional | A was the worst option whether the alarm was real or false, so it was never a real choice |
+| E3 | Scenario 2 option B fails below Cooperation 45 (the spec says 40) | **Spec number** | Section C noted that the threshold of 40 can never bite. At 45, the starting level, B succeeds only if the player has invested in Diplomacy first, which makes it a gamble on the Cooperation metric as the spec intends |
+| E4 | A first set of fact-conditional bonuses, added then withdrawn | Additions | Rules 4 and 5 held, and per-profile Rule 7 became unpassable. Superseded by E11 |
+| E5, E6, E7 | Withdrawn. They flattened the difference between profiles to pass Rule 7 per profile: the moratorium's artefact penalty cut to Public Trust -1, final option E's numbers cut to -6 and -4, and the two nuisance events raised to Public Trust -4. **All reverted under option B**: the spec's Public Trust -3 is restored, and the provisional numbers are back to their first drafts (section D) | | Under option B a difference between profiles is wanted, not a fault |
+| E8 | Open-weight defence model: 40% in every world, with a further National Security +4 if offence leads (first drafted as 30% offence-led, 55% defence-led, no bonus). Kept | Provisional | A defence model is plausibly worth most where offence leads |
+| E9 | The harness judges Rule 7 pooled across the three profiles at their published weights, prints the per-profile shares for information, and enforces Rules 4 and 5 in every scripted scenario | Harness | Decision 12 |
+| E10 | Scenario 5 is linked to a latent fact: foreign posture | Addition | Its own uncertainty (is the recording authentic: 30% in every world) does not vary by profile, so no option could be best in one profile and not another. If the foreign posture is open, no sustained campaign follows and restraint is vindicated; if it is unilateral, one does, and provenance rules blunt it |
+| E11 | Every scripted scenario's waiting option and most restrictive option gain a pair of fact-conditional hidden effects: one when the option suits the world, one when it does not. Listed below | Additions | Sizes were solved for, not guessed: the smallest effects that make the waiting option best in the benign profile and the most restrictive best in the hard profile, each by 0.2 of an ending-score point, while a middle option stays best in the contested profile |
+| E12 | Scenario 4 levy: Social Stability +11 if structural (solved as +10). Scenario 3 tiered access: Systemic Risk -8 if uplift is real (solved as -7) | Additions | Firmer Rule 5 margins (0.13 to about 0.2) |
+| E13 | Final option C: a "weak" economy is below 48 (was 50) | Provisional | Always-middle takes this option; its pooled share was the lowest of the three. 48 is clearly below the starting level of 50 |
+
+**E11 in full.** All are hidden effects, shown to the player only in the debrief's View assumptions table. No spec number was changed by them.
+
+| Scenario (latent fact) | Waiting option | Most restrictive option |
+| --- | --- | --- |
+| 1 Attribution Gap (cyber balance) | A, reporting pact. Defence-led: Innovation +2, Economy +2. Offence-led: National Security -3 | C, market-access evaluation. Offence-led: Systemic Risk -6. Defence-led: Innovation -4, Economy -3 |
+| 2 Open-Weight Release (cyber balance) | A, welcome the release. Defence-led: Innovation +3, Economy +2. Offence-led: National Security -4, Systemic Risk +4 | C, bar derivatives. Offence-led: Systemic Risk -5, National Security +3. Defence-led: Innovation -4 |
+| 3 Biology Result (biological uplift) | A, fund studies. Marginal: Innovation +1. Real: Systemic Risk +6, National Security -4 | B, tiered access. Real: Systemic Risk -8. Marginal: Innovation -4, Economy -3 |
+| 4 Graduate Collapse (labour shock) | A, let the market adjust. Transitional: Economy +4, Innovation +3. Structural: Social Stability -5 | C, levy. Structural: Social Stability +11, Public Trust +4. Transitional: Economy -5, Innovation -5 |
+| 5 Deepfake Election (foreign posture) | A, say nothing. Open: Public Trust +5 | D, emergency provenance rules. Unilateral: Social Stability +2. Open: Public Trust -3 |
+| 6 Sandbagging Finding (sandbagging cause) | A, evaluation redesign. Artefact: Innovation +2, Economy +2. Strategic: Systemic Risk +8 | D, moratorium. Strategic: National Security +6, State Capacity +6, Public Trust +3, on top of the spec's Systemic Risk -10. Artefact: the spec's Public Trust -3 |
+| 2032 Threshold (sandbagging cause) | A, permit. Artefact: Economy +2. Strategic: Systemic Risk +6, National Security -5 | E, prohibit. Strategic: Systemic Risk -10. Artefact: Public Trust -2, Innovation -2 |
+
+Two of these are large because the spec's own numbers leave the option far behind: the levy (Scenario 4) trails retraining by more than a point of ending score even when the shock is structural, and the moratorium (Scenario 6) trails every alternative by two. If the designer would rather soften the spec's visible costs on those two options than carry large hidden bonuses, the harness will say at once whether the rules still hold.
+
+What this means for a player: in every scripted scenario the cautious option, the restrictive option and a middle option are each the best choice in some kind of world, and the player cannot see which world they are in. No fixed posture wins more than 37% of the time across all worlds.

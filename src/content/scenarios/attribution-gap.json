@@ -57,7 +57,30 @@
         "stateCapacity": 3
       },
       "probabilityModifiers": [],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "cyberOffenceLed",
+              "not": true
+            }
+          ],
+          "effects": {
+            "innovation": 2,
+            "economy": 2
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "cyberOffenceLed"
+            }
+          ],
+          "effects": {
+            "nationalSecurity": -3
+          }
+        }
+      ],
       "trackChange": null,
       "flagsAdded": [
         "s1-voluntary-pact"
@@ -115,7 +138,30 @@
           "delta": -10
         }
       ],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "cyberOffenceLed"
+            }
+          ],
+          "effects": {
+            "systemicRisk": -6
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "cyberOffenceLed",
+              "not": true
+            }
+          ],
+          "effects": {
+            "innovation": -4,
+            "economy": -3
+          }
+        }
+      ],
       "trackChange": null,
       "flagsAdded": [
         "s1-market-access-evaluation"

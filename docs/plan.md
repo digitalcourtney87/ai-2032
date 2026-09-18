@@ -23,6 +23,7 @@ Confirmed with the designer on 2026-09-18:
 9. **Pacing.** Commit on `main` at every green gate without asking, and push each gate commit to GitHub (authorised by the designer on 2026-09-18; before that, commits stayed local). Stop and wait only at the Phase 2 numbers sign-off, the Phase 4 playtest, and completion.
 10. **Keyed draws.** Each event roll and briefing signal derives from `(seed, id)` rather than stream position, so everyone on a seed faces the same dice and what-ifs are coherent. Deviates from the letter of handoff invariant 2 while keeping determinism and the banned-API rule; logged prominently.
 11. **Copy run summary** control in the debrief (seed, choices, forecasts, investments, Brier, ending as text and JSON). No network call.
+12. **Rule 7 is judged pooled** across all worlds at their published weights, not per profile, and Rules 4 and 5 are enforced per profile in every scripted scenario. Decided after the build, when the harness showed the spec's wording cannot hold all three at once (`DECISIONS.md` section E).
 
 Decided by the builder, logged, open to challenge:
 
@@ -68,9 +69,9 @@ Decided by the builder, logged, open to challenge:
 
 - [x] 🟩 **Phase 3: Balance harness**
   - [x] 🟩 `simulate.ts` and `scripts/balance.ts`: 10,000 paired-seed games per profile for the three fixed strategies; report names the scenarios where a strategy runs away
-  - [x] 🟩 Report spec Rules 4 and 5 per scenario, by profile and by latent fact (`npm run balance -- --rules`). **Open design question logged in `DECISIONS.md` section E: Rules 4 and 5 conflict with Rule 7 as the spec words them**
+  - [x] 🟩 Rules 4 and 5 enforced per scenario by `npm run balance`. They conflict with Rule 7 as the spec words it; the designer chose to judge Rule 7 pooled across worlds (decision 12), and all seven rules now hold
   - [x] 🟩 Tune JSON only, never the engine; log every change; wire `npm run balance` into CI
-  - [x] 🟩 Gate: no fixed strategy above 40% in any profile (worst share 38.4% at 10,000 runs). Commit.
+  - [x] 🟩 Gate: no fixed strategy above 40% (pooled shares 35.4 / 27.5 / 37.1 at 10,000 runs per profile); Rules 4 and 5 hold in all seven scripted scenarios. Commit.
 
 - [x] 🟩 **Phase 4: Turn interface**
   - [x] 🟩 `App.tsx` view state over `useReducer` wrapping the engine; title screen with disclaimer and seed-code entry

@@ -67,7 +67,31 @@
           "delta": 8
         }
       ],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "cyberOffenceLed",
+              "not": true
+            }
+          ],
+          "effects": {
+            "innovation": 3,
+            "economy": 2
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "cyberOffenceLed"
+            }
+          ],
+          "effects": {
+            "nationalSecurity": -4,
+            "systemicRisk": 4
+          }
+        }
+      ],
       "trackChange": null,
       "flagsAdded": [
         "s2-welcomed-release"
@@ -145,7 +169,30 @@
           "delta": -4
         }
       ],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "cyberOffenceLed"
+            }
+          ],
+          "effects": {
+            "systemicRisk": -5,
+            "nationalSecurity": 3
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "cyberOffenceLed",
+              "not": true
+            }
+          ],
+          "effects": {
+            "innovation": -4
+          }
+        }
+      ],
       "trackChange": null,
       "flagsAdded": [
         "s2-barred-derivatives"

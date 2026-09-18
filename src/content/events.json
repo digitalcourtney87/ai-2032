@@ -255,7 +255,7 @@
       "hard": 40
     },
     "effects": {
-      "publicTrust": -4
+      "publicTrust": -3
     },
     "conditionalEffects": [],
     "mitigations": [],
@@ -388,7 +388,7 @@
       "hard": 30
     },
     "effects": {
-      "publicTrust": -4
+      "publicTrust": -3
     },
     "conditionalEffects": [],
     "mitigations": [],

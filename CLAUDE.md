@@ -49,8 +49,10 @@ properties, stop and ask.
 ## Commands
 - `npm run dev` - dev server
 - `npm run test` - Vitest (engine + content)
-- `npm run balance` - 10,000 runs per world profile; fails if any fixed
-  strategy tops 40%. Add `-- --rules` for the Rule 4 and 5 report
+- `npm run balance` - 10,000 runs per world profile. Fails if any fixed strategy
+  tops 40% pooled across worlds (Rule 7), or if a scripted scenario's waiting or
+  most restrictive option is never best in any profile (Rules 4 and 5).
+  Add `-- --table` for every option's value
 - `npm run e2e` - Playwright browser tests against the production bundle (crisis
   turns, debrief, 3-second budget, axe, keyboard, reproducibility)
 - `npm run build` - type check, then static bundle (must stay under 16 MB)

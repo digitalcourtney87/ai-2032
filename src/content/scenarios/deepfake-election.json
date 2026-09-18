@@ -10,18 +10,44 @@
   "forecast": {
     "question": "Chance the recording is authentic.",
     "resolvesBy": "2029-06",
-    "resolution": [{ "draw": { "key": "recording-authentic", "probability": 30 } }]
+    "resolution": [
+      {
+        "draw": {
+          "key": "recording-authentic",
+          "probability": 30
+        }
+      }
+    ]
   },
   "briefingSignal": {
-    "about": [{ "draw": { "key": "recording-authentic", "probability": 30 } }],
+    "about": [
+      {
+        "draw": {
+          "key": "recording-authentic",
+          "probability": 30
+        }
+      }
+    ],
     "leansTrue": "First forensic read, low confidence: no synthesis artefacts found so far. The recording may be authentic.",
     "leansFalse": "First forensic read, low confidence: spectral irregularities consistent with synthesis. The recording may be fabricated."
   },
   "adviserViews": {
-    "shah": { "stance": "Forensics needs 48 hours we do not have. Anything we assert now, we assert without evidence.", "recommends": "A" },
-    "harcourt": { "stance": "If this is a hostile operation, silence is the outcome it was designed to produce. Say what we know and how we will find out.", "recommends": "B" },
-    "chen": { "stance": "Whatever you do, do not be the government that leaned on platforms three days before a vote.", "recommends": "B" },
-    "okafor": { "stance": "Fourteen million views and rising. Slow it down and label it; do not take it down.", "recommends": "C" }
+    "shah": {
+      "stance": "Forensics needs 48 hours we do not have. Anything we assert now, we assert without evidence.",
+      "recommends": "A"
+    },
+    "harcourt": {
+      "stance": "If this is a hostile operation, silence is the outcome it was designed to produce. Say what we know and how we will find out.",
+      "recommends": "B"
+    },
+    "chen": {
+      "stance": "Whatever you do, do not be the government that leaned on platforms three days before a vote.",
+      "recommends": "B"
+    },
+    "okafor": {
+      "stance": "Fourteen million views and rising. Slow it down and label it; do not take it down.",
+      "recommends": "C"
+    }
   },
   "choices": [
     {
@@ -31,20 +57,48 @@
       "politicalCost": 0,
       "restrictive": false,
       "stance": 1,
-      "visibleEffects": { "publicTrust": -2 },
+      "visibleEffects": {
+        "publicTrust": -2
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
         {
           "when": [
-            { "draw": { "key": "recording-authentic", "probability": 30 }, "not": true },
-            { "draw": { "key": "forensics-in-time", "probability": 40 }, "not": true }
+            {
+              "draw": {
+                "key": "recording-authentic",
+                "probability": 30
+              },
+              "not": true
+            },
+            {
+              "draw": {
+                "key": "forensics-in-time",
+                "probability": 40
+              },
+              "not": true
+            }
           ],
-          "effects": { "socialStability": -6 }
+          "effects": {
+            "socialStability": -6
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "foreignPostureOpen"
+            }
+          ],
+          "effects": {
+            "publicTrust": 5
+          }
         }
       ],
       "trackChange": null,
-      "flagsAdded": ["s5-said-nothing"],
+      "flagsAdded": [
+        "s5-said-nothing"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -57,14 +111,30 @@
       "politicalCost": 2,
       "restrictive": false,
       "stance": 2,
-      "visibleEffects": { "publicTrust": 2 },
+      "visibleEffects": {
+        "publicTrust": 2
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
-        { "when": [{ "draw": { "key": "recording-authentic", "probability": 30 } }], "effects": { "publicTrust": -7 } }
+        {
+          "when": [
+            {
+              "draw": {
+                "key": "recording-authentic",
+                "probability": 30
+              }
+            }
+          ],
+          "effects": {
+            "publicTrust": -7
+          }
+        }
       ],
       "trackChange": null,
-      "flagsAdded": ["s5-unverified-statement"],
+      "flagsAdded": [
+        "s5-unverified-statement"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -77,14 +147,25 @@
       "politicalCost": 3,
       "restrictive": true,
       "stance": 3,
-      "visibleEffects": { "socialStability": 3, "publicTrust": -2 },
+      "visibleEffects": {
+        "socialStability": 3,
+        "publicTrust": -2
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s5-platform-friction"],
+      "flagsAdded": [
+        "s5-platform-friction"
+      ],
       "flagsRemoved": [],
-      "queues": [{ "eventId": "free-speech-challenge", "minDelay": 1, "maxDelay": 2 }],
+      "queues": [
+        {
+          "eventId": "free-speech-challenge",
+          "minDelay": 1,
+          "maxDelay": 2
+        }
+      ],
       "requires": [],
       "headline": "Platforms add sharing friction and an 'unverified' label to the recording at the government's request."
     },
@@ -95,12 +176,41 @@
       "politicalCost": 4,
       "restrictive": true,
       "stance": 4,
-      "visibleEffects": { "publicTrust": -1, "socialStability": 2 },
-      "hiddenEffects": { "stateCapacity": 3 },
+      "visibleEffects": {
+        "publicTrust": -1,
+        "socialStability": 2
+      },
+      "hiddenEffects": {
+        "stateCapacity": 3
+      },
       "probabilityModifiers": [],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "seedFact": "foreignPostureOpen",
+              "not": true
+            }
+          ],
+          "effects": {
+            "socialStability": 2
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "foreignPostureOpen"
+            }
+          ],
+          "effects": {
+            "publicTrust": -3
+          }
+        }
+      ],
       "trackChange": null,
-      "flagsAdded": ["s5-provenance-rules"],
+      "flagsAdded": [
+        "s5-provenance-rules"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -112,20 +222,43 @@
       "lever": "publicInvestment",
       "politicalCost": 2,
       "restrictive": false,
-      "visibleEffects": { "publicTrust": 5, "socialStability": 4 },
+      "visibleEffects": {
+        "publicTrust": 5,
+        "socialStability": 4
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
         {
-          "when": [{ "draw": { "key": "authentication-correct", "probability": 90 }, "not": true }],
-          "effects": { "publicTrust": -8, "socialStability": -4 }
+          "when": [
+            {
+              "draw": {
+                "key": "authentication-correct",
+                "probability": 90
+              },
+              "not": true
+            }
+          ],
+          "effects": {
+            "publicTrust": -8,
+            "socialStability": -4
+          }
         }
       ],
       "trackChange": null,
-      "flagsAdded": ["s5-rapid-authentication"],
+      "flagsAdded": [
+        "s5-rapid-authentication"
+      ],
       "flagsRemoved": [],
       "queues": [],
-      "requires": [{ "track": { "key": "provenance", "minLevel": 2 } }],
+      "requires": [
+        {
+          "track": {
+            "key": "provenance",
+            "minLevel": 2
+          }
+        }
+      ],
       "headline": "The national provenance service publishes an authentication result within 12 hours."
     }
   ],

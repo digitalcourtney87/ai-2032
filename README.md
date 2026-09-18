@@ -19,9 +19,9 @@ npm install
 | `npm run lint` | ESLint, including the engine-isolation, banned-API and hidden-content rules |
 | `npm run build` | Type check, then produce the static bundle in `dist/` |
 | `npm run preview` | Serve the built bundle locally |
-| `npm run balance` | Play 10,000 simulated games per world profile for three fixed strategies. Fails if any strategy gives the best ending score in more than 40% of runs (spec Rule 7) |
-| `npm run balance -- --rules` | Also report, for each scenario, the worlds in which the waiting option and the most restrictive option are the best choice (spec Rules 4 and 5) |
-| `npm run balance -- --runs 2000` | A quicker reading while tuning numbers |
+| `npm run balance` | The balance harness. Rule 7: plays 10,000 paired-seed games per world profile for three fixed strategies and fails if any gives the best ending score in more than 40% of runs, pooled across the profiles at their published weights. Rules 4 and 5: fails unless, in every scripted scenario, the waiting option and the most restrictive option are each the best choice in at least one world profile |
+| `npm run balance -- --table` | Also print every option's value in every profile |
+| `npm run balance -- --runs 2000 --value-runs 1000` | A quicker reading while tuning numbers |
 | `npm run e2e` | Playwright browser tests against the production bundle: crisis turns, the debrief, the 3-second rerun budget, accessibility (axe), keyboard play, reproducibility. First run `npx playwright install chromium` |
 
 Balance is tuned in the JSON under `src/content/`, never in the engine. Every change is logged in `DECISIONS.md` section E.
@@ -77,7 +77,7 @@ There is no backend, so the debrief ends with **Copy run summary**: the seed cod
 - [docs/spec.md](docs/spec.md): Game Design Specification v2
 - [docs/handoff.md](docs/handoff.md): the build handoff
 - [docs/plan.md](docs/plan.md): the implementation plan, its progress, and the items only people can complete
-- [DECISIONS.md](DECISIONS.md): every choice made where the spec was silent, every number that is not in the spec, the balance-tuning log, and one open design question (spec Rules 4 and 5 against Rule 7)
+- [DECISIONS.md](DECISIONS.md): every choice made where the spec was silent, every number that is not in the spec, and the balance-tuning log, including why Rule 7 is judged across all worlds pooled
 
 ## Status
 
