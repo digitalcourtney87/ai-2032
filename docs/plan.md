@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `66%` (23 of 35 steps)
+**Overall Progress:** `69%` (24 of 35 steps)
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -20,7 +20,7 @@ Confirmed with the designer on 2026-09-18:
 6. **Luck tags.** "Sound" = top two options by expected ending score over worlds sampled from the published prior, with a neutral seeded-random continuation, about 300 rollouts per option. "Fortunate/unlucky" comes from the frozen `oddsAtTheTime` versus what was drawn, weighted by damage. The What-if panel changes one decision, replays the rest as played (nearest-stance fallback when a choice is unavailable), across fresh seeds in the same profile.
 7. **Facilitator editor** is built in Phase 7 as one minimal form behind `?facilitator=1`, with overrides encoded into the share URL. No facilitator guide, no paywall.
 8. **Dev-only dependencies approved:** `typescript`, `@types/react`, `@types/react-dom`, `@vitejs/plugin-react`, `eslint`, `typescript-eslint`, `eslint-plugin-react-hooks`, `@tailwindcss/vite` (Tailwind v4), `tsx`, `@playwright/test`, `@axe-core/playwright`. Runtime dependencies stay `react`, `react-dom`, `zod`, `recharts`.
-9. **Pacing.** Commit locally on `main` at every green gate without asking; never push. Stop and wait only at the Phase 2 numbers sign-off, the Phase 4 playtest, and completion.
+9. **Pacing.** Commit on `main` at every green gate without asking, and push each gate commit to GitHub (authorised by the designer on 2026-09-18; before that, commits stayed local). Stop and wait only at the Phase 2 numbers sign-off, the Phase 4 playtest, and completion.
 10. **Keyed draws.** Each event roll and briefing signal derives from `(seed, id)` rather than stream position, so everyone on a seed faces the same dice and what-ifs are coherent. Deviates from the letter of handoff invariant 2 while keeping determinism and the banned-API rule; logged prominently.
 11. **Copy run summary** control in the debrief (seed, choices, forecasts, investments, Brier, ending as text and JSON). No network call.
 
@@ -72,12 +72,12 @@ Decided by the builder, logged, open to challenge:
   - [x] 🟩 Tune JSON only, never the engine; log every change; wire `npm run balance` into CI
   - [x] 🟩 Gate: no fixed strategy above 40% in any profile (worst share 38.4% at 10,000 runs). Commit.
 
-- [ ] 🟨 **Phase 4: Turn interface**
+- [x] 🟩 **Phase 4: Turn interface**
   - [x] 🟩 `App.tsx` view state over `useReducer` wrapping the engine; title screen with disclaimer and seed-code entry
   - [x] 🟩 Screens: Briefing, Forecast (adviser estimates as anchors), Buy Information, Decision (lever, cost with window pricing, disabled states), Invest, News
   - [x] 🟩 Components: `MetricBar`, `EstimateBand` (range plus midpoint, never one number), `EvidenceTag`, `AdviserCard`; briefing-document theme. Components read scenarios only through `src/content/index.ts`, which strips hidden effects (lint-enforced)
   - [x] 🟩 Briefing, headline and adviser copy (first full draft; open to the playtester's comments)
-  - [ ] 🟨 Builder smoke run of all eight turns in the browser: done, no console errors, no horizontal overflow at 375px. Committed. **STOPPED: awaiting a run by the designer or a recruited playtester, without code or docs.**
+  - [x] 🟩 Builder smoke run of all eight turns in the browser: no console errors, no horizontal overflow at 375px. Gate: the designer completed a playtest run on 2026-09-18 with nothing to report.
 
 - [ ] 🟥 **Phase 5: Crisis turns and the interrupt**
   - [ ] 🟥 Crisis variant: stepped clock, no information purchase, reduced evidence text, unlocked options surfaced

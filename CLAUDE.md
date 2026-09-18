@@ -29,7 +29,8 @@ properties, stop and ask.
 ## Workflow
 - Build in the seven phases in `docs/plan.md`. Each has an acceptance gate.
   Do not start a phase until the previous gate is green.
-- Commit locally on `main` at each green gate without asking. Never push unless asked.
+- Commit on `main` at each green gate without asking, and push the gate commit to GitHub
+  (the designer authorised gate pushes on 2026-09-18). CI runs lint, tests, balance and build.
 - Stop and wait for the designer at: the Phase 2 provisional-numbers sign-off,
   the Phase 4 human playtest, and completion.
 - Update the status emojis and progress percentage in `docs/plan.md` as you go.
