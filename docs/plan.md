@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `40%` (14 of 35 steps)
+**Overall Progress:** `54%` (19 of 35 steps)
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -64,13 +64,13 @@ Decided by the builder, logged, open to challenge:
   - [x] 🟩 Author JSON: six scenarios, three interrupt variants (cyber, bio, false alarm), final decision, event registry, advisers, endings with Section 15 reading lists
   - [x] 🟩 Content tests: schema, no free option, no dominance, distinct levers, hidden ratio, reference integrity, complete stance ranks, source review-date warning
   - [x] 🟩 Provisional-numbers table in `DECISIONS.md` (sections C and D)
-  - [ ] 🟨 Gate: all content parses and tests pass (130 tests green, committed). **STOPPED: awaiting designer sign-off of `DECISIONS.md` sections C and D.**
+  - [x] 🟩 Gate: all content parses and tests pass (130 tests green, committed). Designer signed off `DECISIONS.md` sections C and D on 2026-09-18.
 
-- [ ] 🟥 **Phase 3: Balance harness**
-  - [ ] 🟥 `simulate.ts` and `scripts/balance.ts`: 10,000 paired-seed games per profile for the three fixed strategies; report names the scenarios where a strategy runs away
-  - [ ] 🟥 Report spec Rules 4 and 5 per scenario (the waiting option and the most restrictive option are each best in at least one profile)
-  - [ ] 🟥 Tune JSON only, never the engine; log every change; wire `npm run balance` into CI
-  - [ ] 🟥 Gate: no fixed strategy above 40% in any profile. Commit.
+- [x] 🟩 **Phase 3: Balance harness**
+  - [x] 🟩 `simulate.ts` and `scripts/balance.ts`: 10,000 paired-seed games per profile for the three fixed strategies; report names the scenarios where a strategy runs away
+  - [x] 🟩 Report spec Rules 4 and 5 per scenario, by profile and by latent fact (`npm run balance -- --rules`). **Open design question logged in `DECISIONS.md` section E: Rules 4 and 5 conflict with Rule 7 as the spec words them**
+  - [x] 🟩 Tune JSON only, never the engine; log every change; wire `npm run balance` into CI
+  - [x] 🟩 Gate: no fixed strategy above 40% in any profile (worst share 38.4% at 10,000 runs). Commit.
 
 - [ ] 🟥 **Phase 4: Turn interface**
   - [ ] 🟥 `App.tsx` view state over `useReducer` wrapping the engine; title screen with disclaimer and seed-code entry

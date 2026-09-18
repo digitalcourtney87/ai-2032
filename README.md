@@ -19,8 +19,11 @@ npm install
 | `npm run lint` | ESLint, including the engine-isolation and banned-API rules |
 | `npm run build` | Type check, then produce the static bundle in `dist/` |
 | `npm run preview` | Serve the built bundle locally |
+| `npm run balance` | Play 10,000 simulated games per world profile for three fixed strategies. Fails if any strategy gives the best ending score in more than 40% of runs (spec Rule 7) |
+| `npm run balance -- --rules` | Also report, for each scenario, the worlds in which the waiting option and the most restrictive option are the best choice (spec Rules 4 and 5) |
+| `npm run balance -- --runs 2000` | A quicker reading while tuning numbers |
 
-`npm run balance` (10,000 simulated games per world profile) arrives with Phase 3.
+Balance is tuned in the JSON under `src/content/`, never in the engine. Every change is logged in `DECISIONS.md` section E.
 
 ## How the project is organised
 

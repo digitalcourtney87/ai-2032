@@ -10,10 +10,16 @@
   "forecast": {
     "question": "Chance of a severe incident within two years if the model is deployed in the UK.",
     "resolvesBy": "2034-10",
-    "resolution": { "eventId": "post-deployment-incident" }
+    "resolution": {
+      "eventId": "post-deployment-incident"
+    }
   },
   "briefingSignal": {
-    "about": [{ "seedFact": "foreignPostureOpen" }],
+    "about": [
+      {
+        "seedFact": "foreignPostureOpen"
+      }
+    ],
     "leansTrue": "Diplomatic reporting: the developer's home government is sounding out partners about common deployment conditions. Posts judge it is probably open to agreement.",
     "leansFalse": "Diplomatic reporting: the developer's home government is briefing that deployment decisions are a national matter. Posts judge it will probably act unilaterally."
   },
@@ -23,7 +29,12 @@
       "recommends": "B",
       "memory": [
         {
-          "when": [{ "flag": "sandbagging-resolved", "not": true }],
+          "when": [
+            {
+              "flag": "sandbagging-resolved",
+              "not": true
+            }
+          ],
           "line": "We never did establish why that 2030 system under-performed when watched. Every evaluation I am about to cite rests on that open question."
         }
       ]
@@ -33,7 +44,16 @@
       "recommends": "E",
       "memory": [
         {
-          "when": [{ "flag": "s6-moratorium", "not": true }, { "flag": "sandbagging-resolved", "not": true }],
+          "when": [
+            {
+              "flag": "s6-moratorium",
+              "not": true
+            },
+            {
+              "flag": "sandbagging-resolved",
+              "not": true
+            }
+          ],
           "line": "In 2030 I asked for a moratorium until the sandbagging was explained. It never was."
         }
       ]
@@ -55,14 +75,26 @@
       "politicalCost": 0,
       "restrictive": false,
       "stance": 1,
-      "visibleEffects": { "innovation": 6, "economy": 4, "publicTrust": -2 },
+      "visibleEffects": {
+        "innovation": 6,
+        "economy": 4,
+        "publicTrust": -2
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["final-permitted"],
+      "flagsAdded": [
+        "final-permitted"
+      ],
       "flagsRemoved": [],
-      "queues": [{ "eventId": "post-deployment-incident", "minDelay": 0, "maxDelay": 0 }],
+      "queues": [
+        {
+          "eventId": "post-deployment-incident",
+          "minDelay": 0,
+          "maxDelay": 0
+        }
+      ],
       "requires": [],
       "headline": "The UK permits deployment of the 2032 system."
     },
@@ -73,14 +105,34 @@
       "politicalCost": 4,
       "restrictive": true,
       "stance": 2,
-      "visibleEffects": { "innovation": 3, "economy": 2, "nationalSecurity": 1 },
+      "visibleEffects": {
+        "innovation": 3,
+        "economy": 2,
+        "nationalSecurity": 1
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
-        { "when": [{ "metric": { "key": "stateCapacity", "op": "<=", "value": 34 } }], "effects": { "publicTrust": -5 } }
+        {
+          "when": [
+            {
+              "metric": {
+                "key": "stateCapacity",
+                "op": "<=",
+                "value": 34
+              }
+            }
+          ],
+          "effects": {
+            "publicTrust": -5
+          }
+        }
       ],
       "trackChange": null,
-      "flagsAdded": ["final-controls", "final-cautious"],
+      "flagsAdded": [
+        "final-controls",
+        "final-cautious"
+      ],
       "flagsRemoved": [],
       "queues": [
         {
@@ -91,13 +143,47 @@
             "cases": [
               {
                 "when": [
-                  { "metric": { "key": "stateCapacity", "op": ">=", "value": 60 } },
-                  { "metric": { "key": "systemicRisk", "op": "<=", "value": 50 } }
+                  {
+                    "metric": {
+                      "key": "stateCapacity",
+                      "op": ">=",
+                      "value": 60
+                    }
+                  },
+                  {
+                    "metric": {
+                      "key": "systemicRisk",
+                      "op": "<=",
+                      "value": 50
+                    }
+                  }
                 ],
                 "probability": 6
               },
-              { "when": [{ "metric": { "key": "stateCapacity", "op": ">=", "value": 60 } }], "probability": 20 },
-              { "when": [{ "metric": { "key": "systemicRisk", "op": ">=", "value": 51 } }], "probability": 40 }
+              {
+                "when": [
+                  {
+                    "metric": {
+                      "key": "stateCapacity",
+                      "op": ">=",
+                      "value": 60
+                    }
+                  }
+                ],
+                "probability": 20
+              },
+              {
+                "when": [
+                  {
+                    "metric": {
+                      "key": "systemicRisk",
+                      "op": ">=",
+                      "value": 51
+                    }
+                  }
+                ],
+                "probability": 40
+              }
             ],
             "otherwise": 20
           }
@@ -113,23 +199,69 @@
       "politicalCost": 4,
       "restrictive": true,
       "stance": 3,
-      "visibleEffects": { "nationalSecurity": 2, "innovation": -3, "economy": -2 },
-      "hiddenEffects": { "stateCapacity": 4, "systemicRisk": -5 },
+      "visibleEffects": {
+        "nationalSecurity": 2,
+        "innovation": -3,
+        "economy": -2
+      },
+      "hiddenEffects": {},
       "probabilityModifiers": [],
-      "conditionalEffects": [],
+      "conditionalEffects": [
+        {
+          "when": [
+            {
+              "metric": {
+                "key": "economy",
+                "op": ">=",
+                "value": 55
+              }
+            },
+            {
+              "metric": {
+                "key": "publicTrust",
+                "op": ">=",
+                "value": 50
+              }
+            }
+          ],
+          "effects": {
+            "stateCapacity": 4,
+            "systemicRisk": -5
+          }
+        }
+      ],
       "trackChange": null,
-      "flagsAdded": ["final-delayed", "final-cautious"],
+      "flagsAdded": [
+        "final-delayed",
+        "final-cautious"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
       "succeedsWhen": [
-        { "metric": { "key": "economy", "op": ">=", "value": 55 } },
-        { "metric": { "key": "publicTrust", "op": ">=", "value": 50 } }
+        {
+          "metric": {
+            "key": "economy",
+            "op": ">=",
+            "value": 50
+          }
+        }
       ],
       "onFailure": {
-        "effects": { "publicTrust": -8 },
-        "flagsAdded": ["final-delay-reversed", "final-cautious"],
-        "queues": [{ "eventId": "post-deployment-incident", "minDelay": 0, "maxDelay": 0 }],
+        "effects": {
+          "publicTrust": -8
+        },
+        "flagsAdded": [
+          "final-delay-reversed",
+          "final-cautious"
+        ],
+        "queues": [
+          {
+            "eventId": "post-deployment-incident",
+            "minDelay": 0,
+            "maxDelay": 0
+          }
+        ],
         "headline": "The UK delays deployment, then reverses within a year as the economy weakens and patience runs out."
       },
       "headline": "The UK delays deployment of the 2032 system pending further evaluation, and holds the line."
@@ -141,23 +273,50 @@
       "politicalCost": 4,
       "restrictive": true,
       "stance": 4,
-      "visibleEffects": { "cooperation": 4, "innovation": -3 },
-      "hiddenEffects": { "systemicRisk": -12, "nationalSecurity": 4 },
+      "visibleEffects": {
+        "cooperation": 4,
+        "innovation": -3
+      },
+      "hiddenEffects": {
+        "systemicRisk": -12,
+        "nationalSecurity": 4
+      },
       "probabilityModifiers": [],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["final-allied-pause", "final-cautious"],
+      "flagsAdded": [
+        "final-allied-pause",
+        "final-cautious"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
       "succeedsWhen": [
-        { "metric": { "key": "cooperation", "op": ">=", "value": 65 } },
-        { "track": { "key": "diplomacy", "minLevel": 3 } },
-        { "seedFact": "foreignPostureOpen" }
+        {
+          "metric": {
+            "key": "cooperation",
+            "op": ">=",
+            "value": 65
+          }
+        },
+        {
+          "track": {
+            "key": "diplomacy",
+            "minLevel": 3
+          }
+        },
+        {
+          "seedFact": "foreignPostureOpen"
+        }
       ],
       "onFailure": {
-        "effects": { "innovation": -8 },
-        "flagsAdded": ["final-paused-alone", "final-cautious"],
+        "effects": {
+          "innovation": -8
+        },
+        "flagsAdded": [
+          "final-paused-alone",
+          "final-cautious"
+        ],
         "queues": [],
         "headline": "Allies decline a coordinated pause; the UK delays alone."
       },
@@ -170,15 +329,43 @@
       "politicalCost": 6,
       "restrictive": true,
       "stance": 5,
-      "visibleEffects": { "nationalSecurity": 5, "innovation": -7, "economy": -4 },
+      "visibleEffects": {
+        "nationalSecurity": 5,
+        "innovation": -7,
+        "economy": -4
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
-        { "when": [{ "seedFact": "sandbaggingStrategic" }], "effects": { "systemicRisk": -10 } },
-        { "when": [{ "metric": { "key": "innovation", "op": "<=", "value": 39 } }], "effects": { "stateCapacity": -8 } }
+        {
+          "when": [
+            {
+              "seedFact": "sandbaggingStrategic"
+            }
+          ],
+          "effects": {
+            "systemicRisk": -6
+          }
+        },
+        {
+          "when": [
+            {
+              "metric": {
+                "key": "innovation",
+                "op": "<=",
+                "value": 39
+              }
+            }
+          ],
+          "effects": {
+            "stateCapacity": -4
+          }
+        }
       ],
       "trackChange": null,
-      "flagsAdded": ["final-prohibited"],
+      "flagsAdded": [
+        "final-prohibited"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],

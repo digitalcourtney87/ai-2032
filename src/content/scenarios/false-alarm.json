@@ -10,18 +10,44 @@
   "forecast": {
     "question": "Chance the intelligence is right and an attack is attempted.",
     "resolvesBy": "2031-12",
-    "resolution": [{ "draw": { "key": "alarm-real", "probability": 40 } }]
+    "resolution": [
+      {
+        "draw": {
+          "key": "alarm-real",
+          "probability": 40
+        }
+      }
+    ]
   },
   "briefingSignal": {
-    "about": [{ "draw": { "key": "alarm-real", "probability": 40 } }],
+    "about": [
+      {
+        "draw": {
+          "key": "alarm-real",
+          "probability": 40
+        }
+      }
+    ],
     "leansTrue": "Late read, low confidence: a second channel reports matching preparations. The warning may be sound.",
     "leansFalse": "Late read, low confidence: no second channel corroborates the report. The warning may be mistaken."
   },
   "adviserViews": {
-    "shah": { "stance": "A single source with a mixed record. Prepare quietly; do not spend credibility you will need for a real one.", "recommends": "A" },
-    "harcourt": { "stance": "If it is real and we did nothing, there is no explaining that afterwards. Warn operators and shut down what is exposed.", "recommends": "C" },
-    "chen": { "stance": "A precautionary shutdown costs the economy the same whether or not anything was coming.", "recommends": "A" },
-    "okafor": { "stance": "Cry wolf once and the next warning is ignored. Raise the standards, which helps either way.", "recommends": "B" }
+    "shah": {
+      "stance": "A single source with a mixed record. Prepare quietly; do not spend credibility you will need for a real one.",
+      "recommends": "A"
+    },
+    "harcourt": {
+      "stance": "If it is real and we did nothing, there is no explaining that afterwards. Warn operators and shut down what is exposed.",
+      "recommends": "C"
+    },
+    "chen": {
+      "stance": "A precautionary shutdown costs the economy the same whether or not anything was coming.",
+      "recommends": "A"
+    },
+    "okafor": {
+      "stance": "Cry wolf once and the next warning is ignored. Raise the standards, which helps either way.",
+      "recommends": "B"
+    }
   },
   "choices": [
     {
@@ -31,14 +57,45 @@
       "politicalCost": 1,
       "restrictive": false,
       "stance": 1,
-      "visibleEffects": { "publicTrust": -1 },
+      "visibleEffects": {
+        "publicTrust": -1
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
-        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 } }], "effects": { "nationalSecurity": -8, "publicTrust": -4 } }
+        {
+          "when": [
+            {
+              "draw": {
+                "key": "alarm-real",
+                "probability": 40
+              }
+            }
+          ],
+          "effects": {
+            "nationalSecurity": -6,
+            "publicTrust": -3
+          }
+        },
+        {
+          "when": [
+            {
+              "draw": {
+                "key": "alarm-real",
+                "probability": 40
+              },
+              "not": true
+            }
+          ],
+          "effects": {
+            "publicTrust": 2
+          }
+        }
       ],
       "trackChange": null,
-      "flagsAdded": ["alarm-held-closely"],
+      "flagsAdded": [
+        "alarm-held-closely"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -51,15 +108,45 @@
       "politicalCost": 3,
       "restrictive": true,
       "stance": 2,
-      "visibleEffects": { "nationalSecurity": 4, "innovation": -3 },
+      "visibleEffects": {
+        "nationalSecurity": 4,
+        "innovation": -3
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
-        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 } }], "effects": { "nationalSecurity": -3 } },
-        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 }, "not": true }], "effects": { "publicTrust": -2 } }
+        {
+          "when": [
+            {
+              "draw": {
+                "key": "alarm-real",
+                "probability": 40
+              }
+            }
+          ],
+          "effects": {
+            "nationalSecurity": -3
+          }
+        },
+        {
+          "when": [
+            {
+              "draw": {
+                "key": "alarm-real",
+                "probability": 40
+              },
+              "not": true
+            }
+          ],
+          "effects": {
+            "publicTrust": -2
+          }
+        }
       ],
       "trackChange": null,
-      "flagsAdded": ["alarm-emergency-standards"],
+      "flagsAdded": [
+        "alarm-emergency-standards"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -72,15 +159,45 @@
       "politicalCost": 5,
       "restrictive": true,
       "stance": 3,
-      "visibleEffects": { "nationalSecurity": 6, "economy": -4 },
+      "visibleEffects": {
+        "nationalSecurity": 6,
+        "economy": -4
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
-        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 } }], "effects": { "publicTrust": 4 } },
-        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 }, "not": true }], "effects": { "publicTrust": -5 } }
+        {
+          "when": [
+            {
+              "draw": {
+                "key": "alarm-real",
+                "probability": 40
+              }
+            }
+          ],
+          "effects": {
+            "publicTrust": 4
+          }
+        },
+        {
+          "when": [
+            {
+              "draw": {
+                "key": "alarm-real",
+                "probability": 40
+              },
+              "not": true
+            }
+          ],
+          "effects": {
+            "publicTrust": -5
+          }
+        }
       ],
       "trackChange": null,
-      "flagsAdded": ["alarm-public-warning"],
+      "flagsAdded": [
+        "alarm-public-warning"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -92,17 +209,41 @@
       "lever": "publicInvestment",
       "politicalCost": 2,
       "restrictive": false,
-      "visibleEffects": { "nationalSecurity": 4, "publicTrust": 2 },
+      "visibleEffects": {
+        "nationalSecurity": 4,
+        "publicTrust": 2
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
-        { "when": [{ "draw": { "key": "alarm-real", "probability": 40 } }], "effects": { "nationalSecurity": -3 } }
+        {
+          "when": [
+            {
+              "draw": {
+                "key": "alarm-real",
+                "probability": 40
+              }
+            }
+          ],
+          "effects": {
+            "nationalSecurity": -3
+          }
+        }
       ],
       "trackChange": null,
-      "flagsAdded": ["alarm-response-model"],
+      "flagsAdded": [
+        "alarm-response-model"
+      ],
       "flagsRemoved": [],
       "queues": [],
-      "requires": [{ "track": { "key": "evaluation", "minLevel": 3 } }],
+      "requires": [
+        {
+          "track": {
+            "key": "evaluation",
+            "minLevel": 3
+          }
+        }
+      ],
       "headline": "The government's incident-response model sweeps exposed networks overnight."
     }
   ],

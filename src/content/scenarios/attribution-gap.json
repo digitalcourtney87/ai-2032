@@ -10,18 +10,36 @@
   "forecast": {
     "question": "Chance of a disruptive AI-enabled attack on UK critical infrastructure by the end of 2029.",
     "resolvesBy": "2029-12",
-    "resolution": { "eventId": "infra-attack" }
+    "resolution": {
+      "eventId": "infra-attack"
+    }
   },
   "briefingSignal": {
-    "about": [{ "seedFact": "cyberOffenceLed" }],
+    "about": [
+      {
+        "seedFact": "cyberOffenceLed"
+      }
+    ],
     "leansTrue": "Assessment: across recent cases, offensive tooling built on frontier models is improving faster than the defences operators can deploy. The balance currently favours the attacker.",
     "leansFalse": "Assessment: across recent cases, defenders using the same models are closing intrusions about as fast as attackers can automate them. The balance is not clearly with the attacker."
   },
   "adviserViews": {
-    "shah": { "stance": "The autonomy figure is contested; do not price a disputed number as fact. Get the reporting first.", "recommends": "A" },
-    "harcourt": { "stance": "We do not get to run the experiment twice. Evaluate before these systems reach UK users.", "recommends": "C" },
-    "chen": { "stance": "Market-access conditions will cost us launches. A reporting pact gets the data without the delay.", "recommends": "A" },
-    "okafor": { "stance": "Operators outside government carry this risk too, and most cannot afford to defend themselves.", "recommends": "D" }
+    "shah": {
+      "stance": "The autonomy figure is contested; do not price a disputed number as fact. Get the reporting first.",
+      "recommends": "A"
+    },
+    "harcourt": {
+      "stance": "We do not get to run the experiment twice. Evaluate before these systems reach UK users.",
+      "recommends": "C"
+    },
+    "chen": {
+      "stance": "Market-access conditions will cost us launches. A reporting pact gets the data without the delay.",
+      "recommends": "A"
+    },
+    "okafor": {
+      "stance": "Operators outside government carry this risk too, and most cannot afford to defend themselves.",
+      "recommends": "D"
+    }
   },
   "choices": [
     {
@@ -31,12 +49,19 @@
       "politicalCost": 2,
       "restrictive": false,
       "stance": 1,
-      "visibleEffects": { "innovation": 1, "nationalSecurity": 1 },
-      "hiddenEffects": { "stateCapacity": 3 },
+      "visibleEffects": {
+        "innovation": 1,
+        "nationalSecurity": 1
+      },
+      "hiddenEffects": {
+        "stateCapacity": 3
+      },
       "probabilityModifiers": [],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s1-voluntary-pact"],
+      "flagsAdded": [
+        "s1-voluntary-pact"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -49,12 +74,22 @@
       "politicalCost": 3,
       "restrictive": true,
       "stance": 3,
-      "visibleEffects": { "nationalSecurity": 3, "economy": -1 },
+      "visibleEffects": {
+        "nationalSecurity": 3,
+        "economy": -1
+      },
       "hiddenEffects": {},
-      "probabilityModifiers": [{ "eventId": "infra-attack", "delta": -6 }],
+      "probabilityModifiers": [
+        {
+          "eventId": "infra-attack",
+          "delta": -6
+        }
+      ],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s1-procurement-standards"],
+      "flagsAdded": [
+        "s1-procurement-standards"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -67,14 +102,32 @@
       "politicalCost": 4,
       "restrictive": true,
       "stance": 4,
-      "visibleEffects": { "nationalSecurity": 4, "innovation": -3 },
-      "hiddenEffects": { "stateCapacity": 4 },
-      "probabilityModifiers": [{ "eventId": "infra-attack", "delta": -10 }],
+      "visibleEffects": {
+        "nationalSecurity": 4,
+        "innovation": -3
+      },
+      "hiddenEffects": {
+        "stateCapacity": 4
+      },
+      "probabilityModifiers": [
+        {
+          "eventId": "infra-attack",
+          "delta": -10
+        }
+      ],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s1-market-access-evaluation"],
+      "flagsAdded": [
+        "s1-market-access-evaluation"
+      ],
       "flagsRemoved": [],
-      "queues": [{ "eventId": "developer-delay", "minDelay": 1, "maxDelay": 1 }],
+      "queues": [
+        {
+          "eventId": "developer-delay",
+          "minDelay": 1,
+          "maxDelay": 1
+        }
+      ],
       "requires": [],
       "headline": "Frontier models must pass a government cyber evaluation before they are offered to UK users."
     },
@@ -85,12 +138,21 @@
       "politicalCost": 3,
       "restrictive": false,
       "stance": 2,
-      "visibleEffects": { "nationalSecurity": 1, "innovation": 2, "economy": -2 },
+      "visibleEffects": {
+        "nationalSecurity": 1,
+        "innovation": 2,
+        "economy": -2
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [],
-      "trackChange": { "key": "defensiveCyber", "delta": 1 },
-      "flagsAdded": ["s1-defensive-tooling"],
+      "trackChange": {
+        "key": "defensiveCyber",
+        "delta": 1
+      },
+      "flagsAdded": [
+        "s1-defensive-tooling"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],

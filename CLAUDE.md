@@ -49,7 +49,7 @@ properties, stop and ask.
 - `npm run dev` - dev server
 - `npm run test` - Vitest (engine + content)
 - `npm run balance` - 10,000 runs per world profile; fails if any fixed
-  strategy tops 40% (arrives in Phase 3)
+  strategy tops 40%. Add `-- --rules` for the Rule 4 and 5 report
 - `npm run build` - type check, then static bundle (must stay under 16 MB)
 - `npm run lint` - includes the engine-isolation and banned-API rules
 

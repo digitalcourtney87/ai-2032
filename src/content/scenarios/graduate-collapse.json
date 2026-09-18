@@ -10,18 +10,36 @@
   "forecast": {
     "question": "Chance graduate hiring in professional services is still 20% below its 2026 level in 2032.",
     "resolvesBy": "2032-10",
-    "resolution": { "eventId": "graduate-hiring-depressed" }
+    "resolution": {
+      "eventId": "graduate-hiring-depressed"
+    }
   },
   "briefingSignal": {
-    "about": [{ "seedFact": "labourShockStructural" }],
+    "about": [
+      {
+        "seedFact": "labourShockStructural"
+      }
+    ],
     "leansTrue": "Assessment: firms are redesigning work around the absence of juniors, not pausing hiring. Analysts judge the fall is probably structural.",
     "leansFalse": "Assessment: firms describe a hiring pause while they learn what the tools can do, and smaller employers are picking up graduates. Analysts judge the fall is probably transitional."
   },
   "adviserViews": {
-    "shah": { "stance": "Two years of data from one sector. Publish better data and find out which kind of shock this is before spending billions.", "recommends": "A" },
-    "harcourt": { "stance": "Not my brief, but a generation with no route into professional work is a security problem in ten years.", "recommends": "B" },
-    "chen": { "stance": "Productivity is rising and unemployment is flat. A levy on firms for becoming more productive is a tax on the recovery.", "recommends": "A" },
-    "okafor": { "stance": "The bottom rung of the ladder has gone and it is not coming back. Build the replacement now, at scale.", "recommends": "D" }
+    "shah": {
+      "stance": "Two years of data from one sector. Publish better data and find out which kind of shock this is before spending billions.",
+      "recommends": "A"
+    },
+    "harcourt": {
+      "stance": "Not my brief, but a generation with no route into professional work is a security problem in ten years.",
+      "recommends": "B"
+    },
+    "chen": {
+      "stance": "Productivity is rising and unemployment is flat. A levy on firms for becoming more productive is a tax on the recovery.",
+      "recommends": "A"
+    },
+    "okafor": {
+      "stance": "The bottom rung of the ladder has gone and it is not coming back. Build the replacement now, at scale.",
+      "recommends": "D"
+    }
   },
   "choices": [
     {
@@ -31,14 +49,32 @@
       "politicalCost": 0,
       "restrictive": false,
       "stance": 1,
-      "visibleEffects": { "economy": 3, "socialStability": -4 },
-      "hiddenEffects": { "stateCapacity": 1 },
-      "probabilityModifiers": [{ "eventId": "graduate-hiring-depressed", "delta": 6 }],
+      "visibleEffects": {
+        "economy": 3,
+        "socialStability": -4
+      },
+      "hiddenEffects": {
+        "stateCapacity": 1
+      },
+      "probabilityModifiers": [
+        {
+          "eventId": "graduate-hiring-depressed",
+          "delta": 6
+        }
+      ],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s4-market-adjusts"],
+      "flagsAdded": [
+        "s4-market-adjusts"
+      ],
       "flagsRemoved": [],
-      "queues": [{ "eventId": "labour-data-signal", "minDelay": 1, "maxDelay": 1 }],
+      "queues": [
+        {
+          "eventId": "labour-data-signal",
+          "minDelay": 1,
+          "maxDelay": 1
+        }
+      ],
       "requires": [],
       "headline": "Ministers decline to intervene in graduate hiring and commission quarterly labour data."
     },
@@ -49,12 +85,24 @@
       "politicalCost": 3,
       "restrictive": false,
       "stance": 2,
-      "visibleEffects": { "socialStability": 4, "economy": -2 },
-      "hiddenEffects": { "stateCapacity": 1 },
-      "probabilityModifiers": [{ "eventId": "graduate-hiring-depressed", "delta": -8 }],
+      "visibleEffects": {
+        "socialStability": 4,
+        "economy": -2
+      },
+      "hiddenEffects": {
+        "stateCapacity": 1
+      },
+      "probabilityModifiers": [
+        {
+          "eventId": "graduate-hiring-depressed",
+          "delta": -8
+        }
+      ],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s4-apprenticeships"],
+      "flagsAdded": [
+        "s4-apprenticeships"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -67,14 +115,26 @@
       "politicalCost": 5,
       "restrictive": true,
       "stance": 4,
-      "visibleEffects": { "socialStability": 5, "innovation": -4, "economy": -2 },
+      "visibleEffects": {
+        "socialStability": 5,
+        "innovation": -4,
+        "economy": -2
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s4-levy"],
+      "flagsAdded": [
+        "s4-levy"
+      ],
       "flagsRemoved": [],
-      "queues": [{ "eventId": "offshoring", "minDelay": 1, "maxDelay": 2 }],
+      "queues": [
+        {
+          "eventId": "offshoring",
+          "minDelay": 1,
+          "maxDelay": 2
+        }
+      ],
       "requires": [],
       "headline": "A levy on firms that cut junior intake becomes law; proceeds go to training."
     },
@@ -85,14 +145,26 @@
       "politicalCost": 4,
       "restrictive": false,
       "stance": 3,
-      "visibleEffects": { "socialStability": 2, "publicTrust": 2, "economy": -3 },
+      "visibleEffects": {
+        "socialStability": 2,
+        "publicTrust": 2,
+        "economy": -3
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s4-retraining"],
+      "flagsAdded": [
+        "s4-retraining"
+      ],
       "flagsRemoved": [],
-      "queues": [{ "eventId": "retraining-outcome", "minDelay": 2, "maxDelay": 2 }],
+      "queues": [
+        {
+          "eventId": "retraining-outcome",
+          "minDelay": 2,
+          "maxDelay": 2
+        }
+      ],
       "requires": [],
       "headline": "Government launches a national retraining programme for displaced graduates."
     }

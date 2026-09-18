@@ -10,18 +10,36 @@
   "forecast": {
     "question": "Chance this model family is implicated in a serious UK security incident by 2030.",
     "resolvesBy": "2030-12",
-    "resolution": { "eventId": "open-weight-incident" }
+    "resolution": {
+      "eventId": "open-weight-incident"
+    }
   },
   "briefingSignal": {
-    "about": [{ "seedFact": "cyberOffenceLed" }],
+    "about": [
+      {
+        "seedFact": "cyberOffenceLed"
+      }
+    ],
     "leansTrue": "Assessment: red teams stripped the safeguards in days and the derivative materially sped up intrusion work. Openly available capability at this level is likely to help attackers more than defenders.",
     "leansFalse": "Assessment: red teams stripped the safeguards in days, but defenders gained as much from the derivative as attackers did. Openly available capability at this level is not clearly a net gift to offence."
   },
   "adviserViews": {
-    "shah": { "stance": "Six months behind the frontier means the marginal risk is measurable. Get our evaluators in before release and measure it.", "recommends": "B" },
-    "harcourt": { "stance": "Once the weights are out, every safeguard is optional. Keep derivatives away from anything that matters.", "recommends": "C" },
-    "chen": { "stance": "This is the best free research asset the UK will be handed this decade. Build on it.", "recommends": "A" },
-    "okafor": { "stance": "We cannot stop this release, or the next one. The only durable answer is a threshold agreed with allies.", "recommends": "D" }
+    "shah": {
+      "stance": "Six months behind the frontier means the marginal risk is measurable. Get our evaluators in before release and measure it.",
+      "recommends": "B"
+    },
+    "harcourt": {
+      "stance": "Once the weights are out, every safeguard is optional. Keep derivatives away from anything that matters.",
+      "recommends": "C"
+    },
+    "chen": {
+      "stance": "This is the best free research asset the UK will be handed this decade. Build on it.",
+      "recommends": "A"
+    },
+    "okafor": {
+      "stance": "We cannot stop this release, or the next one. The only durable answer is a threshold agreed with allies.",
+      "recommends": "D"
+    }
   },
   "choices": [
     {
@@ -31,17 +49,37 @@
       "politicalCost": 2,
       "restrictive": false,
       "stance": 1,
-      "visibleEffects": { "innovation": 6, "economy": 2, "nationalSecurity": -2 },
-      "hiddenEffects": { "systemicRisk": 5 },
+      "visibleEffects": {
+        "innovation": 6,
+        "economy": 2,
+        "nationalSecurity": -2
+      },
+      "hiddenEffects": {
+        "systemicRisk": 5
+      },
       "probabilityModifiers": [
-        { "eventId": "infra-attack", "delta": 8 },
-        { "eventId": "open-weight-incident", "delta": 8 }
+        {
+          "eventId": "infra-attack",
+          "delta": 8
+        },
+        {
+          "eventId": "open-weight-incident",
+          "delta": 8
+        }
       ],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s2-welcomed-release"],
+      "flagsAdded": [
+        "s2-welcomed-release"
+      ],
       "flagsRemoved": [],
-      "queues": [{ "eventId": "open-weight-defence-model", "minDelay": 1, "maxDelay": 3 }],
+      "queues": [
+        {
+          "eventId": "open-weight-defence-model",
+          "minDelay": 1,
+          "maxDelay": 3
+        }
+      ],
       "requires": [],
       "headline": "Government welcomes the open-weight release and funds UK researchers to build on it."
     },
@@ -52,19 +90,36 @@
       "politicalCost": 3,
       "restrictive": false,
       "stance": 2,
-      "visibleEffects": { "innovation": 2, "nationalSecurity": 2 },
-      "hiddenEffects": { "stateCapacity": 3 },
+      "visibleEffects": {
+        "innovation": 2,
+        "nationalSecurity": 2
+      },
+      "hiddenEffects": {
+        "stateCapacity": 3
+      },
       "probabilityModifiers": [],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s2-evaluation-access"],
+      "flagsAdded": [
+        "s2-evaluation-access"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
-      "succeedsWhen": [{ "metric": { "key": "cooperation", "op": ">=", "value": 40 } }],
+      "succeedsWhen": [
+        {
+          "metric": {
+            "key": "cooperation",
+            "op": ">=",
+            "value": 45
+          }
+        }
+      ],
       "onFailure": {
         "effects": {},
-        "flagsAdded": ["s2-evaluation-access-refused"],
+        "flagsAdded": [
+          "s2-evaluation-access-refused"
+        ],
         "queues": [],
         "headline": "The laboratory declines early access for UK evaluators; the release goes ahead as planned."
       },
@@ -77,12 +132,24 @@
       "politicalCost": 3,
       "restrictive": true,
       "stance": 4,
-      "visibleEffects": { "nationalSecurity": 3, "innovation": -3 },
-      "hiddenEffects": { "systemicRisk": 2 },
-      "probabilityModifiers": [{ "eventId": "infra-attack", "delta": -4 }],
+      "visibleEffects": {
+        "nationalSecurity": 3,
+        "innovation": -3
+      },
+      "hiddenEffects": {
+        "systemicRisk": 2
+      },
+      "probabilityModifiers": [
+        {
+          "eventId": "infra-attack",
+          "delta": -4
+        }
+      ],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s2-barred-derivatives"],
+      "flagsAdded": [
+        "s2-barred-derivatives"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -95,14 +162,26 @@
       "politicalCost": 4,
       "restrictive": false,
       "stance": 3,
-      "visibleEffects": { "cooperation": 5, "innovation": -1 },
+      "visibleEffects": {
+        "cooperation": 5,
+        "innovation": -1
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s2-convened-allies"],
+      "flagsAdded": [
+        "s2-convened-allies"
+      ],
       "flagsRemoved": [],
-      "queues": [{ "eventId": "threshold-agreement", "minDelay": 3, "maxDelay": 3, "baseProbability": "certain" }],
+      "queues": [
+        {
+          "eventId": "threshold-agreement",
+          "minDelay": 3,
+          "maxDelay": 3,
+          "baseProbability": "certain"
+        }
+      ],
       "requires": [],
       "headline": "The UK convenes allied governments to negotiate a shared threshold for open release."
     }

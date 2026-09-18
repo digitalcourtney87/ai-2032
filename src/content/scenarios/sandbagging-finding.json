@@ -10,18 +10,38 @@
   "forecast": {
     "question": "Chance the behaviour is strategic.",
     "resolvesBy": "2032-10",
-    "resolution": [{ "seedFact": "sandbaggingStrategic" }]
+    "resolution": [
+      {
+        "seedFact": "sandbaggingStrategic"
+      }
+    ]
   },
   "briefingSignal": {
-    "about": [{ "seedFact": "sandbaggingStrategic" }],
+    "about": [
+      {
+        "seedFact": "sandbaggingStrategic"
+      }
+    ],
     "leansTrue": "Assessment: the under-performance appears on tasks the system has reason to conceal and not on others. Researchers lean towards strategic behaviour.",
     "leansFalse": "Assessment: the under-performance appears across unrelated tasks whenever test formatting is present. Researchers lean towards a training artefact."
   },
   "adviserViews": {
-    "shah": { "stance": "We have a reproducible measurement failure and no theory of it. Fix the instrument before we regulate on its readings.", "recommends": "A" },
-    "harcourt": { "stance": "A system that behaves differently when watched is the threat model. Pause deployment until someone can explain it.", "recommends": "D" },
-    "chen": { "stance": "A moratorium on a finding nobody can interpret would cost us the sector. Work the problem with allies.", "recommends": "C" },
-    "okafor": { "stance": "If evaluations can be gamed, announce nothing in advance. Test them the way we inspect anything else that matters.", "recommends": "B" }
+    "shah": {
+      "stance": "We have a reproducible measurement failure and no theory of it. Fix the instrument before we regulate on its readings.",
+      "recommends": "A"
+    },
+    "harcourt": {
+      "stance": "A system that behaves differently when watched is the threat model. Pause deployment until someone can explain it.",
+      "recommends": "D"
+    },
+    "chen": {
+      "stance": "A moratorium on a finding nobody can interpret would cost us the sector. Work the problem with allies.",
+      "recommends": "C"
+    },
+    "okafor": {
+      "stance": "If evaluations can be gamed, announce nothing in advance. Test them the way we inspect anything else that matters.",
+      "recommends": "B"
+    }
   },
   "choices": [
     {
@@ -31,12 +51,18 @@
       "politicalCost": 2,
       "restrictive": false,
       "stance": 1,
-      "visibleEffects": { "economy": -1 },
-      "hiddenEffects": { "stateCapacity": 4 },
+      "visibleEffects": {
+        "economy": -1
+      },
+      "hiddenEffects": {
+        "stateCapacity": 4
+      },
       "probabilityModifiers": [],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s6-evaluation-redesign"],
+      "flagsAdded": [
+        "s6-evaluation-redesign"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],
@@ -49,17 +75,53 @@
       "politicalCost": 4,
       "restrictive": true,
       "stance": 3,
-      "visibleEffects": { "nationalSecurity": 3, "innovation": -2 },
+      "visibleEffects": {
+        "nationalSecurity": 3,
+        "innovation": -2
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
-        { "when": [{ "track": { "key": "evaluation", "minLevel": 2 } }], "effects": { "systemicRisk": -4 } },
-        { "when": [{ "track": { "key": "evaluation", "minLevel": 2 }, "not": true }], "effects": { "systemicRisk": -2 } }
+        {
+          "when": [
+            {
+              "track": {
+                "key": "evaluation",
+                "minLevel": 2
+              }
+            }
+          ],
+          "effects": {
+            "systemicRisk": -4
+          }
+        },
+        {
+          "when": [
+            {
+              "track": {
+                "key": "evaluation",
+                "minLevel": 2
+              },
+              "not": true
+            }
+          ],
+          "effects": {
+            "systemicRisk": -2
+          }
+        }
       ],
       "trackChange": null,
-      "flagsAdded": ["s6-unannounced-evaluations"],
+      "flagsAdded": [
+        "s6-unannounced-evaluations"
+      ],
       "flagsRemoved": [],
-      "queues": [{ "eventId": "sandbagging-finding", "minDelay": 1, "maxDelay": 1 }],
+      "queues": [
+        {
+          "eventId": "sandbagging-finding",
+          "minDelay": 1,
+          "maxDelay": 1
+        }
+      ],
       "requires": [],
       "headline": "Developers must accept unannounced government evaluations to keep UK market access."
     },
@@ -70,14 +132,25 @@
       "politicalCost": 3,
       "restrictive": false,
       "stance": 2,
-      "visibleEffects": { "cooperation": 4, "innovation": -1 },
+      "visibleEffects": {
+        "cooperation": 4,
+        "innovation": -1
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [],
       "trackChange": null,
-      "flagsAdded": ["s6-joint-interpretability"],
+      "flagsAdded": [
+        "s6-joint-interpretability"
+      ],
       "flagsRemoved": [],
-      "queues": [{ "eventId": "interpretability-dividend", "minDelay": 2, "maxDelay": 2 }],
+      "queues": [
+        {
+          "eventId": "interpretability-dividend",
+          "minDelay": 2,
+          "maxDelay": 2
+        }
+      ],
       "requires": [],
       "headline": "The UK and allied institutes launch a joint interpretability programme."
     },
@@ -88,15 +161,40 @@
       "politicalCost": 6,
       "restrictive": true,
       "stance": 4,
-      "visibleEffects": { "nationalSecurity": 5, "innovation": -7, "economy": -4 },
+      "visibleEffects": {
+        "nationalSecurity": 5,
+        "innovation": -7,
+        "economy": -4
+      },
       "hiddenEffects": {},
       "probabilityModifiers": [],
       "conditionalEffects": [
-        { "when": [{ "seedFact": "sandbaggingStrategic" }], "effects": { "systemicRisk": -10 } },
-        { "when": [{ "seedFact": "sandbaggingStrategic", "not": true }], "effects": { "publicTrust": -3 } }
+        {
+          "when": [
+            {
+              "seedFact": "sandbaggingStrategic"
+            }
+          ],
+          "effects": {
+            "systemicRisk": -10
+          }
+        },
+        {
+          "when": [
+            {
+              "seedFact": "sandbaggingStrategic",
+              "not": true
+            }
+          ],
+          "effects": {
+            "publicTrust": -1
+          }
+        }
       ],
       "trackChange": null,
-      "flagsAdded": ["s6-moratorium"],
+      "flagsAdded": [
+        "s6-moratorium"
+      ],
       "flagsRemoved": [],
       "queues": [],
       "requires": [],

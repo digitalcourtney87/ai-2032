@@ -397,7 +397,16 @@ export interface DisplayedState {
   history?: DecisionRecord[];
 }
 
-// Filled in during Phase 3 (simulate) and Phase 6 (counterfactual).
+/** The three fixed strategies of Rule 7: always most permissive, always middle, always most restrictive. */
 export type Strategy = "permissive" | "middle" | "restrictive";
-export type SimResult = Record<string, unknown>;
+
+export interface SimResult {
+  strategy: Strategy;
+  runs: number;
+  meanScore: number;
+  /** Share of runs reaching each ending, by ending id. */
+  endings: Record<string, number>;
+}
+
+// Filled in during Phase 6.
 export type CounterfactualResult = Record<string, unknown>;
