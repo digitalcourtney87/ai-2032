@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `71%` of build steps (45 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
+**Overall Progress:** `73%` of build steps (46 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -108,11 +108,11 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 Docs: `DECISIONS.md` decision 14 and section F; Phases 8 to 15 here; `CLAUDE.md` reading list and branch workflow
   - [x] 🟩 Gate: all local gates green (e2e 19 passed in 13.8 s); baseline e2e timing recorded; crash bug fixed with a regression test. Committed on the feature branch.
 
-- [ ] 🟨 **Phase 9: The opening**
+- [x] 🟩 **Phase 9: The opening**
   - [x] 🟩 Dilemma-first title screen; the primary button reads "Try your first decision" and sits inside the first viewport at 375×667, 726×900 and 1280×800
   - [x] 🟩 Seed field inside "Play the same world as a friend", open when the link carries a seed; the fictional-unit disclaimer stays
   - [x] 🟩 Print-production labels removed (figure ids, 720PT, 48MM, "Fig. NN"); mono microlabels at least 12px
-  - [ ] ⬜ Gate: `e2e/engagement.spec.ts` checks the button position at the three sizes; all local gates green. Commit on the feature branch.
+  - [x] 🟩 Gate: `e2e/engagement.spec.ts` checks the button position at the three sizes; all local gates green (e2e 29 passed in 12.8 s). Committed on the feature branch.
 
 - [ ] ⬜ **Phase 10: Briefing and forecast**
   - [ ] ⬜ Advisers: "Cares about", "Backs option X" and a "Who backs what" split, from public content only
