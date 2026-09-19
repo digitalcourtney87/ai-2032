@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `100%` of build steps (35 of 35). The items only people can complete are listed at the end and remain open.
+**Overall Progress:** `65%` of build steps (41 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -97,6 +97,54 @@ Decided by the builder, logged, open to challenge:
   - [x] 🟩 Bundle-size check (under 1 MB against a 16 MB limit); README and `DECISIONS.md` completed
   - [x] 🟩 Gate: axe reports no violations at any impact on any screen, in light and dark; the same seed code reproduces an identical run start to finish in the browser. Commit and push.
 
+Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagement-handoff.md`, the decisions are `DECISIONS.md` decision 14 and section F, and every step is planned task by task in [`docs/plans/2026-09-19-public-engagement-ui.md`](plans/2026-09-19-public-engagement-ui.md). The work happens on a feature branch and reaches `main` only by a pull request the designer approves. GitHub Actions has never run, so every gate is run locally: `npm run lint && npm run test && npm run balance && npm run build && npm run e2e`. Status: 🟩 done, 🟨 in progress, ⬜ not started. Optional Phase 14 is not counted in the progress figure unless the designer approves it.
+
+- [ ] 🟨 **Phase 8: Baseline and safety net**
+  - [x] 🟩 Baseline before any change: `npm ci`, Playwright Chromium, all local gates green. `npm run test` 166 passed; `npm run e2e` 17 passed in 13.2 s (Playwright's figure), 13.53 s wall clock including the build
+  - [x] 🟩 End-to-end helpers hardened: `LABEL` constants in `e2e/play.ts`, helpers wait for the next screen, the debrief is found by `data-testid="debrief"`, luck tags are read only after the rankings arrive; the axe check fails on any violation, heading order and one h1 included (`DECISIONS.md` B42)
+  - [x] 🟩 Fix: an option priced out by commissioning analysis no longer stays picked with Confirm enabled (the page went blank), and focus moves to the analysis bought; regression test in `e2e/regressions.spec.ts`
+  - [x] 🟩 Fix: the steps rail lists Investment on turn 7's consequences and not on the final turn's; regression test
+  - [x] 🟩 Guards: `tests/content/public.test.ts` fails if a hidden key reaches `publicContent()`; a lint rule keeps `published`, `defaults`, `assumptionsOf`, `view.truth`, `view.debrief`, `view.history` and `halfWidth` out of play screens
+  - [x] 🟩 Docs: `DECISIONS.md` decision 14 and section F; Phases 8 to 15 here; `CLAUDE.md` reading list and branch workflow
+  - [ ] ⬜ Gate: all local gates green; baseline e2e timing recorded; crash bug fixed with a regression test. Commit on the feature branch.
+
+- [ ] ⬜ **Phase 9: The opening**
+  - [ ] ⬜ Dilemma-first title screen; the primary button reads "Try your first decision" and sits inside the first viewport at 375×667, 726×900 and 1280×800
+  - [ ] ⬜ Seed field inside "Play the same world as a friend", open when the link carries a seed; the fictional-unit disclaimer stays
+  - [ ] ⬜ Print-production labels removed (figure ids, 720PT, 48MM, "Fig. NN"); mono microlabels at least 12px
+  - [ ] ⬜ Gate: `e2e/engagement.spec.ts` checks the button position at the three sizes; all local gates green. Commit on the feature branch.
+
+- [ ] ⬜ **Phase 10: Briefing and forecast**
+  - [ ] ⬜ Advisers: "Cares about", "Backs option X" and a "Who backs what" split, from public content only
+  - [ ] ⬜ Forecast: gut feel first, then "Compare with your advisers" on the same 0 to 100 scale; "Lock in N%" always enabled
+  - [ ] ⬜ Play-screen sentence builders in `src/ui/copy.ts`, unit-tested against the copy rules
+  - [ ] ⬜ Gate: all local gates green; axe clean on the new states in light and dark. Commit on the feature branch.
+
+- [ ] ⬜ **Phase 11: Decision, investment and consequences**
+  - [ ] ⬜ `publicContent()` gains the Political Capital rules and track bonuses; investment copy corrected (`DECISIONS.md` F10, F11)
+  - [ ] ⬜ Choice preview (Political Capital left, stated effects) and a track ladder with the next unlock, from pure, unit-tested helpers
+  - [ ] ⬜ Consequences in four parts in the main column: Your decision, What the world noticed, What you can measure now, Still unknown
+  - [ ] ⬜ Gate: all local gates green. Stop for the designer's review of the opening and one representative turn.
+
+- [ ] ⬜ **Phase 12: First-decision pause (the five-minute taster)**
+  - [ ] ⬜ A pause after turn 1's consequences in every game, with "Keep going" and "Stop here"; no engine or content change
+  - [ ] ⬜ End-to-end helpers click through the pause
+  - [ ] ⬜ Gate: all local gates green; a run that pauses and continues reproduces an uninterrupted run. Commit on the feature branch.
+
+- [ ] ⬜ **Phase 13: A debrief for everyone**
+  - [ ] ⬜ New order: At a glance, What if (preselected), Decision quality versus luck, collapsible reference panels, Talk it over, Share your run
+  - [ ] ⬜ Existing panel headings, test ids and copy rules kept
+  - [ ] ⬜ Gate: all local gates green. Stop for the designer's review.
+
+- [ ] ⬜ **Phase 14 (optional): Save and resume**, only if the designer approves `DECISIONS.md` F7
+  - [ ] ⬜ The action log, never the game state, saved in this browser; opt-in "Continue" on the title screen
+  - [ ] ⬜ Gate: all local gates green; replay unit tests; resume end-to-end test. Commit on the feature branch.
+
+- [ ] ⬜ **Phase 15: Accessibility sweep, docs and handover**
+  - [ ] ⬜ Extended axe, overflow and keyboard walk over every new screen and state, in light and dark, at phone and desktop sizes
+  - [ ] ⬜ README, `DECISIONS.md` and this plan updated; human-only items listed as open
+  - [ ] ⬜ Gate: all local gates green; the pull request is ready for the designer. Stop at completion.
+
 ## Owned by the designer, not the build
 
 These parts of the definition of done cannot be passed by the builder and will be reported as open, never as done:
@@ -105,3 +153,7 @@ These parts of the definition of done cannot be passed by the builder and will b
 - Spec milestone M5: ten solo testers and one facilitated group of eight
 - First-time completion in under 30 minutes, and two of five testers naming a decision they would defend despite its outcome
 - The three willingness-to-pay sessions in the spec's commercial note
+- Whether the spec's commercial note (a paid workshop layer, and the three willingness-to-pay sessions above) still applies now that the game is a personal project for everyone (`DECISIONS.md` decision 14)
+- Sign-off of `DECISIONS.md` decision 14 and section F (the public-audience redesign)
+- The design reviews at the Phase 11 and Phase 13 gates, and the decision on optional Phase 14
+- Merging the redesign's pull request, and any deploy
