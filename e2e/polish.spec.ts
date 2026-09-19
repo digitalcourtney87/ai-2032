@@ -366,3 +366,37 @@ for (const colorScheme of ["light", "dark"] as const) {
     });
   });
 }
+
+/** Closes every collapsible debrief panel: the mirror of openAllPanels in e2e/play.ts. */
+async function closeAllPanels(page: Page) {
+  const openPanels = page.getByTestId("debrief").locator('h2 > button[aria-expanded="true"]');
+  for (let i = 0; i < 20 && (await openPanels.count()) > 0; i++) await openPanels.first().click();
+  await expect(openPanels).toHaveCount(0);
+}
+
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`axe finds no violations in the redesigned debrief, as it opens, fully open and fully closed (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await startGame(page, "AXE-DEBRIEF");
+    await playToDebrief(page);
+    await expect(page.getByText("Weighing the options you had")).toHaveCount(0, { timeout: 10_000 });
+    await expect(page.getByRole("heading", { level: 2, name: /At a glance/ })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: /Talk it over/ })).toBeVisible();
+    const closed = page.getByTestId("debrief").locator('h2 > button[aria-expanded="false"]');
+    expect(await closed.count(), "the reference panels start closed").toBeGreaterThan(0);
+    await settle(page);
+    await expectNoSeriousViolations(page, "debrief as it opens");
+
+    await openAllPanels(page);
+    await expect(page.getByRole("img", { name: /^Calibration chart/ })).toBeVisible();
+    await page.getByRole("button", { name: "Rerun 1,000 games" }).click();
+    await expect(page.getByTestId("what-if-result")).toBeVisible();
+    await settle(page);
+    await expectNoSeriousViolations(page, "debrief with every panel open");
+
+    await closeAllPanels(page);
+    await expect(page.getByRole("img", { name: /^Calibration chart/ })).toHaveCount(0);
+    await settle(page);
+    await expectNoSeriousViolations(page, "debrief with every panel closed");
+  });
+}
