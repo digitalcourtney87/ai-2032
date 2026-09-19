@@ -166,7 +166,13 @@ export function App() {
           />
         )}
         {reporting && (
-          <News view={view} resolvedTurn={resolved.turn} onContinue={() => setStage(view.phase === "debrief" ? "debrief" : "briefing")} />
+          <News
+            view={view}
+            before={before}
+            scenario={scenario}
+            resolvedTurn={resolved.turn}
+            onContinue={() => setStage(view.phase === "debrief" ? "debrief" : "briefing")}
+          />
         )}
       </div>
     </AppShell>

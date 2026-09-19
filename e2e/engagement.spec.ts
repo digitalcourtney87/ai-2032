@@ -432,6 +432,12 @@ test.describe("briefing and forecast", () => {
 
 // ---------------------------------------------------------------- Phase 11: decision, investment and consequences
 
+/** True when `a` comes before `b` in document order (reading and tab order). */
+async function precedes(a: Locator, b: Locator): Promise<boolean> {
+  const other = await b.elementHandle();
+  return a.evaluate((el, node) => Boolean(el.compareDocumentPosition(node as Node) & Node.DOCUMENT_POSITION_FOLLOWING), other);
+}
+
 test.describe("decision, investment and consequences", () => {
   test("choosing an option previews the Political Capital it would leave", async ({ page }) => {
     await startGame(page, "PREVIEW-E2E");
@@ -471,5 +477,46 @@ test.describe("decision, investment and consequences", () => {
     await expect(page.getByText("Bonus per level: State Capacity +4")).toBeVisible();
     await expect(page.getByText("A government incident-response model in the unscheduled crisis")).toBeVisible();
     await expect(page.getByText("(still ahead)").first()).toBeVisible();
+  });
+
+  test("on a phone, the news screen puts your decision and the measured changes before Next briefing", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await startGame(page, "NEWS-E2E");
+    await toDecision(page);
+    await page.locator("#choice-A").check();
+    await page.getByRole("button", { name: LABEL.confirm }).click();
+    await page.locator('input[name="track"]:enabled').first().check();
+    await page.getByRole("button", { name: LABEL.investIn }).click();
+
+    await expect(page.getByRole("heading", { name: LABEL.newsHeading })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Your decision" })).toBeVisible();
+    await expect(page.getByText(/^You chose option A: /)).toBeVisible();
+    const next = page.getByRole("button", { name: LABEL.next });
+    const firstChange = page.getByText(/^(National Security|Economy|Public Trust|Innovation|Social Stability): \d+ → \d+ \([+−]\d+\)$/).first();
+    expect(await precedes(page.getByRole("heading", { name: "What you can measure now" }), next)).toBe(true);
+    expect(await precedes(firstChange, next)).toBe(true);
+    await expect(page.getByText("shown beside this page", { exact: false })).toHaveCount(0);
+  });
+
+  test("no band width or odds figure appears on the decision, investment or news screens", async ({ page }) => {
+    const clean = async (where: string, scope: Locator) => {
+      const text = await scope.innerText();
+      expect(text, where).not.toContain("halfWidth");
+      expect(text, where).not.toMatch(/\d\s?%/);
+    };
+    await startGame(page, "NO-LEAK-E2E");
+    await toDecision(page, 35);
+    await page.locator('input[name="choice"]:enabled').first().check();
+    await clean("the options", page.getByRole("group", { name: LABEL.decisionGroup }));
+    await clean("the preview", page.getByRole("region", { name: /^If you choose option/ }));
+    await page.getByRole("button", { name: LABEL.confirm }).click();
+    await page.getByRole("radio", { name: /^Diplomacy/ }).check();
+    await clean("the ladder", page.getByRole("group", { name: LABEL.investGroup }));
+    await page.getByRole("button", { name: LABEL.investIn }).click();
+
+    await expect(page.getByRole("heading", { name: LABEL.newsHeading })).toBeVisible();
+    for (const name of ["Your decision", LABEL.newsHeading, "What you can measure now"]) await clean(name, page.getByRole("region", { name }));
+    // The only percentage on the news screen is the player's own forecast.
+    expect((await page.getByRole("region", { name: "Still unknown" }).innerText()).match(/\d+%/g)).toEqual(["35%"]);
   });
 });
