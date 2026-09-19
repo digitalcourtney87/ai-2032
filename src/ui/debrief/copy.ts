@@ -40,10 +40,13 @@ export function outcomeSentence(label: string, probability: number, happened: bo
 }
 
 /** The what-if result, in the spec's phrasing: incidents first, then the metrics that moved most. */
-export function whatIfSentences(result: CounterfactualResult, scenarioTitle: string, asPlayedText: string, newText: string): string[] {
+export function whatIfSentences(result: CounterfactualResult, scenarioTitle: string, asPlayedText: string, newText: string, unaffordable = false): string[] {
   const { asPlayed, changed } = result;
+  const incidents = `moved serious incidents from ${percent(asPlayed.seriousIncidentShare)} of runs to ${percent(changed.seriousIncidentShare)}`;
   const sentences = [
-    `${PREFIX}, choosing “${newText}” instead of “${asPlayedText}” in ${scenarioTitle} moved serious incidents from ${percent(asPlayed.seriousIncidentShare)} of runs to ${percent(changed.seriousIncidentShare)}.`,
+    unaffordable
+      ? `${PREFIX}, “${newText}” cost more Political Capital than you had at the time, so each replay used the nearest affordable option instead. That substitution ${incidents}.`
+      : `${PREFIX}, choosing “${newText}” instead of “${asPlayedText}” in ${scenarioTitle} ${incidents}.`,
   ];
   const moved = (Object.keys(METRIC_LABEL) as MetricKey[])
     .map((key) => ({ key, delta: changed.medianMetrics[key] - asPlayed.medianMetrics[key] }))
@@ -168,7 +171,7 @@ export function leastLikelyOutcome(debrief: { luck: readonly { links: readonly L
   const chances = debrief.luck.flatMap((entry, index) =>
     entry.links.filter((link) => link.probability > 0 && link.probability < 1).map((link) => ({ index, link })));
   // An event reads as something that happened. A hidden fact is a state of the world, named in condition
-  // language ("it is not the case that…"), so it is used only when no event was at stake.
+  // language ("the authentication result was inaccurate"), so it is used only when no event was at stake.
   const events = chances.filter((chance) => chance.link.kind === "event");
   const pool = events.length > 0 ? events : chances;
   const happened = pool.filter((chance) => chance.link.happened);

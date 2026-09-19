@@ -171,11 +171,11 @@ export const FACT_LABEL: Record<SeedFact, { name: string; whenTrue: string; when
   foreignPostureOpen: { name: "Foreign posture", whenTrue: "Open to agreement", whenFalse: "Unilateral" },
 };
 
-const DRAW_LABEL: Record<string, string> = {
-  "recording-authentic": "the recording was authentic",
-  "forensics-in-time": "forensics finished before polling day",
-  "authentication-correct": "the authentication result was correct",
-  "alarm-real": "the warning was real",
+const DRAW_LABEL: Record<string, { text: string; not: string }> = {
+  "recording-authentic": { text: "the recording was authentic", not: "the recording was not authentic" },
+  "forensics-in-time": { text: "forensics finished before polling day", not: "forensics did not finish before polling day" },
+  "authentication-correct": { text: "the authentication result was correct", not: "the authentication result was inaccurate" },
+  "alarm-real": { text: "the warning was real", not: "the warning was false" },
 };
 
 /** A condition in words, for the published assumptions and the luck panel. */
@@ -185,7 +185,10 @@ export function describeCondition(condition: Condition): string {
     const fact = FACT_LABEL[condition.seedFact];
     parts.push(`${fact.name.toLowerCase()} is ${(condition.not ? fact.whenFalse : fact.whenTrue).toLowerCase()}`);
   }
-  if (condition.draw) parts.push(`${condition.not ? "it is not the case that " : ""}${DRAW_LABEL[condition.draw.key] ?? condition.draw.key}`);
+  if (condition.draw) {
+    const label = DRAW_LABEL[condition.draw.key];
+    parts.push(label ? (condition.not ? label.not : label.text) : condition.draw.key);
+  }
   const negate = condition.not && !condition.seedFact && !condition.draw ? "not: " : "";
   if (condition.metric) parts.push(`${negate}${METRIC_LABEL[condition.metric.key]} ${condition.metric.op === ">=" ? "at or above" : "at or below"} ${condition.metric.value}`);
   if (condition.composite) parts.push(`${negate}${condition.composite.key} ${condition.composite.op === ">=" ? "at or above" : "at or below"} ${condition.composite.value}`);

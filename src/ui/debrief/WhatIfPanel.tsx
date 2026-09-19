@@ -3,19 +3,21 @@ import { Assumptions } from "./Assumptions";
 import { whatIfEndingCaption, whatIfEndingRows, whatIfMethod, whatIfSentences } from "./copy";
 import { Button } from "../components/Button";
 import { percent, PROFILE_LABEL } from "../format";
-import { pub, WHAT_IF_RUNS, type WhatIfAnswer } from "../useGame";
+import { pub, WHAT_IF_RUNS, type UnaffordableAt, type WhatIfAnswer } from "../useGame";
 import type { DisplayedState } from "../../engine";
 
 interface Props {
   view: DisplayedState;
   whatIf: (changeAt: number, newChoiceId: string) => Promise<WhatIfAnswer>;
+  /** For each decision, the options that cost more Political Capital than the player then had. */
+  unaffordable: readonly UnaffordableAt[];
   /** The decision to change, by its place in the history. The debrief holds it, so At a glance can choose it. */
   changeAt: number;
   onChangeAt: (index: number) => void;
 }
 
 /** Counterfactual reruns of any one decision, phrased as the model's output and never as a finding. */
-export function WhatIfPanel({ view, whatIf, changeAt, onChangeAt }: Props) {
+export function WhatIfPanel({ view, whatIf, unaffordable, changeAt, onChangeAt }: Props) {
   const history = view.history ?? [];
   // The alternative picked, and for which decision: choosing another decision starts again from its first alternative.
   const [picked, setPicked] = useState<{ at: number; choiceId: string } | null>(null);
@@ -26,6 +28,11 @@ export function WhatIfPanel({ view, whatIf, changeAt, onChangeAt }: Props) {
   const scenario = pub.scenarios[record.scenarioId]!;
   const alternatives = scenario.choices.filter((c) => c.id !== record.choiceId && !record.lockedChoiceIds.includes(c.id));
   const chosenAlternative = alternatives.find((c) => picked?.at === changeAt && c.id === picked.choiceId) ?? alternatives[0];
+  // Unaffordable options stay on offer, labelled: hiding them would hide the capital lesson, and a silent
+  // substitution would claim the replay took an option it did not. The result names the substitution instead.
+  const unaffordableAt = unaffordable[changeAt];
+  const over = (id: string) => unaffordableAt?.options.find((option) => option.id === id);
+  const substitution = chosenAlternative ? over(chosenAlternative.id) : undefined;
 
   async function run() {
     if (!chosenAlternative) return;
@@ -39,7 +46,7 @@ export function WhatIfPanel({ view, whatIf, changeAt, onChangeAt }: Props) {
 
   const shown = answer && answer.changeAt === changeAt && answer.result.newChoiceId === chosenAlternative?.id ? answer : null;
   const sentences = shown
-    ? whatIfSentences(shown.result, scenario.title, scenario.choices.find((c) => c.id === record.choiceId)?.text ?? record.choiceId, chosenAlternative?.text ?? "")
+    ? whatIfSentences(shown.result, scenario.title, scenario.choices.find((c) => c.id === record.choiceId)?.text ?? record.choiceId, chosenAlternative?.text ?? "", substitution !== undefined)
     : [];
 
   return (
@@ -73,9 +80,10 @@ export function WhatIfPanel({ view, whatIf, changeAt, onChangeAt }: Props) {
             value={chosenAlternative?.id ?? ""}
             onChange={(event) => setPicked({ at: changeAt, choiceId: event.target.value })}
           >
-            {alternatives.map((c) => (
-              <option key={c.id} value={c.id}>{c.id}. {c.text}</option>
-            ))}
+            {alternatives.map((c) => {
+              const beyond = over(c.id);
+              return <option key={c.id} value={c.id}>{c.id}. {c.text}{beyond ? ` (costs ${beyond.cost}; you had ${unaffordableAt!.capital})` : ""}</option>;
+            })}
           </select>
         </div>
       </div>

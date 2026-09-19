@@ -130,7 +130,7 @@
   {
     "id": "unknown-frontier",
     "title": "The Unknown Frontier",
-    "text": "You built a state that can see clearly, kept systemic risk low, and declined to wave the 2032 system through. You did almost everything well, and you still cannot say whether the system is controllable. The research below demonstrates the relevant capabilities in constructed settings; none of it shows how often they occur in deployment. That gap is what this ending is about. It is not a failure of your unit. It is the state of the science.",
+    "text": "You built a state that can see clearly, kept systemic risk low, and declined to wave the 2032 system through — and still cannot say whether the system is controllable. The research below demonstrates the relevant capabilities in constructed settings; none of it shows how often they occur in deployment. That gap is what this ending is about. It is not a failure of your unit. It is the state of the science.",
     "priority": 2,
     "when": [
       { "metric": { "key": "stateCapacity", "op": ">=", "value": 70 } },

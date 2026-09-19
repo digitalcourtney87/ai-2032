@@ -35,7 +35,7 @@ function seedFromUrl(): string | null {
 }
 
 export function App() {
-  const { view, before, rankings, start, reset, act, whatIf } = useGame();
+  const { view, before, rankings, start, reset, act, whatIf, unaffordable } = useGame();
   const [stage, setStage] = useState<Stage>("briefing");
   /** The turn and scenario whose consequences the news screen is reporting. */
   const [resolved, setResolved] = useState<{ turn: number; scenarioId: string } | null>(null);
@@ -94,6 +94,7 @@ export function App() {
           view={view}
           rankings={rankings}
           whatIf={whatIf}
+          unaffordable={unaffordable}
           onRestart={backToStart}
         />
       </AppShell>

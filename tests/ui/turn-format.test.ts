@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { loadContent, publicContent } from "../../src/content";
 import {
-  DOMAIN_LABEL, effectRows, EXACT_METRICS, formatEffects, isExactMetric, METRIC_LABEL, METRIC_ORDER, TRACK_MILESTONES, trackBonusText, TRACKS,
+  describeCondition, DOMAIN_LABEL, effectRows, EXACT_METRICS, formatEffects, isExactMetric, METRIC_LABEL, METRIC_ORDER, TRACK_MILESTONES, trackBonusText, TRACKS,
 } from "../../src/ui/format";
 
 const pub = publicContent(loadContent());
@@ -53,5 +53,17 @@ describe("standing-investment copy (DECISIONS.md, F11)", () => {
     );
     const authored = new Set(TRACKS.flatMap((t) => TRACK_MILESTONES[t].filter((m) => m.applies === "unlock").map((m) => `${t}:${m.level}`)));
     expect([...authored].sort()).toEqual([...fromContent].sort());
+  });
+});
+
+describe("conditions in words", () => {
+  test("a negated draw reads as a plain negative, not 'it is not the case that'", () => {
+    const draw = (key: string) => ({ draw: { key, probability: 0.5 } });
+    expect(describeCondition({ ...draw("authentication-correct"), not: true })).toBe("the authentication result was inaccurate");
+    expect(describeCondition(draw("authentication-correct"))).toBe("the authentication result was correct");
+    expect(describeCondition({ ...draw("alarm-real"), not: true })).toBe("the warning was false");
+    for (const key of ["recording-authentic", "forensics-in-time", "authentication-correct", "alarm-real"]) {
+      expect(describeCondition({ ...draw(key), not: true })).not.toContain("it is not the case that");
+    }
   });
 });

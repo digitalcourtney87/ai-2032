@@ -62,6 +62,14 @@ describe("copy rules (spec Section 14)", () => {
     expect(metrics).toContain("raised median National Security by 2 points");
     expect(score).toContain("rose by 0.6");
   });
+
+  test("an unaffordable what-if names the substitution instead of claiming the replay took the option", () => {
+    const [incidents, metrics] = whatIfSentences(result, "The Open-Weight Release", "Welcome the release", "An export ban", true);
+    expect(incidents).toContain("cost more Political Capital than you had at the time");
+    expect(incidents).toContain("the nearest affordable option");
+    expect(incidents).toContain("moved serious incidents from 31% of runs to 24%");
+    expect(metrics).toContain("lowered median Innovation by 4 points");
+  });
 });
 
 describe("calibration bins", () => {
