@@ -9,7 +9,7 @@ import { Facilitator } from "./Facilitator";
 interface Props {
   /** A seed code carried in the URL, so friends can play the same world. */
   initialSeed: string | null;
-  /** App's step heading, so focus comes back to this h1 after Play again. */
+  /** App's step heading, so focus comes back to this h1 after "Play a new world" or Back to the start. */
   headingRef?: Ref<HTMLHeadingElement>;
   onStart: (seedCode: string) => void;
 }

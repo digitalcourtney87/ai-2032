@@ -8,15 +8,22 @@ interface Props {
   hrefs?: readonly string[];
 }
 
-/** A rail link to a folded <details> unfolds it, scrolls to it and moves focus to its summary. Any other target is left to the browser. */
+/**
+ * A rail link to a folded <details> unfolds it, scrolls to it and moves focus to its summary.
+ * A link to a closed debrief panel (debrief/Panel.tsx) opens it through its own toggle, and the
+ * browser then follows the link. This also works when the URL already carries that hash.
+ */
 function unfold(event: MouseEvent<HTMLAnchorElement>) {
   const id = event.currentTarget.hash.slice(1);
   const target = id ? document.getElementById(id) : null;
-  if (!(target instanceof HTMLDetailsElement)) return;
-  event.preventDefault();
-  target.open = true;
-  target.scrollIntoView({ block: "start" });
-  target.querySelector<HTMLElement>(":scope > summary")?.focus({ preventScroll: true });
+  if (target instanceof HTMLDetailsElement) {
+    event.preventDefault();
+    target.open = true;
+    target.scrollIntoView({ block: "start" });
+    target.querySelector<HTMLElement>(":scope > summary")?.focus({ preventScroll: true });
+    return;
+  }
+  target?.querySelector<HTMLButtonElement>(':scope > h2 > button[aria-expanded="false"]')?.click();
 }
 
 /** Compact inspector index. The active step is an inverted label; a step with an anchor is a link to it. */

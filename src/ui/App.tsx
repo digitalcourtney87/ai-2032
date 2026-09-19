@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { CrisisClock } from "./components/CrisisClock";
 import { StatusPanel } from "./components/StatusPanel";
 import { PAUSE_HEADING } from "./copy";
+import { DEBRIEF_SECTIONS } from "./debrief/sections";
 import { formatMonth } from "./format";
 import { Briefing } from "./screens/Briefing";
 import { Debrief } from "./screens/Debrief";
@@ -24,7 +25,9 @@ import { pub, useGame } from "./useGame";
 type Stage = "briefing" | "play" | "news" | "pause" | "debrief";
 
 const STEPS = ["Briefing", "Forecast", "Decision", "Investment", "Consequences"] as const;
-const DEBRIEF_STEPS = ["World", "Calibration", "Quality", "Governance", "Unseen", "What if"] as const;
+/** The debrief's rail is a table of contents: one link per section, in reading order. */
+const DEBRIEF_STEPS = DEBRIEF_SECTIONS.map((section) => section.rail);
+const DEBRIEF_HREFS = DEBRIEF_SECTIONS.map((section) => `#${section.id}`);
 const PAUSE_STEPS = ["Taking stock"] as const;
 
 function seedFromUrl(): string | null {
@@ -49,7 +52,7 @@ export function App() {
     window.scrollTo(0, 0);
   }, [stepKey]);
 
-  /** Play again on the debrief, and Back to the start on the pause: keep a facilitator's edited assumptions, drop the seed for a new world. */
+  /** "Play a new world" on the debrief, and Back to the start on the pause: keep a facilitator's edited assumptions, drop the seed for a new world. */
   function backToStart() {
     const params = new URLSearchParams(window.location.search);
     params.delete("seed");
@@ -83,9 +86,9 @@ export function App() {
       <AppShell
         chrome={{ turn: pub.totalTurns, totalTurns: pub.totalTurns, dateLabel: "October 2032", seedCode: view.seedCode }}
         steps={DEBRIEF_STEPS}
-        stepIndex={0}
-        stepsLabel="Record contents"
-        status={<StatusPanel view={view} />}
+        stepIndex={-1}
+        stepsLabel="In this debrief"
+        stepHrefs={DEBRIEF_HREFS}
       >
         <Debrief
           view={view}

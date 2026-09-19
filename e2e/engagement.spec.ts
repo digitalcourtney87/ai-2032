@@ -870,3 +870,32 @@ test("with reduced motion, trying a different choice jumps to the what-if at onc
   await expect(page.getByTestId("what-if-result").getByRole("table")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);   // the endings table fits a phone
 });
+
+test("the debrief rail links to every section, marks none as current, and opens a closed panel it points to", async ({ page }) => {
+  await startGame(page, "RAIL-1");
+  await playToDebrief(page);
+  const rail = page.getByRole("navigation", { name: "In this debrief" });
+  const links = rail.getByRole("link");
+  await expect(links).toHaveCount(9);
+  await expect(rail.locator("[aria-current]")).toHaveCount(0);               // a table of contents: no section is "current"
+  await expect(page.getByRole("complementary", { name: "State of the nation" })).toHaveCount(0);   // the in-play estimates stay off the debrief
+  for (let index = 0; index < 9; index++) {
+    const link = links.nth(index);
+    const number = String(index + 1);
+    expect(await link.innerText()).toMatch(new RegExp(`^0?${number}`));
+    const target = page.locator(`${await link.getAttribute("href")} > h2`);
+    expect(await target.innerText()).toMatch(new RegExp(`^${number}\\.`));  // the rail and the heading agree
+    expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(24);   // WCAG 2.2 target size
+  }
+
+  await rail.getByRole("link", { name: /Calibration/ }).click();
+  await expect(page).toHaveURL(/#panel-calibration$/);
+  const toggle = page.getByRole("heading", { level: 2, name: /Calibration/ }).getByRole("button");
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("img", { name: /^Calibration chart/ })).toBeVisible();
+
+  await toggle.click();                                                       // closed again from its heading
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await rail.getByRole("link", { name: /Calibration/ }).click();              // same hash: no hashchange event fires
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+});
