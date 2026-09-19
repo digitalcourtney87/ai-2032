@@ -4,10 +4,12 @@
 import { useEffect, useRef, useState } from "react";
 import { CrisisClock } from "./components/CrisisClock";
 import { StatusPanel } from "./components/StatusPanel";
+import { PAUSE_HEADING } from "./copy";
 import { formatMonth } from "./format";
 import { Briefing } from "./screens/Briefing";
 import { Debrief } from "./screens/Debrief";
 import { Decision } from "./screens/Decision";
+import { FirstDecision } from "./screens/FirstDecision";
 import { Forecast } from "./screens/Forecast";
 import { Invest } from "./screens/Invest";
 import { News } from "./screens/News";
@@ -15,11 +17,15 @@ import { Title } from "./screens/Title";
 import { AppShell } from "./shell/AppShell";
 import { pub, useGame } from "./useGame";
 
-/** The interface's own steps. "briefing" and "news" are reading steps the engine has no phase for. */
-type Stage = "briefing" | "play" | "news" | "debrief";
+/**
+ * The interface's own steps. "briefing" and "news" are reading steps the engine has no phase for.
+ * "pause" is the one-time stop after turn 1's news: the five-minute taster (DECISIONS.md section F).
+ */
+type Stage = "briefing" | "play" | "news" | "pause" | "debrief";
 
 const STEPS = ["Briefing", "Forecast", "Decision", "Investment", "Consequences"] as const;
 const DEBRIEF_STEPS = ["World", "Calibration", "Quality", "Governance", "Unseen", "What if"] as const;
+const PAUSE_STEPS = ["Taking stock"] as const;
 
 function seedFromUrl(): string | null {
   return new URLSearchParams(window.location.search).get("seed");
@@ -85,6 +91,27 @@ export function App() {
             reset();
           }}
         />
+      </AppShell>
+    );
+  }
+
+  // The pause is not a turn step: it has its own shell, rail and h1, so the next turn's clock and rail are untouched.
+  const pausedOn = stage === "pause" && resolved ? pub.scenarios[resolved.scenarioId] : undefined;
+  if (pausedOn && resolved && before) {
+    return (
+      <AppShell
+        skip={{ href: "#main", label: "Skip to the main content" }}
+        chrome={{ turn: resolved.turn, totalTurns: pub.totalTurns, dateLabel: formatMonth(pausedOn.date), seedCode: view.seedCode }}
+        steps={PAUSE_STEPS}
+        stepIndex={0}
+        stepsLabel="Where you are"
+      >
+        <h1 ref={heading} tabIndex={-1} className="text-3xl outline-none sm:text-4xl">
+          {PAUSE_HEADING}
+        </h1>
+        <div className="mt-6">
+          <FirstDecision view={view} before={before} scenario={pausedOn} resolved={resolved} onContinue={() => setStage("briefing")} />
+        </div>
       </AppShell>
     );
   }
@@ -171,7 +198,7 @@ export function App() {
             before={before}
             scenario={scenario}
             resolvedTurn={resolved.turn}
-            onContinue={() => setStage(view.phase === "debrief" ? "debrief" : "briefing")}
+            onContinue={() => setStage(view.phase === "debrief" ? "debrief" : resolved.turn === 1 ? "pause" : "briefing")}
           />
         )}
       </div>

@@ -122,6 +122,9 @@ for (const colorScheme of ["light", "dark"] as const) {
     await expect(page.getByText(/each turn adds \d+ Political Capital/)).toBeVisible();
     await expectNoSeriousViolations(page, "news with the measures explained");
     await page.getByRole("button", { name: LABEL.next }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(LABEL.pauseHeading);
+    await expectNoSeriousViolations(page, "first-decision pause");
+    await page.getByRole("button", { name: LABEL.keepGoing }).click();
 
     await playUntil(page, "The Deepfake Election");
     await expectNoSeriousViolations(page, "crisis briefing");
@@ -181,6 +184,11 @@ test("a whole turn can be played with the keyboard alone", async ({ page }) => {
   await expect(page.getByRole("heading", { name: LABEL.newsHeading })).toBeVisible();
   await focusOn(LABEL.next);
   await press("Enter");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(LABEL.pauseHeading);   // the one-time pause after turn 1
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
+  await focusOn(/^Keep going$/);
+  await press("Enter");
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
   await expect(page.getByRole("heading", { level: 1 })).not.toHaveText("The Attribution Gap");
 });
 
@@ -211,7 +219,9 @@ test("reduced motion is honoured, and no screen scrolls sideways on a phone", as
   await overflows("news");
   await page.goto("/?seed=PHONE-2");
   await page.getByRole("button", { name: LABEL.start }).click();
-  await playTurn(page);
+  await playTurn(page, { stopAtPause: true });
+  await overflows("first-decision pause");
+  await page.getByRole("button", { name: LABEL.keepGoing }).click();
   await playToDebrief(page);
   await overflows("debrief");
 });

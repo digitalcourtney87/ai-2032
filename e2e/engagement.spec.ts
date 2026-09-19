@@ -3,7 +3,7 @@
 
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { LABEL, finishTurn, playToDebrief, playTurn, playUntil, startGame, toDecision } from "./play";
+import { LABEL, finishTurn, playToDebrief, playTurn, playUntil, scenarioTitle, startGame, toDecision } from "./play";
 
 // ---------------------------------------------------------------- the opening (dilemma first)
 
@@ -519,4 +519,66 @@ test.describe("decision, investment and consequences", () => {
     // The only percentage on the news screen is the player's own forecast.
     expect((await page.getByRole("region", { name: "Still unknown" }).innerText()).match(/\d+%/g)).toEqual(["35%"]);
   });
+});
+
+// ---------------------------------------------------------------- Phase 12: the first-decision pause (the five-minute taster)
+
+test("the first-decision pause appears exactly once, after turn 1 only", async ({ page }) => {
+  await startGame(page, "PAUSE-ONCE");
+  const keepGoing = page.getByRole("button", { name: LABEL.keepGoing });
+  const pausedAfter: number[] = [];
+  for (let turn = 1; turn <= 8; turn++) {
+    await playTurn(page, { stopAtPause: true });
+    if (await keepGoing.isVisible()) {
+      pausedAfter.push(turn);
+      await keepGoing.click();
+    }
+  }
+  await expect(page.getByTestId("debrief")).toBeVisible();
+  expect(pausedAfter).toEqual([1]);
+});
+
+test("the pause puts Keep going first, recaps turn 1 from what the player saw, and Keep going lands on turn 2's briefing", async ({ page }) => {
+  await startGame(page, "PAUSE-KEEP");
+  expect(await scenarioTitle(page)).toBe("The Attribution Gap");
+  await toDecision(page, 35);
+  expect(await finishTurn(page, { prefer: "B", stopAtPause: true })).toBe("B");
+
+  const heading = page.getByRole("heading", { level: 1 });
+  await expect(heading).toHaveText(LABEL.pauseHeading);
+  await expect(heading).toBeFocused();
+  expect(await page.locator("main").getByRole("heading", { level: 2 }).allInnerTexts()).toEqual([
+    "What happens next",
+    "Your choice, and who backed each option",
+    "Think it over",
+  ]);
+  await expect(page.getByText("Keep going: 7 more decisions, about 20 minutes, then your debrief.")).toBeVisible();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: LABEL.keepGoing })).toBeFocused();         // the first control after the heading
+
+  // Every option alike, each with its backers; the player's own marked in words, not by colour alone.
+  await expect(page.getByText("Option B (your choice).")).toBeVisible();
+  await expect(page.getByText("Agent security standards for all government procurement.")).toBeVisible();
+  await expect(page.getByText("No adviser backs this option.")).toBeVisible();
+  await expect(page.getByText("Backed by Dr Maya Shah and Amelia Chen.")).toBeVisible();
+  // Turn 1's question and forecast, read from the snapshot: the live view has already moved on to turn 2.
+  await expect(page.getByText("Chance of a disruptive AI-enabled attack on UK critical infrastructure by the end of 2029.")).toBeVisible();
+  await expect(page.getByText("You said 35%.")).toBeVisible();
+  await expect(page.getByText("What would you need to see to move your forecast up or down?")).toBeVisible();
+
+  await page.getByRole("button", { name: LABEL.keepGoing }).click();
+  await expect(page.getByRole("button", { name: LABEL.continueToForecast })).toBeVisible();
+  await expect(heading).toHaveText("The Open-Weight Release");
+  await expect(heading).toBeFocused();
+  await expect(page.getByText(/Turn 2 of 8/)).toBeVisible();
+  await expect(page.locator('[aria-current="step"]')).toHaveText(/Briefing/);           // the pause did not move the next turn's rail
+});
+
+test("on a small phone, Keep going is inside the first screen of the pause", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await startGame(page, "PAUSE-FOLD");
+  await playTurn(page, { stopAtPause: true });
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(LABEL.pauseHeading);
+  const box = await page.getByRole("button", { name: LABEL.keepGoing }).boundingBox();
+  expect(box!.y + box!.height).toBeLessThanOrEqual(667);
 });
