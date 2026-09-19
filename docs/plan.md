@@ -141,7 +141,7 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
 - [ ] 🟨 **Phase 15: Accessibility sweep, docs and handover**
   - [x] � Extended axe, overflow and keyboard walk over every new screen and state, in light and dark, at phone and desktop sizes: 9 new tests in `e2e/polish.spec.ts` at the B42 bar, including reflow at 320 px, focus-ring contrast and the phone's sticky bar; Playwright timeout 60 s, preview reused only off CI (`DECISIONS.md` B43)
   - [x] 🟩 README, `DECISIONS.md` and this plan updated; human-only items listed as open; the playtest and timing protocol in `docs/playtest.md`; deferred work listed below
-  - [ ] ⬜ Gate: all local gates green; the pull request is ready for the designer. Stop at completion.
+  - [ ] 🟨 Gate from a clean clone on 2026-09-19: all local gates green; unit tests 375 passed; e2e 71 passed in 35.8 s (Phase 8 baseline: 17 in 13.2 s; Phase 8 gate: 19 in 13.8 s; before this phase: 62 in 24.1 s); slowest test 11.3 s; `dist` 2016 KB. Next: the pull request for the designer. Stop at completion.
 
 ## Owned by the designer, not the build
 
