@@ -63,7 +63,7 @@ export interface TrackMilestone {
 export const TRACK_MILESTONES: Record<Track, TrackMilestone[]> = {
   evaluation: [
     { level: 2, text: "Stronger unannounced evaluations", applies: "standing" },
-    { level: 3, text: "A government incident-response model in the unscheduled crisis", applies: "unlock" },
+    { level: 3, text: "A government incident-response model in an unscheduled crisis", applies: "unlock" },
   ],
   provenance: [{ level: 2, text: "Rapid authentication in a crisis about disputed media", applies: "unlock" }],
   diplomacy: [{ level: 3, text: "A credible coordinated pause in the final decision", applies: "final" }],

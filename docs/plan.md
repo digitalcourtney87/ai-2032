@@ -120,7 +120,7 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 Play-screen sentence builders in `src/ui/copy.ts`, unit-tested against the copy rules
   - [x] 🟩 Gate: all local gates green; axe clean on the new states in light and dark. Commit on the feature branch.
 
-- [ ] 🟨 **Phase 11: Decision, investment and consequences** — built; awaiting the designer's review
+- [x] � **Phase 11: Decision, investment and consequences** — built; the designer answered the review's three questions (`DECISIONS.md` F19, F20)
   - [x] 🟩 `publicContent()` gains the Political Capital rules and track bonuses; investment copy corrected (`DECISIONS.md` F10, F11)
   - [x] 🟩 Choice preview (Political Capital left, stated effects) and a track ladder with the next unlock, from pure, unit-tested helpers
   - [x] 🟩 Consequences in four parts in the main column: Your decision, What the world noticed, What you can measure now, Still unknown

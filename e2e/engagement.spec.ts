@@ -475,7 +475,7 @@ test.describe("decision, investment and consequences", () => {
     await page.getByRole("radio", { name: /^Evaluation science/ }).check();
     await expect(page.getByText("This turn: level 0 → 1. Takes effect when the turn ends.")).toBeVisible();
     await expect(page.getByText("Bonus per level: State Capacity +4")).toBeVisible();
-    await expect(page.getByText("A government incident-response model in the unscheduled crisis")).toBeVisible();
+    await expect(page.getByText("A government incident-response model in an unscheduled crisis")).toBeVisible();
     await expect(page.getByText("(still ahead)").first()).toBeVisible();
   });
 

@@ -1,8 +1,9 @@
 // What standing investment prepares for, derived only from public content and the
-// displayed state (handoff invariant 3). Only scripted scenarios and the final decision
-// get a status. The unscheduled crisis never does: late in a run "still ahead" would pin
-// it to the next turn (turn 6 of 8 with the final still ahead means turn 7), and "passed"
-// would say that no other crisis is coming (non-negotiable 6; DECISIONS.md, B6).
+// displayed state (handoff invariant 3). Scripted scenarios and the final decision always
+// get a status. An unscheduled crisis does not until it has been played: while it is still
+// possible, "still ahead" would pin it to the next turn and "passed" would say none is
+// coming (non-negotiable 6; DECISIONS.md, F19). Once played it can no longer come, so the
+// designer lets its line say "passed".
 
 import type { PublicContent } from "../content";
 import type { DisplayedState, Track } from "../engine";
@@ -51,7 +52,7 @@ export function runPosition(view: DisplayedState, pub: PublicContent): RunPositi
  * "ahead": a remaining turn uses it, and the level can still be reached in time.
  * "outOfReach": a remaining turn uses it, but too few investment points are left to reach the level.
  * "passed": no remaining turn uses it.
- * "standing": no status, because it has no single turn or it belongs to the unscheduled crisis.
+ * "standing": no status, because it has no single turn or an unscheduled crisis might still come.
  */
 export type MilestoneStatus = "ahead" | "outOfReach" | "passed" | "standing";
 
@@ -90,12 +91,19 @@ export function milestonesFor(track: Track, view: DisplayedState, pub: PublicCon
     if (ahead.length === 0) return "passed";
     return ahead.some((id) => level - have <= pointsBefore(id)) ? "ahead" : "outOfReach";
   };
-  // Only scripted targets get a status (see the header). A level that also opens an
-  // option in the unscheduled crisis shows none unless a scripted turn can still use it.
+  // The unscheduled crisis has been played when the current scripted turn numbers one more
+  // than its slot in the sequence: the crisis consumed a turn of its own (reduce.ts). While
+  // it is in play the count is back to normal, so an interrupt turn never reports "passed".
+  const current = view.current;
+  const crisisPlayed =
+    current !== null && !current.isInterrupt && pub.sequence.indexOf(current.scenarioId) + 1 < view.turn;
+  // A level that also opens an option in an unscheduled crisis shows no status while the
+  // crisis might still come; once it has been played, the scripted uses alone decide (F19).
   const unlockStatus = (level: number, atLevel: UnlockTarget[]): MilestoneStatus => {
     const scripted = atLevel.filter((t) => t.scheduled).map((t) => t.scenarioId);
-    const status = scripted.length > 0 ? statusFor(level, scripted) : "standing";
-    return status !== "ahead" && atLevel.some((t) => !t.scheduled) ? "standing" : status;
+    const scriptedStatus = scripted.length > 0 ? statusFor(level, scripted) : "passed";
+    if (!atLevel.some((t) => !t.scheduled) || scriptedStatus === "ahead") return scriptedStatus;
+    return crisisPlayed ? scriptedStatus : "standing";
   };
 
   return ([1, 2, 3] as const).map((level) => {
@@ -112,7 +120,7 @@ export function milestonesFor(track: Track, view: DisplayedState, pub: PublicCon
     if (atLevel.length > 0 && !authored.some((m) => m.applies === "unlock")) {
       const unscheduled = atLevel.every((t) => !t.scheduled);
       milestones.push({
-        text: unscheduled ? "Opens an option in the unscheduled crisis" : "Opens an option in a later scenario",
+        text: unscheduled ? "Opens an option in an unscheduled crisis" : "Opens an option in a later scenario",
         status: unlockStatus(level, atLevel),
       });
     }

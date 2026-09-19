@@ -43,7 +43,7 @@ describe("standing-investment copy (DECISIONS.md, F11)", () => {
   test("no promise the content does not keep, and no odds or damage numbers", () => {
     expect(TRACK_MILESTONES.diplomacy.map((m) => m.level)).toEqual([3]);           // "joint evaluations" is gone
     const all = Object.values(TRACK_MILESTONES).flat().map((m) => m.text).join(" ");
-    expect(all).toContain("in the unscheduled crisis");
+    expect(all).toContain("in an unscheduled crisis");
     expect(all).not.toMatch(/crisis turns|joint evaluations|halves|\d/);
   });
 
