@@ -101,6 +101,8 @@ for (const colorScheme of ["light", "dark"] as const) {
 
     await page.getByRole("button", { name: LABEL.continueToForecast }).click();
     await expectNoSeriousViolations(page, "forecast");
+    await page.getByRole("button", { name: "Compare with your advisers" }).click();
+    await expectNoSeriousViolations(page, "forecast with the advisers' estimates shown");
     await page.getByRole("button", { name: LABEL.lockIn }).click();
     await page.getByRole("button", { name: /^Commission analysis/ }).click();
     await expectNoSeriousViolations(page, "decision");

@@ -113,6 +113,87 @@ input, select, textarea {
   }
 }
 
+/* The forecast slider draws its own thumb at a fixed width.
+   A range thumb's centre does not sit at value% of the input's width: it travels
+   from half a thumb in from the left edge (at 0) to half a thumb in from the right
+   edge (at 100). Adviser marks and the verbal anchors are placed with the same
+   formula, left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * p) (src/ui/scale.ts),
+   which only lines up if every browser draws the thumb exactly --thumb wide. So the
+   native look is switched off and the thumb, square like everything else
+   (decision 13), is drawn here. The input stays 24px tall, the WCAG 2.2 minimum
+   target, and keeps the global focus outline. */
+.forecast-scale {
+  --thumb: 1.25rem;
+}
+
+.forecast-scale input[type="range"] {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 1.5rem;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.forecast-scale input[type="range"]::-webkit-slider-runnable-track {
+  height: 0.25rem;
+  background: var(--muted);
+}
+
+.forecast-scale input[type="range"]::-moz-range-track {
+  height: 0.25rem;
+  background: var(--muted);
+}
+
+.forecast-scale input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  margin-top: calc((0.25rem - var(--thumb)) / 2); /* centre it on the 4px track */
+  border: 2px solid var(--paper);
+  border-radius: 0;
+  background: var(--accent);
+}
+
+.forecast-scale input[type="range"]::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  border: 2px solid var(--paper);
+  border-radius: 0;
+  background: var(--accent);
+}
+
+/* Forced colours (Windows High Contrast) replace background colours with Canvas,
+   which would erase the drawn track and the thumb's fill. Only the track and the
+   thumb opt out, so the input keeps the forced focus outline. One rule per
+   pseudo-element: a browser drops a whole rule if one selector in it is unknown. */
+@media (forced-colors: active) {
+  .forecast-scale input[type="range"]::-webkit-slider-runnable-track {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  .forecast-scale input[type="range"]::-moz-range-track {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  .forecast-scale input[type="range"]::-webkit-slider-thumb {
+    forced-color-adjust: none;
+    border-color: Canvas;
+    background: Highlight;
+  }
+
+  .forecast-scale input[type="range"]::-moz-range-thumb {
+    forced-color-adjust: none;
+    border-color: Canvas;
+    background: Highlight;
+  }
+}
+
 /* One visible focus style everywhere, for keyboard operation (WCAG 2.4.7). */
 :focus-visible {
   outline: 3px solid var(--accent);

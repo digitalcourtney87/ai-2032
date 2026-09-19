@@ -2,7 +2,7 @@
 // New behaviour is tested here; the older gates keep their own spec files.
 
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { LABEL, finishTurn, playToDebrief, playTurn, playUntil, startGame, toDecision } from "./play";
 
 // ---------------------------------------------------------------- the opening (dilemma first)
@@ -210,6 +210,13 @@ test("a shared link carries a plain description for link previews", async ({ pag
 // ---------------------------------------------------------------- Phase 10: briefing and forecast
 
 test.describe("briefing and forecast", () => {
+  const COMPARE = "Compare with your advisers";
+
+  const toForecast = async (page: Page) => {
+    await page.getByRole("button", { name: LABEL.continueToForecast }).click();
+    await expect(page.getByRole("slider")).toBeVisible();
+  };
+
   /** The same bar as Phase 8's expectNoSeriousViolations in polish.spec.ts (DECISIONS B42): no violations at any impact, best-practice rules included. */
   const expectAxeClean = async (page: Page, where: string) => {
     const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"]).analyze();
@@ -249,5 +256,112 @@ test.describe("briefing and forecast", () => {
       await page.emulateMedia({ colorScheme });
       await expectAxeClean(page, `briefing with earlier reports open (${colorScheme})`);
     }
+  });
+
+  test("the advisers' estimates stay hidden until the player compares, then sit on the slider's own scale", async ({ page }) => {
+    await startGame(page, "FORECAST-1");
+    await toForecast(page);
+    await expect(page.getByRole("heading", { level: 2, name: "How likely do you think this is?" })).toBeVisible();
+    await expect(page.getByText("We will find out by December 2029.")).toBeVisible();
+    await expect(page.getByTestId("adviser-mark")).toHaveCount(0);
+    await expect(page.getByText(/^You said/)).toHaveCount(0);
+
+    const slider = page.getByRole("slider");
+    await slider.fill("35");
+    await expect(slider).toHaveAttribute("aria-valuetext", "35%, unlikely");
+
+    const compare = page.getByRole("button", { name: COMPARE });
+    await expect(compare).toHaveAttribute("aria-expanded", "false");
+    await compare.click();
+    await expect(compare).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByTestId("adviser-mark")).toHaveCount(4);
+    await expect(page.getByText(/^You said 35%\. Your advisers (range from \d+% to \d+%|all say \d+%)\.$/)).toBeVisible();
+    const estimates = page.getByRole("list", { name: "Your advisers’ estimates" }).getByRole("listitem");
+    await expect(estimates).toHaveCount(4);
+
+    // A mark sits where the thumb's centre would be: pressing the track under a mark sets that estimate.
+    const first = Number((await estimates.first().innerText()).match(/(\d+)%/)![1]);
+    const mark = (await page.getByTestId("adviser-mark").first().boundingBox())!;
+    const track = (await slider.boundingBox())!;
+    await slider.click({ position: { x: mark.x + mark.width / 2 - track.x, y: track.height / 2 } });
+    expect(Math.abs(Number(await slider.inputValue()) - first)).toBeLessThanOrEqual(1);
+
+    // Moving the slider afterwards changes the forecast, not what the player first said.
+    await slider.fill("60");
+    await expect(page.getByText(/^You said 35%\./)).toBeVisible();
+    await page.getByRole("button", { name: "Lock in 60%" }).click();
+    await expect(page.getByRole("group", { name: LABEL.decisionGroup })).toBeVisible();
+  });
+
+  test("Lock in works without comparing", async ({ page }) => {
+    await startGame(page, "FORECAST-2");
+    await toForecast(page);
+    await page.getByRole("slider").fill("70");
+    await page.getByRole("button", { name: "Lock in 70%" }).click();
+    await expect(page.getByRole("group", { name: LABEL.decisionGroup })).toBeVisible();
+  });
+
+  test("by keyboard: the slider comes first after the title, then Compare, then Lock in", async ({ page }) => {
+    await startGame(page, "FORECAST-KEYS");
+    await toForecast(page);
+    await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("slider")).toBeFocused();
+    for (let i = 0; i < 15; i++) await page.keyboard.press("ArrowLeft");
+    await expect(page.getByRole("slider")).toHaveAttribute("aria-valuetext", "35%, unlikely");
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("button", { name: COMPARE })).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("adviser-mark")).toHaveCount(4);
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("button", { name: "Lock in 35%" })).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("group", { name: LABEL.decisionGroup })).toBeVisible();
+  });
+
+  test("comparing before moving the slider does not claim a guess", async ({ page }) => {
+    await startGame(page, "FORECAST-3");
+    await toForecast(page);
+    await page.getByRole("button", { name: COMPARE }).click();
+    await expect(page.getByText(/^Under this game's assumptions, these are your advisers' own estimates/)).toBeVisible();
+    await expect(page.getByText(/^You compared before moving the slider\. Your advisers (range from \d+% to \d+%|all say \d+%)\.$/)).toBeVisible();
+    await expect(page.getByText(/^You said/)).toHaveCount(0);
+    // Moving the slider afterwards does not rewrite what the player had done when they compared.
+    await page.getByRole("slider").fill("40");
+    await expect(page.getByText(/^You compared before moving the slider\./)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Lock in 40%" })).toBeVisible();
+  });
+
+  test("the final question says the game settles it", async ({ page }) => {
+    await startGame(page, "FINAL-Q");
+    await playUntil(page, "The 2032 Threshold");
+    await toForecast(page);
+    await expect(page.getByText(/^We would only find out by October 2034, after the game ends/)).toBeVisible();
+  });
+
+  test("in forced colours the track and the marks' stems are still drawn", async ({ page }) => {
+    await startGame(page, "FORCED-1");
+    await toForecast(page);
+    const slider = page.getByRole("slider");
+    await slider.fill("0"); // the thumb sits at the left end, clear of the stretch of track checked below
+    await page.getByRole("button", { name: COMPARE }).click();
+    await page.emulateMedia({ forcedColors: "active" });
+    await slider.scrollIntoViewIfNeeded();
+
+    // Each check photographs a small area, hides the element, and photographs it again.
+    // Identical pictures mean forced colours had already painted the element out.
+    const drawn = async (element: Locator, clip: { x: number; y: number; width: number; height: number }) => {
+      const shown = await page.screenshot({ clip });
+      await element.evaluate((node) => { (node as HTMLElement).style.visibility = "hidden"; });
+      const hidden = await page.screenshot({ clip });
+      await element.evaluate((node) => { (node as HTMLElement).style.visibility = ""; });
+      return !shown.equals(hidden);
+    };
+    const track = (await slider.boundingBox())!;
+    // By id, not by role: a role locator no longer finds the slider once it is hidden.
+    expect(await drawn(page.locator("#forecast"), { x: track.x + track.width * 0.6, y: track.y + track.height / 2 - 4, width: track.width * 0.3, height: 8 })).toBe(true);
+    const stem = page.getByTestId("adviser-mark").first().locator(":scope > span").last();
+    const stemBox = (await stem.boundingBox())!;
+    expect(await drawn(stem, { x: stemBox.x - 1, y: stemBox.y, width: stemBox.width + 2, height: stemBox.height })).toBe(true);
   });
 });
