@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `94%` of build steps (59 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
+**Overall Progress:** `95%` of build steps (60 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -131,17 +131,15 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 End-to-end helpers click through the pause
   - [x] 🟩 Gate: all local gates green; a run stopped at the pause, with Stop here opened, and then continued reproduces a replay of the same world from its link (`e2e/engagement.spec.ts`). Keep going only changes the interface stage (`App.tsx`), so it plays on in the same state. Commit on the feature branch.
 
-- [ ] 🟨 **Phase 13: A debrief for everyone**
+- [x] � **Phase 13: A debrief for everyone**
   - [x] 🟩 New order: At a glance, What if (preselected), Decision quality versus luck, collapsible reference panels, Talk it over, Share your run
   - [x] 🟩 Existing panel headings, test ids and copy rules kept
-  - [ ] 🟨 Gate: all local gates green (e2e 62 passed); awaiting the designer's review.
+  - [x] � Gate: all local gates green (e2e 62 passed); the designer's review returned nine rulings, all recorded in `DECISIONS.md` F24 — six kept as built, three implemented (the Unknown Frontier ending, plain draw-label negations, labelled unaffordable What if options).
 
-- [ ] ⬜ **Phase 14 (optional): Save and resume**, only if the designer approves `DECISIONS.md` F7
-  - [ ] ⬜ The action log, never the game state, saved in this browser; opt-in "Continue" on the title screen
-  - [ ] ⬜ Gate: all local gates green; replay unit tests; resume end-to-end test. Commit on the feature branch.
+- [x] ⬛ **Phase 14 (optional): Save and resume** — declined by the designer at the Phase 13 review; not built.
 
-- [ ] ⬜ **Phase 15: Accessibility sweep, docs and handover**
-  - [ ] ⬜ Extended axe, overflow and keyboard walk over every new screen and state, in light and dark, at phone and desktop sizes
+- [ ] 🟨 **Phase 15: Accessibility sweep, docs and handover**
+  - [ ] 🟨 Extended axe, overflow and keyboard walk over every new screen and state, in light and dark, at phone and desktop sizes
   - [ ] ⬜ README, `DECISIONS.md` and this plan updated; human-only items listed as open
   - [ ] ⬜ Gate: all local gates green; the pull request is ready for the designer. Stop at completion.
 

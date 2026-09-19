@@ -230,6 +230,7 @@ test("reduced motion is honoured, and no screen scrolls sideways on a phone", as
   await playToDebrief(page);
   await openAllPanels(page);
   await overflows("debrief");
+  await expectNoMotion(page, "debrief with every panel open");
 });
 
 // ---------------------------------------------------------------- the public-audience redesign: the Phase 15 sweep
@@ -289,6 +290,7 @@ async function walkFirstTurn(page: Page, seedCode: string, at: (where: string) =
   await expect(page.getByRole("group", { name: LABEL.decisionGroup })).toBeVisible();
   await page.locator('input[name="choice"]:enabled').first().check();
   await expect(page.getByRole("heading", { name: PREVIEW })).toBeVisible();
+  await expect(page.getByRole("button", { name: LABEL.confirm })).toBeEnabled();   // the render is settled: no mid-fade, no disabled Confirm
   await at("decision with a preview");
   await openBriefingRecap(page);
   await at("decision with the briefing recap open");
@@ -315,6 +317,52 @@ for (const colorScheme of ["light", "dark"] as const) {
     await walkFirstTurn(page, "AXE-NEW1", async (where) => {
       await settle(page);
       await expectNoSeriousViolations(page, where);
+    });
+  });
+}
+
+/** States scanned by axe on the phone walk; every state on it is checked for overflow and motion. */
+const PHONE_AXE = new Set(["title", "decision with a preview", "news", "pause card", "pause card with Stop here open"]);
+
+async function expectNoSidewaysScroll(page: Page, where: string) {
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow, where).toBeLessThanOrEqual(0);
+}
+
+/** Under prefers-reduced-motion nothing may transition, animate or smooth-scroll for 1 ms or more. */
+async function expectNoMotion(page: Page, where: string) {
+  const moving = await page.evaluate(() => {
+    const longest = (list: string) =>
+      Math.max(...list.split(",").map((part) => parseFloat(part) * (part.trim().endsWith("ms") ? 0.001 : 1)));
+    const found: string[] = [];
+    for (const element of Array.from(document.querySelectorAll("body *"))) {
+      const style = getComputedStyle(element);
+      const animated = style.animationName !== "none" && longest(style.animationDuration) >= 0.001;
+      if (animated || longest(style.transitionDuration) >= 0.001) {
+        found.push(`${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""} "${element.getAttribute("class") ?? ""}"`);
+      }
+    }
+    for (const animation of document.getAnimations()) {
+      const duration = animation.effect?.getTiming().duration;
+      if (typeof duration === "number" && duration >= 1) found.push(`a running animation of ${duration} ms`);
+    }
+    if (getComputedStyle(document.documentElement).scrollBehavior !== "auto") found.push("smooth scrolling on <html>");
+    return found;
+  });
+  expect(moving, where).toEqual([]);
+}
+
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`on a phone the redesigned screens pass axe, never scroll sideways and hold still under reduced motion (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 360, height: 740 });
+    await walkFirstTurn(page, "PHONE-NEW1", async (where) => {
+      await expectNoSidewaysScroll(page, `phone ${where}`);
+      await page.setViewportSize({ width: 320, height: 740 });                    // WCAG 2.2 reflow width (1.4.10)
+      await expectNoSidewaysScroll(page, `320 ${where}`);
+      await page.setViewportSize({ width: 360, height: 740 });
+      await expectNoMotion(page, `phone ${where}`);
+      if (PHONE_AXE.has(where)) await expectNoSeriousViolations(page, `phone ${where}`);
     });
   });
 }

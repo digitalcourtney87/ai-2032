@@ -25,12 +25,12 @@ interface Props {
 export function StatusPanel({ view, before }: Props) {
   return (
     <aside aria-label="State of the nation" className="space-y-5 p-4">
-      <div className="flex items-baseline justify-between gap-2">
+      <div className="flex items-baseline justify-between gap-2" role="group" aria-label={`${view.politicalCapital} Political Capital`}>
         <h2 className="flex items-center gap-2 text-sm font-semibold">
           <Icon name="capital" />
           Political Capital
         </h2>
-        <span className="font-mono text-2xl" aria-label={`${view.politicalCapital} Political Capital`}>
+        <span className="font-mono text-2xl" aria-hidden="true">
           {view.politicalCapital}
         </span>
       </div>
