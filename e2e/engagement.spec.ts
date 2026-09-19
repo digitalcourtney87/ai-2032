@@ -758,6 +758,7 @@ test("the world panel reads the draw odds from the weights in force, and the Bri
   const scores = page.getByRole("table", { name: /^Forecast scores on the same questions/ });   // a comparison, not a ranking
   await expect(scores.getByRole("rowheader").first()).toHaveText("You");
   await expect(page.getByText("Brier scores, best first")).toHaveCount(0);
+  await expect(page.getByText(/^Anyone who opens this link plays the same world/)).toBeVisible();   // edited odds travel only in the link
 });
 
 test("a what-if shows how the 1,000 replays ended, in a table captioned as the model's output", async ({ page }) => {
@@ -787,4 +788,85 @@ test("a what-if shows how the 1,000 replays ended, in a table captioned as the m
   for (const sentence of sentences.slice(0, -1)) expect(sentence.startsWith("Under this game's assumptions")).toBe(true);
   expect(sentences.at(-1)).toContain("This is the model's output, not a finding.");
   await expect(page.getByLabel("The decision to change")).toHaveValue("2");
+});
+
+test("the debrief reads in the agreed order, each section numbered as the rail numbers it", async ({ page }) => {
+  await startGame(page, "ORDER-1");
+  await playToDebrief(page);
+  const order = [/At a glance/, /What if/, /Decision quality versus luck/, /The world you were in/, /Calibration/, /Governance record/, /What you never saw/, /Talk it over/, /Share your run/];
+  const titles = await page.getByTestId("debrief").locator("h2").allInnerTexts();
+  expect(titles).toHaveLength(order.length);
+  order.forEach((pattern, index) => {
+    expect(titles[index]).toMatch(pattern);
+    expect(titles[index]).toMatch(new RegExp(`^${index + 1}\\.`));
+  });
+  const prompts = await page.getByRole("region", { name: /Talk it over/ }).getByRole("listitem").allInnerTexts();
+  expect(prompts.length).toBeGreaterThanOrEqual(4);
+  for (const prompt of prompts) expect(prompt.trim().endsWith("?")).toBe(true);
+});
+
+test("At a glance picks a decision to argue about, and trying a different choice opens the what-if on it", async ({ page }) => {
+  await startGame(page, "GLANCE-1");
+  await playToDebrief(page);
+  const glance = page.getByRole("region", { name: /At a glance/ });
+  await expect(glance.getByRole("heading", { level: 3, name: "Your world" })).toBeVisible();
+  await expect(glance.getByText(/^You were governing a (benign|contested|hard) world\.$/)).toBeVisible();
+  await expect(glance.getByRole("heading", { level: 3, name: /^The (least likely thing that happened|likeliest thing that did not happen)$/ })).toBeVisible();
+  await expect(glance.getByText("Would you defend this choice, knowing how it turned out?")).toBeVisible();
+  await expect(glance.getByText(/^Under this game's assumptions, your decision in turn \d, .+, (raised|lowered|left) its odds/)).toBeVisible();
+  expect(await glance.innerText()).not.toMatch(/your record/i);
+
+  const pivotal = (await page.getByTestId("pivotal-decision").getAttribute("data-index"))!;
+  const decision = page.getByLabel("The decision to change");
+  await expect(decision).toHaveValue(pivotal);                               // the what-if opens on the same decision
+  await decision.selectOption(pivotal === "0" ? "1" : "0");
+  await glance.getByRole("button", { name: "Try a different choice here" }).click();
+  await expect(decision).toHaveValue(pivotal);
+  await expect(page.getByLabel("What you might have done instead")).toBeFocused();
+
+  await expect(page.getByText("Weighing the options you had")).toHaveCount(0, { timeout: 10_000 });
+  await expect(page.getByTestId("pivotal-decision").getByText(/^(Sound|Risky) and (fortunate|unlucky)$/)).toBeVisible();
+  await expect(page.getByTestId("luck-tag")).toHaveCount(8);                // the glance adds no ninth tag
+});
+
+test("the link to this world opens the same world, gives nothing away and is sent nowhere", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await startGame(page, "SHARE-1");
+  await playToDebrief(page);
+  const requests: string[] = [];
+  page.on("request", (request) => requests.push(request.url()));
+
+  await expect(page.getByRole("heading", { level: 2, name: /Share your run/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Play a new world" })).toBeVisible();
+  await expect(page.getByText(/^Anyone who opens this link, or enters seed code SHARE-1, plays the same world/)).toBeVisible();
+  await page.getByRole("button", { name: "Copy link to this world" }).click();
+  await expect(page.getByText("Link to this world copied.")).toBeVisible();
+  const link = await page.evaluate(() => navigator.clipboard.readText());
+  await expect(page.getByTestId("world-link")).toHaveText(link);              // shown as well as copied, for a blocked clipboard
+  expect(new URL(link).searchParams.get("seed")).toBe("SHARE-1");
+  expect(link).not.toContain("facilitator");
+  expect(requests.filter((url) => !url.startsWith("http://localhost"))).toEqual([]);
+
+  await page.goto(link);                                                     // what the friend opens: a fresh start in the same world
+  await expect(page.getByLabel(/^Seed code/)).toHaveValue("SHARE-1");
+  await expect(page.getByTestId("debrief")).toHaveCount(0);
+});
+
+test("with reduced motion, trying a different choice jumps to the what-if at once", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 360, height: 740 });
+  await startGame(page, "GLANCE-2");
+  await playToDebrief(page);
+  await page.getByRole("button", { name: "Try a different choice here" }).click();
+  const inView = await page.evaluate(() => {                                 // read once, no waiting: a smooth scroll would still be under way
+    const box = document.getElementById("what-if-option")!.getBoundingClientRect();
+    return box.top >= 0 && box.bottom <= window.innerHeight;
+  });
+  expect(inView).toBe(true);
+  await expect(page.getByLabel("What you might have done instead")).toBeFocused();
+
+  await expect(page.getByText("Weighing the options you had")).toHaveCount(0, { timeout: 10_000 });
+  await page.getByRole("button", { name: "Rerun 1,000 games" }).click();
+  await expect(page.getByTestId("what-if-result").getByRole("table")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);   // the endings table fits a phone
 });
