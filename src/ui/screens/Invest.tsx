@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "../components/Button";
 import { Icon, type IconName } from "../components/Icon";
-import { TRACK_DETAIL, TRACK_LABEL } from "../format";
+import { TRACK_LABEL, TRACK_MILESTONES, trackBonusText } from "../format";
+import { pub } from "../useGame";
 import type { DisplayedState, Track } from "../../engine";
 
 const TRACKS: Track[] = ["evaluation", "provenance", "diplomacy", "defensiveCyber"];
@@ -55,10 +56,12 @@ export function Invest({ view, onInvest }: Props) {
                       <span className={`font-mono font-normal ${on ? "opacity-80" : "text-muted"}`}>&middot; level {level} of 3</span>
                     </label>
                     <div id={`${inputId}-detail`} className="mt-1 text-sm">
-                      <p>{TRACK_DETAIL[track].perLevel}</p>
+                      <p>{trackBonusText(pub.trackBonuses[track])} per level</p>
                       <ul className={on ? "opacity-80" : "text-muted"}>
-                        {TRACK_DETAIL[track].unlocks.map((line) => (
-                          <li key={line}>{line}</li>
+                        {TRACK_MILESTONES[track].map((milestone) => (
+                          <li key={milestone.text}>
+                            Level {milestone.level}: {milestone.text}
+                          </li>
                         ))}
                       </ul>
                     </div>

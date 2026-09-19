@@ -1,6 +1,6 @@
 // Labels and formatting shared by the screens. Plain functions, no state.
 
-import type { AdviserId, Condition, Effects, EvidenceStrength, Lever, MetricKey, Profile, SeedFact, Severity, Track } from "../engine";
+import type { AdviserId, Condition, Domain, Effects, EvidenceStrength, Lever, MetricKey, Profile, SeedFact, Severity, Track } from "../engine";
 
 export const METRIC_LABEL: Record<MetricKey, string> = {
   nationalSecurity: "National Security",
@@ -42,18 +42,32 @@ export const TRACK_LABEL: Record<Track, string> = {
   defensiveCyber: "Defensive cyber",
 };
 
-/** Spec Section 5: what each track gives per level and what it unlocks. */
-export const TRACK_DETAIL: Record<Track, { perLevel: string; unlocks: string[] }> = {
-  evaluation: {
-    perLevel: "State Capacity +4 per level",
-    unlocks: ["Level 2: stronger unannounced evaluations", "Level 3: a government incident-response model in crisis turns"],
-  },
-  provenance: { perLevel: "Public Trust +1 per level", unlocks: ["Level 2: rapid authentication in an information crisis"] },
-  diplomacy: {
-    perLevel: "International Cooperation +4 per level",
-    unlocks: ["Level 2: joint evaluations", "Level 3: a credible coordinated pause in the final decision"],
-  },
-  defensiveCyber: { perLevel: "National Security +2 per level", unlocks: ["Level 2: lowers the odds of cyber events and halves their damage"] },
+/** The four standing-investment tracks, in display order. */
+export const TRACKS: Track[] = ["evaluation", "provenance", "diplomacy", "defensiveCyber"];
+
+/**
+ * Spec Section 5, as far as the content implements it: what a level opens beyond its
+ * per-level bonus (the bonus itself comes from `pub.trackBonuses`, see `trackBonusText`).
+ * `applies` tells the investment ladder whether a remaining turn can still use it:
+ * "unlock" reads the options in content that name this track and level; "final" is the
+ * final decision; "standing" has no single turn, so the ladder shows no status for it.
+ * Diplomacy level 2 ("joint evaluations") is not listed because no content implements
+ * it, and no damage or odds numbers appear before the debrief (DECISIONS.md, F11).
+ */
+export interface TrackMilestone {
+  level: 2 | 3;
+  text: string;
+  applies: "unlock" | "final" | "standing";
+}
+
+export const TRACK_MILESTONES: Record<Track, TrackMilestone[]> = {
+  evaluation: [
+    { level: 2, text: "Stronger unannounced evaluations", applies: "standing" },
+    { level: 3, text: "A government incident-response model in the unscheduled crisis", applies: "unlock" },
+  ],
+  provenance: [{ level: 2, text: "Rapid authentication in a crisis about disputed media", applies: "unlock" }],
+  diplomacy: [{ level: 3, text: "A credible coordinated pause in the final decision", applies: "final" }],
+  defensiveCyber: [{ level: 2, text: "Lower odds of cyber events, and less damage when they happen", applies: "standing" }],
 };
 
 export const EVIDENCE_LABEL: Record<EvidenceStrength, string> = {
@@ -82,6 +96,26 @@ export const SEVERITY_LABEL: Record<Severity, string> = {
 
 export const ADVISER_ORDER: AdviserId[] = ["shah", "harcourt", "chen", "okafor"];
 
+/** Every metric in one fixed reading order: the five exact ones, the two estimates, then State Capacity. */
+export const METRIC_ORDER: MetricKey[] = [
+  "nationalSecurity", "economy", "publicTrust", "innovation", "socialStability",
+  "systemicRisk", "cooperation", "stateCapacity",
+];
+
+/** The five metrics the Director sees exactly. The other three are an estimate band or a label. */
+export const EXACT_METRICS = ["nationalSecurity", "economy", "publicTrust", "innovation", "socialStability"] as const;
+export type ExactMetric = (typeof EXACT_METRICS)[number];
+export const isExactMetric = (metric: MetricKey): metric is ExactMetric => (EXACT_METRICS as readonly MetricKey[]).includes(metric);
+
+/** A policy area as it reads mid-sentence: "a policy window is open for cyber security". */
+export const DOMAIN_LABEL: Record<Domain, string> = {
+  cyber: "cyber security",
+  bio: "biosecurity",
+  labour: "jobs and skills",
+  information: "information and elections",
+  frontier: "frontier AI",
+};
+
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 /** "2027-09" becomes "September 2027". */
@@ -92,10 +126,26 @@ export function formatMonth(isoMonth: string): string {
 
 export const signed = (value: number) => (value > 0 ? `+${value}` : `${value}`.replace("-", "−"));
 
-/** "National Security +4, Innovation −3". An empty set reads as "No immediate visible effect". */
+/** Stated effects as rows in METRIC_ORDER, leaving out zeros. */
+export function effectRows(effects: Effects): { metric: MetricKey; delta: number }[] {
+  return METRIC_ORDER.flatMap((metric) => {
+    const delta = effects[metric];
+    return delta === undefined || delta === 0 ? [] : [{ metric, delta }];
+  });
+}
+
+/**
+ * "National Security +4, Innovation −3", in METRIC_ORDER, so an option's card and its
+ * preview list the same effects in the same order. An empty set reads as "No immediate visible effect".
+ */
 export function formatEffects(effects: Effects): string {
-  const parts = (Object.keys(effects) as MetricKey[]).map((key) => `${METRIC_LABEL[key]} ${signed(effects[key] ?? 0)}`);
+  const parts = effectRows(effects).map(({ metric, delta }) => `${METRIC_LABEL[metric]} ${signed(delta)}`);
   return parts.length > 0 ? parts.join(", ") : "No immediate visible effect";
+}
+
+/** "State Capacity +4": one track's per-level bonus, from `pub.trackBonuses[track]`. */
+export function trackBonusText(bonus: Effects): string {
+  return effectRows(bonus).length > 0 ? formatEffects(bonus) : "No bonus";
 }
 
 export const percent = (probability: number) => `${Math.round(probability * 100)}%`;
