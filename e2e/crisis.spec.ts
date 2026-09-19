@@ -54,6 +54,7 @@ test("the same option is open, and listed first, once Provenance reaches level 2
   await startGame(page, "UNLOCK-1");
   await playUntil(page, "The Deepfake Election", { track: "Provenance infrastructure" });
   await expect(page.getByText("Open to you because you prepared.")).toBeVisible();
+  await expect(page.getByText("Your advisers' recommendations do not include this option.")).toBeVisible();
   await toDecision(page);
   await expect(page.locator("#choice-E")).toBeEnabled();
   await expect(page.locator('input[name="choice"]').first()).toHaveAttribute("id", "choice-E");

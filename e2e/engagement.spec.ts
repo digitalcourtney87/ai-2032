@@ -205,3 +205,28 @@ test("a shared link carries a plain description for link previews", async ({ pag
   await expect(meta('property="og:description"')).toHaveAttribute("content", DESCRIPTION);
   await expect(meta('property="og:type"')).toHaveAttribute("content", "website");
 });
+
+// ---------------------------------------------------------------- Phase 10: briefing and forecast
+
+test.describe("briefing and forecast", () => {
+  test("each adviser says what they care about and what they back, and every open option shows who backs it", async ({ page }) => {
+    await startGame(page, "BRIEF-1");
+    const cards = page.getByRole("region", { name: "Advisers" }).getByRole("article");
+    await expect(cards).toHaveCount(4);
+    for (const card of await cards.all()) {
+      await expect(card.getByRole("heading", { level: 3 })).toBeVisible();
+      await expect(card).toContainText("Cares about:");
+      await expect(card).toContainText(/Backs option [A-E]: /);
+    }
+    await expect(page.getByText("Adviser file")).toHaveCount(0);
+    await expect(page.getByText(/Recommends option/)).toHaveCount(0);
+
+    const split = page.getByRole("region", { name: "Who backs what" });
+    await expect(split.getByRole("listitem")).toHaveCount(4);
+    await expect(split.getByText(/^(Backed by .+|No adviser backs this option)\.$/)).toHaveCount(4);
+    // The lever and the visible effects are on the decision step; the briefing no longer repeats them.
+    await expect(page.getByText(/Convening and alliances/)).toHaveCount(0);
+
+    await expect(page.getByRole("region", { name: "Assessment" }).getByRole("heading", { name: "What your analysts think" })).toBeVisible();
+  });
+});
