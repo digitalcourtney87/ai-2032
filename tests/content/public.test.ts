@@ -94,4 +94,44 @@ describe("publicContent() carries nothing hidden (DECISIONS.md B33)", () => {
   test("each ending exposes exactly id, title, text and further reading", () => {
     for (const ending of Object.values(pub.endings)) expect(keysOf(ending)).toEqual(["furtherReading", "id", "text", "title"]);
   });
+
+});
+
+describe("the public rules and track bonuses (Phase 11)", () => {
+  const content = loadContent();
+  const pub = publicContent(content);
+  const rules = content.config.politicalCapital;
+
+  test("publish the Political Capital rules field by field, without the analysis cost", () => {
+    expect(pub.rules).toEqual({
+      perTurn: rules.perTurn,
+      carryCap: rules.carryCap,
+      trustBonusAt: rules.trustBonusAt,
+      trustPenaltyAt: rules.trustPenaltyAt,
+      windowTurns: rules.windowTurns,
+      windowDiscount: rules.windowDiscount,
+      windowMinCost: rules.windowMinCost,
+      boomEconomyAt: rules.boomEconomyAt,
+      boomSurcharge: rules.boomSurcharge,
+    });
+    expect(Object.keys(pub.rules)).not.toContain("infoCost");
+    expect(pub.rules.windowDiscount).toBe(2);                      // the number News used to hard-code
+  });
+
+  test("publish each track's per-level bonus as a copy of the config", () => {
+    expect(pub.trackBonuses).toEqual({
+      evaluation: { stateCapacity: 4 },
+      provenance: { publicTrust: 1 },
+      diplomacy: { cooperation: 4 },
+      defensiveCyber: { nationalSecurity: 2 },
+    });
+    expect(pub.trackBonuses.evaluation).not.toBe(content.config.trackBonuses.evaluation);
+  });
+
+  test("the new fields carry nothing hidden", () => {
+    const json = JSON.stringify({ rules: pub.rules, trackBonuses: pub.trackBonuses });
+    for (const key of ["drift", "band", "profiles", "stance", "hiddenEffects", "conditionalEffects", "probabilityModifiers", "trackModifiers", "mitigations", "base"]) {
+      expect(json).not.toContain(`"${key}"`);
+    }
+  });
 });
