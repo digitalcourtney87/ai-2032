@@ -3,7 +3,7 @@
 
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { LABEL, finishTurn, openPanel, playToDebrief, playTurn, playUntil, scenarioTitle, startGame, toDecision } from "./play";
+import { LABEL, finishTurn, openAllPanels, openPanel, playToDebrief, playTurn, playUntil, scenarioTitle, startGame, toDecision } from "./play";
 
 // ---------------------------------------------------------------- the opening (dilemma first)
 
@@ -714,4 +714,30 @@ test("the debrief's reference panels start closed with a teaser, and open from t
   await expect(teaser).toHaveCount(0);
   await expect(chart).toBeVisible();
   expect((await chart.locator("svg").first().boundingBox())?.width).toBeGreaterThan(100);   // the chart measured a real box
+});
+
+test("each reviewed decision leads with what was chosen, keeps its tag in view and tucks the reasons behind a disclosure", async ({ page }) => {
+  await startGame(page, "QUALITY-1");
+  await playToDebrief(page);
+  await expect(page.getByText("Weighing the options you had")).toHaveCount(0, { timeout: 10_000 });
+  await expect(page.getByText(/^Under this game's assumptions, of your 8 decisions, /)).toBeVisible();   // the tally, once the rankings are in
+
+  const reviews = page.getByTestId("decision-review");
+  await expect(reviews).toHaveCount(8);
+  const first = reviews.first();
+  await expect(first.getByRole("heading", { level: 3 })).not.toHaveText(/^Turn \d/);                 // the option's own words, not "Turn 1, …: option A"
+  await expect(first.getByText(/^Turn 1, .+: option [A-Z]$/)).toBeVisible();
+  await expect(first.getByTestId("luck-tag")).toBeVisible();
+  const why = first.locator("details");
+  await expect(why).toHaveCount(1);
+  await expect(why).not.toHaveAttribute("open");
+  await why.locator("summary").click();
+  await expect(why.locator("li").first()).toHaveText(/^(Under this game's assumptions|No chance event)/);
+
+  await openAllPanels(page);                                                  // every "Why this tag" open
+  const everything = (await reviews.allInnerTexts()).join(" ");
+  expect(everything).toContain("Under this game's assumptions, the chance of");
+  // Quoted labels name events and states of the world, such as “the authentication result was correct”, never the decision,
+  // so they are set aside; every word the sentences add around them is checked.
+  expect(everything.replace(/“[^”]*”/g, "“…”")).not.toMatch(/\b(right|wrong|correct|incorrect|mistake|should have)\b/i);
 });
