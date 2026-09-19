@@ -400,3 +400,116 @@ for (const colorScheme of ["light", "dark"] as const) {
     await expectNoSeriousViolations(page, "debrief with every panel closed");
   });
 }
+
+/** States in the phone walk where the focus check tabs through every control. */
+const FOCUS_CHECK = new Set([
+  "title with the friend disclosure open",
+  "forecast with advisers revealed",
+  "decision with a preview",
+  "investment ladder",
+  "news",
+  "pause card with Stop here open",
+]);
+
+/**
+ * Tabs through up to `stops` controls from the step heading. Each focused control
+ * must show an outline with at least 3:1 contrast against the ground behind it
+ * (non-negotiable 8; WCAG 1.4.11) and must not sit under a sticky or fixed layer
+ * such as the phone's confirm bar (WCAG 2.4.11). axe checks neither.
+ */
+async function expectFocusRingsVisible(page: Page, where: string, stops = 30) {
+  const heading = page.getByRole("heading", { level: 1 });
+  if ((await heading.getAttribute("tabindex")) !== null) await heading.focus();
+  for (let stop = 1; stop <= stops; stop++) {
+    await page.keyboard.press("Tab");
+    const problem = await page.evaluate(async () => {
+      // Two frames first: under reduced motion every property still takes a 0.01 ms transition.
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const focused = document.activeElement;
+      if (!(focused instanceof HTMLElement) || focused === document.body) return null;
+      const name = (focused.innerText || focused.getAttribute("aria-label") || focused.id || focused.tagName).trim().slice(0, 40);
+
+      const box = focused.getBoundingClientRect();
+      let layer = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+      while (layer && !layer.contains(focused)) {
+        const position = getComputedStyle(layer).position;
+        if (position === "sticky" || position === "fixed") return `"${name}" is hidden under a ${position} element`;
+        layer = layer.parentElement;
+      }
+
+      const style = getComputedStyle(focused);
+      if (style.outlineStyle === "none" || parseFloat(style.outlineWidth) < 2) return `"${name}" has no visible focus outline`;
+      const pen = document.createElement("canvas").getContext("2d", { willReadFrequently: true })!;
+      const rgba = (colour: string) => {
+        pen.clearRect(0, 0, 1, 1);
+        pen.fillStyle = colour;
+        pen.fillRect(0, 0, 1, 1);
+        return Array.from(pen.getImageData(0, 0, 1, 1).data);
+      };
+      const luminance = (rgb: number[]) =>
+        rgb.slice(0, 3).reduce((sum, value, i) => {
+          const c = value / 255;
+          return sum + (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4) * [0.2126, 0.7152, 0.0722][i]!;
+        }, 0);
+      let ground = rgba(getComputedStyle(document.body).backgroundColor);
+      for (let host = focused.parentElement; host; host = host.parentElement) {
+        const colour = rgba(getComputedStyle(host).backgroundColor);
+        if (colour[3] === 255) {
+          ground = colour;
+          break;
+        }
+      }
+      const [light, dark] = [luminance(rgba(style.outlineColor)), luminance(ground)].sort((a, b) => b - a);
+      const ratio = (light! + 0.05) / (dark! + 0.05);
+      return ratio < 3 ? `"${name}" focus ring contrast ${ratio.toFixed(2)}:1 (needs 3:1)` : null;
+    });
+    expect(problem, `${where}, tab stop ${stop}`).toBeNull();
+  }
+}
+
+/** Presses Tab until the focused element's text (or aria-label) matches `name`. */
+async function tabTo(page: Page, name: RegExp) {
+  for (let i = 0; i < 60; i++) {
+    await page.keyboard.press("Tab");
+    const label = await page.evaluate(
+      () => (document.activeElement as HTMLElement | null)?.innerText || document.activeElement?.getAttribute("aria-label") || "",
+    );
+    if (name.test(label)) return;
+  }
+  throw new Error(`Could not reach ${name} by keyboard`);
+}
+
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`on a phone every focus ring on the redesigned screens shows at 3:1 and is never under the sticky bar (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 360, height: 740 });
+    await walkFirstTurn(page, "FOCUS-NEW1", async (where) => {
+      if (FOCUS_CHECK.has(where)) await expectFocusRingsVisible(page, `phone ${where}`);
+    });
+  });
+}
+
+test("the pause card's Stop here opens, closes and leads back to the start from the keyboard alone", async ({ page }) => {
+  await startGame(page, "KEYBOARD-PAUSE");
+  await playTurn(page, { stopAtPause: true });
+  const heading = page.getByRole("heading", { level: 1 });
+  await expect(heading).toHaveText(LABEL.pauseHeading);
+  await expect(heading).toBeFocused();
+
+  const stop = page.getByRole("button", { name: "Stop here" });
+  await tabTo(page, /^Stop here$/);
+  await page.keyboard.press("Enter");
+  await expect(stop).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator(STOP_PANEL)).toBeVisible();
+  await expect(stop).toBeFocused();                                            // opening the panel leaves focus where it was
+  await page.keyboard.press("Space");
+  await expect(stop).toHaveAttribute("aria-expanded", "false");                // and Space closes it again
+  await expect(page.locator(STOP_PANEL)).toHaveCount(0);
+
+  await page.keyboard.press("Enter");
+  await tabTo(page, /^Copy link to this world$/);                               // the panel's controls come next in tab order
+  await tabTo(page, /^Back to the start$/);
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: LABEL.start })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();         // focus comes back to the title's h1, not <body>
+});
