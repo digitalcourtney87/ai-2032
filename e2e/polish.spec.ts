@@ -231,3 +231,90 @@ test("reduced motion is honoured, and no screen scrolls sideways on a phone", as
   await openAllPanels(page);
   await overflows("debrief");
 });
+
+// ---------------------------------------------------------------- the public-audience redesign: the Phase 15 sweep
+// Every state Phases 9 to 14 added, scanned by axe in light and dark; the new screens
+// at phone width, where nothing may scroll sideways or move under reduced motion; the
+// debrief as it opens, fully open and fully closed; focus rings and the pause card by keyboard.
+
+/** Hooks the sweep steers by, confirmed before Task 15.1. If an earlier phase named one differently, change it here only. */
+const FRIEND = "Play the same world as a friend";                // Phase 9: the title's seed disclosure
+const COMPARE = "Compare with your advisers";                     // Phase 10: the forecast's reveal button
+const COMPARED = /^You said \d+%\. Your advisers/;                // Phase 10: the sentence the reveal adds
+const RECAP = "#briefing-recap";                                  // Phase 10: BriefingRecap's <details>
+const PREVIEW = /^If you choose option [A-Z]$/;                   // Phase 11: ChoicePreview's heading once an option is picked
+const STOP_PANEL = "#stop-here";                                  // Phase 12: the panel that Stop here opens
+
+/**
+ * Waits two frames, then for every running transition or finite animation to finish,
+ * so axe never scores a half-faded element. An endless animation is skipped, not awaited.
+ */
+async function settle(page: Page) {
+  await page.evaluate(async () => {
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const finite = document.getAnimations().filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity);
+    await Promise.all(finite.map((animation) => animation.finished.catch(() => undefined)));
+  });
+}
+
+/** Opens the briefing recap on the current step. */
+async function openBriefingRecap(page: Page) {
+  const recap = page.locator(RECAP);
+  await recap.locator(":scope > summary").click();
+  await expect(recap).toHaveJSProperty("open", true);
+}
+
+/**
+ * A first-time visitor's path: the bare title, the friend disclosure, then turn 1
+ * with every new affordance used, ending on the pause card with Stop here open.
+ * Calls `at` in each state.
+ */
+async function walkFirstTurn(page: Page, seedCode: string, at: (where: string) => Promise<void>) {
+  await page.goto("/");                                                        // no seed, no facilitator panel
+  await at("title");
+  await page.locator("summary", { hasText: FRIEND }).click();
+  await expect(page.getByLabel(/^Seed code/)).toBeVisible();
+  await at("title with the friend disclosure open");
+  await page.getByLabel(/^Seed code/).fill(seedCode);
+  await page.getByRole("button", { name: LABEL.start }).click();
+  await at("briefing");
+
+  await page.getByRole("button", { name: LABEL.continueToForecast }).click();
+  await at("forecast");
+  await page.getByRole("slider").fill("65");                                 // the compared sentence names the guess
+  await page.getByRole("button", { name: COMPARE }).click();
+  await expect(page.getByText(COMPARED).first()).toBeVisible();
+  await at("forecast with advisers revealed");
+  await page.getByRole("button", { name: LABEL.lockIn }).click();
+  await expect(page.getByRole("group", { name: LABEL.decisionGroup })).toBeVisible();
+  await page.locator('input[name="choice"]:enabled').first().check();
+  await expect(page.getByRole("heading", { name: PREVIEW })).toBeVisible();
+  await at("decision with a preview");
+  await openBriefingRecap(page);
+  await at("decision with the briefing recap open");
+
+  await page.getByRole("button", { name: LABEL.confirm }).click();
+  await expect(page.getByRole("group", { name: LABEL.investGroup })).toBeVisible();
+  await page.locator('input[name="track"]:enabled').first().check();
+  await at("investment ladder");
+  await page.getByRole("button", { name: LABEL.investIn }).click();
+
+  await expect(page.getByRole("heading", { name: LABEL.newsHeading })).toBeVisible();
+  await at("news");
+  await page.getByRole("button", { name: LABEL.next }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(LABEL.pauseHeading);
+  await at("pause card");
+  await page.getByRole("button", { name: "Stop here" }).click();
+  await expect(page.locator(STOP_PANEL)).toBeVisible();
+  await at("pause card with Stop here open");
+}
+
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`axe finds no violations on the redesigned opening and first turn (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await walkFirstTurn(page, "AXE-NEW1", async (where) => {
+      await settle(page);
+      await expectNoSeriousViolations(page, where);
+    });
+  });
+}
