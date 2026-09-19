@@ -10,12 +10,20 @@ import {
   capitalise,
   estimateLine,
   ESTIMATES_CAPTION,
+  forecastRecap,
   initials,
   listOf,
+  PAUSE_HEADING,
   PREPARED_UNBACKED,
+  remainingLine,
   resolvesLine,
+  STILL_OPEN_NOTE,
+  stopHereNote,
+  THINK_IT_OVER,
   verbalChance,
+  WHAT_NEXT_NOTE,
   whoBacksWhat,
+  worldLink,
 } from "../../src/ui/copy";
 import { loadContent, publicContent } from "../../src/content";
 
@@ -205,5 +213,51 @@ describe("copy rules (spec Section 14) for the play screens", () => {
 
   test("the caption over the advisers' estimates begins with the prefix (DECISIONS F12)", () => {
     expect(ESTIMATES_CAPTION).toMatch(/^Under this game's assumptions, /);
+  });
+});
+
+// ---------------------------------------------------------------- Phase 12: the first-decision pause
+
+describe("the first-decision pause", () => {
+  const content = publicContent(loadContent());
+  const verdict = /\b(right|wrong|correct|incorrect|mistake|should have|good decision|bad decision)\b/i;
+
+  test("counts the decisions left from the run length, never a fixed number, and mentions the debrief", () => {
+    expect(remainingLine(8, 1)).toBe("Keep going: 7 more decisions, about 20 minutes, then your debrief.");
+    expect(remainingLine(content.totalTurns, 1)).toContain(`${content.totalTurns - 1} more decisions`);
+    expect(remainingLine(5, 1)).toBe("Keep going: 4 more decisions, about 10 minutes, then your debrief.");
+    expect(remainingLine(8, 7)).toBe("Keep going: 1 more decision, about 5 minutes, then your debrief.");
+  });
+
+  test("a link to this world keeps the seed and a facilitator's edits, and drops everything else", () => {
+    expect(worldLink("https://example.test/ai-2032/", "?seed=OLD1-OLD2&cfg=eyJ3Ijp7fX0&facilitator=1", "K7Q2-M9XD"))
+      .toBe("https://example.test/ai-2032/?seed=K7Q2-M9XD&cfg=eyJ3Ijp7fX0");
+    expect(worldLink("https://example.test/", "", "K7Q2-M9XD")).toBe("https://example.test/?seed=K7Q2-M9XD");
+    expect(worldLink("https://example.test/", "?facilitator=1&utm_source=chat", "K7Q2-M9XD")).toBe("https://example.test/?seed=K7Q2-M9XD");
+  });
+
+  test("Stop here offers the world to a friend, from the start, and says it is not saved progress", () => {
+    const note = stopHereNote("K7Q2-M9XD");
+    expect(note).toContain("K7Q2-M9XD");
+    expect(note).toContain("from the first decision");
+    expect(note).toContain("compare what you each chose");
+    expect(note).toContain("already knowing how it began");
+    expect(note).toContain("It is not saved progress");
+    expect(forecastRecap(0.35)).toBe("You said 35%.");
+  });
+
+  test("no pause sentence gives a verdict, names an interrupt or gives odds", () => {
+    const everySentence = [PAUSE_HEADING, remainingLine(8, 1), WHAT_NEXT_NOTE, forecastRecap(0.35), STILL_OPEN_NOTE, stopHereNote("K7Q2-M9XD"), ...THINK_IT_OVER];
+    const interrupts = Object.values(content.scenarios).filter((scenario) => !content.sequence.includes(scenario.id));
+    expect(interrupts.length).toBeGreaterThan(0);
+    for (const sentence of everySentence) {
+      expect(sentence, sentence).not.toMatch(verdict);
+      expect(sentence, sentence).not.toMatch(/\b(crisis|interrupt|odds|probability)\b/i);
+      for (const scenario of interrupts) expect(sentence, sentence).not.toContain(scenario.title);
+    }
+    // The questions to think over are open questions: nothing on the card answers or scores them.
+    for (const question of THINK_IT_OVER) expect(question).toMatch(/\?$/);
+    // The only percentage on the card is the player's own forecast.
+    expect(everySentence.filter((sentence) => /%/.test(sentence))).toEqual([forecastRecap(0.35)]);
   });
 });

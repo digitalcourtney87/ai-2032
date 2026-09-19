@@ -265,3 +265,60 @@ export function openQuestionLine(unknown: NonNullable<TurnConsequences["unknown"
   return `${yours}${unknown.question} It resolves by ${formatMonth(unknown.resolvesBy)}; you will see how it turned out in the debrief.`;
 }
 export const LATER_NOTE = "Some effects of decisions may surface later, if at all.";
+
+// ---------------------------------------------------------------- the first-decision pause (Phase 12)
+// The five-minute taster (DECISIONS.md F6): turn 1 of the real game, then a one-time
+// pause. None of these sentences states a simulated statistic, so none carries the
+// prefix, and none takes hidden state. Who backed what comes from whoBacksWhat and
+// backersLine (Phase 10, above).
+
+/** Spec Section 4: "Each turn ... takes about three minutes". A design estimate; only the human playtest can confirm it. */
+const MINUTES_PER_DECISION = 3;
+
+export const PAUSE_HEADING = "That was your first decision";
+
+/** "Keep going: 7 more decisions, about 20 minutes, then your debrief." Derived from the run length, never hard-coded. */
+export function remainingLine(totalTurns: number, turnsPlayed: number): string {
+  const left = Math.max(0, totalTurns - turnsPlayed);
+  const minutes = Math.max(5, Math.round((left * MINUTES_PER_DECISION) / 5) * 5);
+  return `Keep going: ${left} more decision${left === 1 ? "" : "s"}, about ${minutes} minutes, then your debrief.`;
+}
+
+/** Names no interrupt and no timing (turn 1 never rolls a world event, so nothing here says chance has played out). */
+export const WHAT_NEXT_NOTE =
+  "Later turns may bring the unexpected. At the end, a debrief shows the hidden world you were in and separates what you decided from what the dice delivered.";
+
+/** The player's own number, in the forecast screen's words. Not a simulated statistic, so no prefix. */
+export function forecastRecap(forecast: number): string {
+  return `You said ${percent(forecast)}.`;
+}
+
+export const STILL_OPEN_NOTE = "Nobody knows the answer yet. If you keep going, the debrief at the end shows how it turned out.";
+
+/** Open questions. Nothing answers or scores them (engagement handoff: "discover what might change your mind"). */
+export const THINK_IT_OVER = [
+  "What would you need to see to move your forecast up or down?",
+  "Which adviser's concern weighed most with you, and what would change your mind about it?",
+] as const;
+
+/**
+ * A seed link reproduces a world; it is not a saved-progress link (engagement handoff).
+ * Offered for a friend, as the debrief's share control is (Phase 13, DECISIONS.md F8):
+ * a player who reopens it knows how it began, and it is no rewind to one decision.
+ */
+export function stopHereNote(seedCode: string): string {
+  return `Anyone who opens this link starts world ${seedCode} from the first decision, with the same hidden facts and the same dice. Send it to a friend and compare what you each chose. If you open it yourself, you start again from the first decision, already knowing how it began. It is not saved progress: your choices so far are not in it, and they are not sent anywhere.`;
+}
+
+/**
+ * A link that reproduces this world from the start: `seed` set, a facilitator's `cfg`
+ * kept, everything else (including `facilitator`) dropped. The debrief's share
+ * control (Phase 13) imports this too.
+ */
+export function worldLink(base: string, search: string, seedCode: string): string {
+  const params = new URLSearchParams();
+  params.set("seed", seedCode);
+  const cfg = new URLSearchParams(search).get("cfg");
+  if (cfg) params.set("cfg", cfg);
+  return `${base}?${params.toString()}`;
+}
