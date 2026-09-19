@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ENDING_PLATES } from "../art/plates";
 import { Button } from "../components/Button";
 import { Figure } from "../components/Figure";
 import { CalibrationPanel } from "../debrief/CalibrationPanel";
-import { runSummary, runSummaryText } from "../debrief/copy";
+import { runSummary, runSummaryText, TEASER } from "../debrief/copy";
 import { NeverSawPanel } from "../debrief/NeverSawPanel";
+import { Panel } from "../debrief/Panel";
 import { QualityPanel } from "../debrief/QualityPanel";
 import { RecordPanel } from "../debrief/RecordPanel";
+import { sectionNumber, type DebriefSectionId } from "../debrief/sections";
 import { WhatIfPanel } from "../debrief/WhatIfPanel";
 import { WorldPanel } from "../debrief/WorldPanel";
 import { pub, type Rankings, type WhatIfAnswer } from "../useGame";
@@ -19,20 +21,13 @@ interface Props {
   onRestart: () => void;
 }
 
-function Panel({ number, title, children }: { number: number; title: string; children: ReactNode }) {
-  return (
-    <section aria-labelledby={`panel-${number}`} className="border-t border-rule pt-6">
-      <h2 id={`panel-${number}`} className="text-2xl">
-        <span className="font-mono text-muted">{number}.</span> {title}
-      </h2>
-      <div className="mt-3">{children}</div>
-    </section>
-  );
-}
+/** A section's anchor and its number in the reading order. */
+const section = (id: DebriefSectionId) => ({ id, number: sectionNumber(id) });
 
 /**
  * The debrief separates what the player decided from what the dice delivered
- * (spec Section 11). Six panels, then a run summary the player may choose to share.
+ * (spec Section 11). The six panels come in the order of DECISIONS.md section F: what
+ * the player can try first, the reference panels closed until wanted, then sharing.
  */
 export function Debrief({ view, rankings, whatIf, onRestart }: Props) {
   const heading = useRef<HTMLHeadingElement>(null);
@@ -71,12 +66,24 @@ export function Debrief({ view, rankings, whatIf, onRestart }: Props) {
         </p>
       </header>
 
-      <Panel number={1} title="The world you were in"><WorldPanel view={view} /></Panel>
-      <Panel number={2} title="Calibration"><CalibrationPanel view={view} /></Panel>
-      <Panel number={3} title="Decision quality versus luck"><QualityPanel view={view} rankings={rankings} /></Panel>
-      <Panel number={4} title="Governance record"><RecordPanel view={view} /></Panel>
-      <Panel number={5} title="What you never saw"><NeverSawPanel view={view} /></Panel>
-      <Panel number={6} title="What if"><WhatIfPanel view={view} whatIf={whatIf} /></Panel>
+      <Panel {...section("panel-what-if")} title="What if you had chosen differently?">
+        <WhatIfPanel view={view} whatIf={whatIf} />
+      </Panel>
+      <Panel {...section("panel-quality")} title="Decision quality versus luck">
+        <QualityPanel view={view} rankings={rankings} />
+      </Panel>
+      <Panel {...section("panel-world")} title="The world you were in" collapsible defaultOpen={false} teaser={TEASER.world}>
+        <WorldPanel view={view} />
+      </Panel>
+      <Panel {...section("panel-calibration")} title="Calibration: how close were your forecasts?" collapsible defaultOpen={false} teaser={TEASER.calibration}>
+        <CalibrationPanel view={view} />
+      </Panel>
+      <Panel {...section("panel-record")} title="Governance record" collapsible defaultOpen={false} teaser={TEASER.record}>
+        <RecordPanel view={view} />
+      </Panel>
+      <Panel {...section("panel-unseen")} title="What you never saw" collapsible defaultOpen={false} teaser={TEASER.unseen}>
+        <NeverSawPanel view={view} />
+      </Panel>
 
       <section aria-labelledby="share" className="border-t border-rule pt-6">
         <h2 id="share" className="text-2xl">Your run summary</h2>

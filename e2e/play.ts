@@ -117,3 +117,19 @@ export async function playToDebrief(page: Page, plan: TurnPlan = {}): Promise<st
   }
   throw new Error("Never reached the debrief");
 }
+
+/** Opens one of the debrief's closed reference panels by its heading. */
+export async function openPanel(page: Page, name: RegExp) {
+  const toggle = page.getByRole("heading", { level: 2, name }).getByRole("button");
+  if ((await toggle.getAttribute("aria-expanded")) === "false") await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+}
+
+/** Opens every closed panel and disclosure in the debrief, so a scan or a width check sees all of it. */
+export async function openAllPanels(page: Page) {
+  const debrief = page.getByTestId("debrief");
+  const closedPanels = debrief.locator('h2 > button[aria-expanded="false"]');
+  while ((await closedPanels.count()) > 0) await closedPanels.first().click();
+  const closedDetails = debrief.locator("details:not([open]) > summary");
+  while ((await closedDetails.count()) > 0) await closedDetails.first().click();
+}

@@ -3,7 +3,7 @@
 
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { LABEL, finishTurn, playToDebrief, playTurn, playUntil, scenarioTitle, startGame, toDecision } from "./play";
+import { LABEL, finishTurn, openPanel, playToDebrief, playTurn, playUntil, scenarioTitle, startGame, toDecision } from "./play";
 
 // ---------------------------------------------------------------- the opening (dilemma first)
 
@@ -690,4 +690,28 @@ test("a run that pauses, opens Stop here and keeps going matches a replay from t
 
   expect(runs[1]).toBe(runs[0]);
   expect(runs[0]).toContain("TASTER-SAME");
+});
+
+// ---------------------------------------------------------------- Phase 13: a debrief for everyone
+
+test("the debrief's reference panels start closed with a teaser, and open from their heading", async ({ page }) => {
+  await startGame(page, "PANELS-1");
+  await playToDebrief(page);
+  for (const name of [/The world you were in/, /Calibration/, /Governance record/, /What you never saw/]) {
+    const heading = page.getByRole("heading", { level: 2, name });
+    await expect(heading).toBeVisible();
+    await expect(heading.getByRole("button")).toHaveAttribute("aria-expanded", "false");
+  }
+  for (const name of [/What if/, /Decision quality versus luck/]) {
+    await expect(page.getByRole("heading", { level: 2, name }).getByRole("button")).toHaveCount(0);    // always open: not toggles
+  }
+
+  const chart = page.getByRole("img", { name: /^Calibration chart/ });
+  const teaser = page.getByText("How close your forecasts came to what happened");
+  await expect(chart).toHaveCount(0);                                        // a closed panel renders nothing
+  await expect(teaser).toBeVisible();
+  await openPanel(page, /Calibration/);
+  await expect(teaser).toHaveCount(0);
+  await expect(chart).toBeVisible();
+  expect((await chart.locator("svg").first().boundingBox())?.width).toBeGreaterThan(100);   // the chart measured a real box
 });

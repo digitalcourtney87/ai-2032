@@ -3,7 +3,7 @@
 // on a scripted run.
 
 import { expect, test, type Page } from "@playwright/test";
-import { playTurn, startGame } from "./play";
+import { openPanel, playTurn, startGame } from "./play";
 
 const FORECASTS = [10, 80, 35, 60, 25, 90, 5, 70];
 const TAGS = ["Sound and fortunate", "Sound and unlucky", "Risky and fortunate", "Risky and unlucky"];
@@ -24,6 +24,7 @@ test("the debrief has the six panels of spec Section 11", async ({ page }) => {
 
 test("the Brier score shown matches a hand calculation from the forecasts shown", async ({ page }) => {
   await scriptedRun(page, "DEBRIEF-2");
+  await openPanel(page, /Calibration/);                                       // a reference panel, closed until wanted
   const rows = page.getByTestId("forecast-row");
   await expect(rows).toHaveCount(8);
 

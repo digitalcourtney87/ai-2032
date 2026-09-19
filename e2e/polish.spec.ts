@@ -6,7 +6,7 @@
 
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { LABEL, playToDebrief, playTurn, playUntil, startGame, toDecision } from "./play";
+import { LABEL, openAllPanels, playToDebrief, playTurn, playUntil, startGame, toDecision } from "./play";
 
 async function summaryOf(page: Page): Promise<string> {
   await page.getByRole("button", { name: "Show as JSON" }).click();
@@ -143,6 +143,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.getByRole("button", { name: "Rerun 1,000 games" }).click();
     await expect(page.getByTestId("what-if-result")).toBeVisible();
     await page.getByText("View assumptions").click();
+    await openAllPanels(page);                                               // scan every panel, not only the open ones
     await expectNoSeriousViolations(page, "debrief");
   });
 }
@@ -227,5 +228,6 @@ test("reduced motion is honoured, and no screen scrolls sideways on a phone", as
   await overflows("first-decision pause with Stop here open");
   await page.getByRole("button", { name: LABEL.keepGoing }).click();
   await playToDebrief(page);
+  await openAllPanels(page);
   await overflows("debrief");
 });
