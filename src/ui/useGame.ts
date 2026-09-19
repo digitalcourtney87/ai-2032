@@ -71,6 +71,12 @@ export interface WhatIfAnswer {
   milliseconds: number;
 }
 
+/** What a What-if label needs about one decision: capital then, and the options that cost more than it. */
+export interface UnaffordableAt {
+  capital: number;
+  options: { id: string; cost: number }[];
+}
+
 type Ask = WorkerRequest extends infer R ? (R extends { id: number } ? Omit<R, "id"> : never) : never;
 
 export function useGame() {
@@ -111,6 +117,16 @@ export function useGame() {
   }, [over, ask, session.decisionStates]);
 
   const view = useMemo(() => (session.game ? displayed(session.game) : null), [session.game]);
+  // For each decision, the options the player could not afford at the time, so the debrief's What-if can
+  // label them instead of hiding them. A replay takes the option when that world's capital can pay;
+  // otherwise it substitutes the nearest affordable option (DECISIONS.md, B38, F24).
+  const unaffordable = useMemo<UnaffordableAt[]>(
+    () => session.decisionStates.map((state) => ({
+      capital: state.politicalCapital,
+      options: (state.current?.choices ?? []).filter((c) => c.status === "unaffordable").map((c) => ({ id: c.id, cost: c.cost })),
+    })),
+    [session.decisionStates],
+  );
   const start = useCallback((seedCode: string) => { setRankings(null); dispatch({ type: "START", seedCode }); }, []);
   const reset = useCallback(() => { setRankings(null); dispatch({ type: "RESET" }); }, []);
   const act = useCallback((...actions: Action[]) => dispatch({ type: "ENGINE", actions }), []);
@@ -126,5 +142,5 @@ export function useGame() {
     return { result: response.result, milliseconds: response.milliseconds };
   }, [ask, session.game]);
 
-  return { view, before: session.before, rankings, start, reset, act, whatIf };
+  return { view, before: session.before, rankings, start, reset, act, whatIf, unaffordable };
 }

@@ -78,6 +78,38 @@ export interface PublicEnding {
   furtherReading: Content["endings"][number]["furtherReading"];
 }
 
+/**
+ * The Political Capital and pricing rules (spec Section 5; DECISIONS.md B30), so
+ * the interface can explain a price or an income without hard-coding numbers.
+ * Fixed rules, not world state. `infoCost` is exposed on its own, below.
+ */
+export interface PublicRules {
+  perTurn: number;
+  carryCap: number;
+  trustBonusAt: number;
+  trustPenaltyAt: number;
+  windowTurns: number;
+  windowDiscount: number;
+  windowMinCost: number;
+  boomEconomyAt: number;
+  boomSurcharge: number;
+}
+
+function publicRules(rules: GameConfig["politicalCapital"]): PublicRules {
+  // Field by field, so nothing added to the config later is published by accident.
+  return {
+    perTurn: rules.perTurn,
+    carryCap: rules.carryCap,
+    trustBonusAt: rules.trustBonusAt,
+    trustPenaltyAt: rules.trustPenaltyAt,
+    windowTurns: rules.windowTurns,
+    windowDiscount: rules.windowDiscount,
+    windowMinCost: rules.windowMinCost,
+    boomEconomyAt: rules.boomEconomyAt,
+    boomSurcharge: rules.boomSurcharge,
+  };
+}
+
 export interface PublicContent {
   scenarios: Record<string, PublicScenario>;
   advisers: PublicAdviser[];
@@ -90,6 +122,9 @@ export interface PublicContent {
   sequence: string[];
   infoCost: number;
   totalTurns: number;
+  rules: PublicRules;
+  /** The bonus each standing-investment level applies once, when it is gained. */
+  trackBonuses: Record<Track, Effects>;
 }
 
 export function publicContent(content: Content): PublicContent {
@@ -102,6 +137,13 @@ export function publicContent(content: Content): PublicContent {
     sequence: content.sequence,
     infoCost: content.config.politicalCapital.infoCost,
     totalTurns: content.sequence.length + 1,
+    rules: publicRules(content.config.politicalCapital),
+    trackBonuses: {
+      evaluation: { ...content.config.trackBonuses.evaluation },
+      provenance: { ...content.config.trackBonuses.provenance },
+      diplomacy: { ...content.config.trackBonuses.diplomacy },
+      defensiveCyber: { ...content.config.trackBonuses.defensiveCyber },
+    },
   };
 }
 

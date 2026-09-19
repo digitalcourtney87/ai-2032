@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `100%` of build steps (35 of 35). The items only people can complete are listed at the end and remain open.
+**Overall Progress:** `100%` of build steps (63 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -97,11 +97,80 @@ Decided by the builder, logged, open to challenge:
   - [x] 🟩 Bundle-size check (under 1 MB against a 16 MB limit); README and `DECISIONS.md` completed
   - [x] 🟩 Gate: axe reports no violations at any impact on any screen, in light and dark; the same seed code reproduces an identical run start to finish in the browser. Commit and push.
 
+Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagement-handoff.md`, the decisions are `DECISIONS.md` decision 14 and section F, and every step is planned task by task in [`docs/plans/2026-09-19-public-engagement-ui.md`](plans/2026-09-19-public-engagement-ui.md). The work happens on a feature branch and reaches `main` only by a pull request the designer approves. GitHub Actions has never run, so every gate is run locally: `npm run lint && npm run test && npm run balance && npm run build && npm run e2e`. Status: 🟩 done, 🟨 in progress, ⬜ not started. Optional Phase 14 is not counted in the progress figure unless the designer approves it.
+
+- [x] 🟩 **Phase 8: Baseline and safety net**
+  - [x] 🟩 Baseline before any change: `npm ci`, Playwright Chromium, all local gates green. `npm run test` 166 passed; `npm run e2e` 17 passed in 13.2 s (Playwright's figure), 13.53 s wall clock including the build
+  - [x] 🟩 End-to-end helpers hardened: `LABEL` constants in `e2e/play.ts`, helpers wait for the next screen, the debrief is found by `data-testid="debrief"`, luck tags are read only after the rankings arrive; the axe check fails on any violation, heading order and one h1 included (`DECISIONS.md` B42)
+  - [x] 🟩 Fix: an option priced out by commissioning analysis no longer stays picked with Confirm enabled (the page went blank), and focus moves to the analysis bought; regression test in `e2e/regressions.spec.ts`
+  - [x] 🟩 Fix: the steps rail lists Investment on turn 7's consequences and not on the final turn's; regression test
+  - [x] 🟩 Guards: `tests/content/public.test.ts` fails if a hidden key reaches `publicContent()`; a lint rule keeps `published`, `defaults`, `assumptionsOf`, `view.truth`, `view.debrief`, `view.history` and `halfWidth` out of play screens
+  - [x] 🟩 Docs: `DECISIONS.md` decision 14 and section F; Phases 8 to 15 here; `CLAUDE.md` reading list and branch workflow
+  - [x] 🟩 Gate: all local gates green (e2e 19 passed in 13.8 s); baseline e2e timing recorded; crash bug fixed with a regression test. Committed on the feature branch.
+
+- [x] 🟩 **Phase 9: The opening**
+  - [x] 🟩 Dilemma-first title screen; the primary button reads "Try your first decision" and sits inside the first viewport at 375×667, 726×900 and 1280×800
+  - [x] 🟩 Seed field inside "Play the same world as a friend", open when the link carries a seed; the fictional-unit disclaimer stays
+  - [x] 🟩 Print-production labels removed (figure ids, 720PT, 48MM, "Fig. NN"); mono microlabels at least 12px
+  - [x] 🟩 Gate: `e2e/engagement.spec.ts` checks the button position at the three sizes; all local gates green (e2e 29 passed in 12.8 s). Committed on the feature branch.
+
+- [x] 🟩 **Phase 10: Briefing and forecast**
+  - [x] 🟩 Advisers: "Cares about", "Backs option X" and a "Who backs what" split, from public content only
+  - [x] 🟩 Forecast: gut feel first, then "Compare with your advisers" on the same 0 to 100 scale; "Lock in N%" always enabled
+  - [x] 🟩 Play-screen sentence builders in `src/ui/copy.ts`, unit-tested against the copy rules
+  - [x] 🟩 Gate: all local gates green; axe clean on the new states in light and dark. Commit on the feature branch.
+
+- [x] 🟩 **Phase 11: Decision, investment and consequences** — built; the designer answered the review's three questions (`DECISIONS.md` F19, F20)
+  - [x] 🟩 `publicContent()` gains the Political Capital rules and track bonuses; investment copy corrected (`DECISIONS.md` F10, F11)
+  - [x] 🟩 Choice preview (Political Capital left, stated effects) and a track ladder with the next unlock, from pure, unit-tested helpers
+  - [x] 🟩 Consequences in four parts in the main column: Your decision, What the world noticed, What you can measure now, Still unknown
+  - [x] 🟩 Gate: all local gates green. Stop for the designer's review of the opening and one representative turn.
+
+- [x] 🟩 **Phase 12: First-decision pause (the five-minute taster)**
+  - [x] 🟩 A pause after turn 1's consequences in every game, with "Keep going" and "Stop here"; no engine or content change
+  - [x] 🟩 End-to-end helpers click through the pause
+  - [x] 🟩 Gate: all local gates green; a run stopped at the pause, with Stop here opened, and then continued reproduces a replay of the same world from its link (`e2e/engagement.spec.ts`). Keep going only changes the interface stage (`App.tsx`), so it plays on in the same state. Commit on the feature branch.
+
+- [x] 🟩 **Phase 13: A debrief for everyone**
+  - [x] 🟩 New order: At a glance, What if (preselected), Decision quality versus luck, collapsible reference panels, Talk it over, Share your run
+  - [x] 🟩 Existing panel headings, test ids and copy rules kept
+  - [x] 🟩 Gate: all local gates green (e2e 62 passed); the designer's review returned nine rulings, all recorded in `DECISIONS.md` F24 — six kept as built, three implemented (the Unknown Frontier ending, plain draw-label negations, labelled unaffordable What if options).
+
+- [x] ⬛ **Phase 14 (optional): Save and resume** — declined by the designer at the Phase 13 review; not built.
+
+- [x] 🟩 **Phase 15: Accessibility sweep, docs and handover**
+  - [x] 🟩 Extended axe, overflow and keyboard walk over every new screen and state, in light and dark, at phone and desktop sizes: 9 new tests in `e2e/polish.spec.ts` at the B42 bar, including reflow at 320 px, focus-ring contrast and the phone's sticky bar; Playwright timeout 60 s, preview reused only off CI (`DECISIONS.md` B43)
+  - [x] 🟩 README, `DECISIONS.md` and this plan updated; human-only items listed as open; the playtest and timing protocol in `docs/playtest.md`; deferred work listed below
+  - [x] 🟩 Gate from a clean clone on 2026-09-19: all local gates green; unit tests 375 passed; e2e 71 passed in 35.8 s (Phase 8 baseline: 17 in 13.2 s; Phase 8 gate: 19 in 13.8 s; before this phase: 62 in 24.1 s); slowest test 11.3 s; `dist` 2016 KB. Pull request https://github.com/digitalcourtney87/ai-2032/pull/3 opened for the designer. Stop at completion.
+
 ## Owned by the designer, not the build
 
 These parts of the definition of done cannot be passed by the builder and will be reported as open, never as done:
 
 - The Phase 4 playtest (a person finishing a run without code or docs)
-- Spec milestone M5: ten solo testers and one facilitated group of eight
-- First-time completion in under 30 minutes, and two of five testers naming a decision they would defend despite its outcome
-- The three willingness-to-pay sessions in the spec's commercial note
+- The Phase 11 newcomer check: at least one person new to the game plays the opening and one turn, then answers the handoff's four questions: can they understand the dilemma, choose without specialist knowledge, explain the visible consequences, and do they want to continue? Open until run and written up.
+- The newcomer playtest (spec milestone M5 for a general audience; the playtest row in `DECISIONS.md` section F; the protocol is `docs/playtest.md`): ten solo testers from the general public with no professional background in AI policy, government or forecasting. An informal group sharing one seed code is optional. It reports:
+  - the spec's six metrics (Section 13): most-chosen option share per scenario below 60%; completion rate 80% or above; replay within a week 30% or above; testers who name a decision they would defend despite a bad outcome 50% or above, with two of five as the floor for a five-person round; the forecast slider used meaningfully (not left at 50%) in 70% of forecasts; testers who say the game pushed a policy line below 20%, split evenly by direction (its own question: whether the game seemed to favour one kind of policy)
+  - the engagement handoff's four approachability checks: understands the dilemma; chooses without specialist knowledge; can explain the visible consequences; wants to continue (chooses Keep going at the pause after turn 1)
+  - one neutrality question, asked in these words and reported on its own: "Did the game try to convince you AI is dangerous, or that it is safe?"
+  - testers who choose Stop here at the pause still count: they answer the neutrality, policy and approachability questions, and their turn-1 option and forecast come from the pause card
+  - per-step timing against the spec's budget: about 3 minutes a turn, about 5 minutes from the title to the pause card, about 25 minutes to the debrief, and under 30 minutes for a newcomer without help
+- The age range for playtesters (the game includes an election deepfake and a biosecurity scenario)
+- A preview address for playtesters, which only the designer can approve (no deploy is approved): phone testers need one, and so does the replay-within-a-week follow-up, which is reported as not measured without it
+- Sign-off of each row in `DECISIONS.md` section F, including the proposed withdrawal of the spec's commercial note; confirmed rows move to section A
+- The designer's answers on the deferred list below
+- Merging the redesign's pull request, and any deploy
+
+For the record, and the designer's rather than the build's: the review of the opening and one representative turn at the Phase 11 gate (2026-09-19), the review of the debrief at the Phase 13 gate (2026-09-19), and the decision on optional Phase 14 (not approved on 2026-09-19).
+
+## Deferred, not in this plan
+
+Raised while planning the public-audience redesign and left out on purpose. Each needs the designer's decision before it becomes work.
+
+- **Authored one-line adviser gists.** Advisers show only public fields today (D5): name, role, "Cares about", the option they back and their stance. A written gist per adviser per scenario is new content: it needs authoring, the copy-rule tests, and a check that no gist gives away an adviser's hidden bias, which `publicContent()` deliberately leaves out (`src/content/public.ts`). Wait until a playtest asks for it.
+- **A chance event on turn 1.** Under current content no world event can fire on turn 1 (event windows open at Scenario 2), so the first consequences only ever report the player's own headline, and the pause card cannot yet show chance at work. Making turn 1 eventful is a content change (for example a delay-0 event on a Scenario 1 option) that needs a balance rerun and a section E entry in `DECISIONS.md`.
+- **New everyday-stakes scenarios, such as hospitals or scams.** The engagement handoff's "use everyday stakes" is met here through framing only; the handoff itself says these are framing ideas, not claims that the scenarios exist. New scenarios mean new content with its real-world evidence, a balance rerun against Rules 4, 5 and 7, and a change to the eight-turn sequence (B1).
+- **A same-world rewind.** Replaying one decision in the same world, after the debrief has revealed that world, would become a hindsight oracle that turns one draw into a verdict (B39; the debrief-order row in section F). What if across 1,000 fresh worlds, and the seed link for someone who has not played that world, stay the sanctioned ways to ask "what if".
+- **Editable assumptions for ordinary players after the debrief.** The facilitator panel stays behind `?facilitator=1`, unchanged (decision 14). Offering "change the model and play again" to everyone is a new feature: it needs copy that keeps clear the numbers are assumptions, not findings, and a design for how an edited world is labelled when it is shared.
+- **The Web Share API.** Sharing is clipboard only (decision 11), and the browser tests check that nothing is sent. A native share sheet would help on phones, but it changes that rule and cannot be tested in headless Chromium.
+- **A Playwright mobile project.** The phone checks set a 360 × 740 viewport on desktop Chromium. A second project with a mobile device profile would add touch input and a mobile user agent, but would roughly double the e2e run time. Add it, scoped with tags, if a playtest finds a touch-only problem.

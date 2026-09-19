@@ -1,7 +1,7 @@
-import { causalSentence, outcomeSentence, soundSentence } from "./copy";
+import { causalSentence, outcomeSentence, soundSentence, standing, tagText, tallySentence } from "./copy";
 import { describeConditions } from "../format";
 import { pub, type Rankings } from "../useGame";
-import { luckTag, type DisplayedState } from "../../engine";
+import type { DisplayedState } from "../../engine";
 
 interface Props {
   view: DisplayedState;
@@ -10,13 +10,16 @@ interface Props {
 }
 
 /**
- * Panel 3: decision quality separated from luck. For each decision: the odds at
- * the time, the outcome drawn, and a tag. The game never says a decision was
- * right or wrong; it says how the option ranked and how the dice fell.
+ * Decision quality separated from luck. For each decision: what was chosen, its
+ * tag and how the option ranked, with the odds at the time and the outcomes drawn
+ * one click away. The game never says a decision was right or wrong; it says how
+ * the option ranked and how the dice fell.
  */
 export function QualityPanel({ view, rankings }: Props) {
   const debrief = view.debrief!;
   const history = view.history ?? [];
+  const positions = history.map((record, index) => standing(rankings?.[index], record.choiceId));
+  const tags = positions.flatMap((position, index) => (position ? [tagText(position, debrief.luck[index]!.fortunate)] : []));
 
   return (
     <div className="space-y-4">
@@ -29,36 +32,42 @@ export function QualityPanel({ view, rankings }: Props) {
         {history.map((record, index) => {
           const scenario = pub.scenarios[record.scenarioId];
           const luck = debrief.luck[index]!;
-          const ranking = rankings?.[index];
-          const rank = ranking ? ranking.findIndex((e) => e.choiceId === record.choiceId) + 1 : 0;
-          const sound = rank > 0 && rank <= 2;
+          const position = positions[index];
           const chosen = scenario?.choices.find((c) => c.id === record.choiceId);
+          const causes = record.oddsAtTheTime.filter((o) => Math.round(o.before * 100) !== Math.round(o.probability * 100));
           return (
             <li key={record.turn} className="border-l-2 border-rule pl-4" data-testid="decision-review">
-              <h3 className="font-semibold">
+              <h3 className="font-semibold">{chosen?.text ?? `Option ${record.choiceId}`}</h3>
+              <p className="text-sm text-muted">
                 Turn {record.turn}, {scenario?.title}: option {record.choiceId}
-              </h3>
-              <p className="text-sm text-muted">{chosen?.text}</p>
+              </p>
               <p className="mt-1 font-mono text-lg" data-testid="luck-tag">
-                {ranking && rank > 0 ? luckTag(sound, luck.fortunate).replace(/^./, (c) => c.toUpperCase()) : "Weighing the options you had…"}
+                {position ? tagText(position, luck.fortunate) : "Weighing the options you had…"}
               </p>
               {!record.succeeded && <p className="text-sm">The option did not take effect: its conditions were not met, and the cost was still paid.</p>}
-              <ul className="mt-1 space-y-1 text-sm">
-                {ranking && rank > 0 && <li>{soundSentence(sound, rank, ranking.length)}</li>}
-                {record.oddsAtTheTime.filter((o) => Math.round(o.before * 100) !== Math.round(o.probability * 100)).map((o) => (
-                  <li key={`cause-${o.eventId}`}>{causalSentence(pub.eventTitles[o.eventId] ?? o.eventId, o.before, o.probability)}</li>
-                ))}
-                {luck.links.map((link) => (
-                  <li key={link.id}>
-                    {outcomeSentence(link.kind === "event" ? pub.eventTitles[link.id] ?? link.id : describeConditions(link.when ?? []), link.probability, link.happened)}
-                  </li>
-                ))}
-                {luck.links.length === 0 && <li>No chance event was tied to this decision, so luck played no part in it.</li>}
-              </ul>
+              {position && <p className="mt-1 text-sm">{soundSentence(position.sound, position.rank, position.of)}</p>}
+              <details className="mt-1 text-sm">
+                <summary className="cursor-pointer py-1 font-semibold">
+                  Why this tag<span className="sr-only">: turn {record.turn}</span>
+                </summary>
+                <ul className="mt-1 space-y-1">
+                  {causes.map((o) => (
+                    <li key={`cause-${o.eventId}`}>{causalSentence(pub.eventTitles[o.eventId] ?? o.eventId, o.before, o.probability)}</li>
+                  ))}
+                  {luck.links.map((link) => (
+                    <li key={link.id}>
+                      {outcomeSentence(link.kind === "event" ? pub.eventTitles[link.id] ?? link.id : describeConditions(link.when ?? []), link.probability, link.happened)}
+                    </li>
+                  ))}
+                  {luck.links.length === 0 && <li>No chance event was tied to this decision, so luck played no part in it.</li>}
+                </ul>
+              </details>
             </li>
           );
         })}
       </ol>
+      {/* After the list and in plain text, so it reads as a summary, not a score to beat. */}
+      {history.length > 0 && tags.length === history.length && <p className="text-sm">{tallySentence(tags)}</p>}
     </div>
   );
 }

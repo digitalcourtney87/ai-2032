@@ -22,9 +22,9 @@ export function CrisisClock({ step }: Props) {
       aria-label={`Crisis turn. Simulated clock: ${remaining} remaining. The clock moves only as you move; take the time you need.`}
     >
       <Icon name="crisis" className="self-center" />
-      <span className="font-mono text-[10px] font-medium uppercase tracking-widest">Crisis</span>
+      <span className="font-mono text-xs font-medium uppercase tracking-widest">Crisis</span>
       <span className="font-mono text-xl">{remaining}</span>
-      <span className="font-mono text-[10px] uppercase tracking-wider text-muted">simulated</span>
+      <span className="font-mono text-xs uppercase tracking-wider text-muted">simulated</span>
     </p>
   );
 }

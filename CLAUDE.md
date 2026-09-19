@@ -3,8 +3,10 @@
 A browser game about governing frontier AI from a UK middle-power position.
 The full design is in `docs/spec.md`; the build handoff is `docs/handoff.md`;
 the agreed plan and its progress are in `docs/plan.md`; every choice made where
-the spec was silent is in `DECISIONS.md`.
-Read all four before writing code. Where spec and handoff disagree, the spec
+the spec was silent is in `DECISIONS.md`. The public-audience redesign is briefed
+in `docs/ui-engagement-handoff.md` and planned task by task in
+`docs/plans/2026-09-19-public-engagement-ui.md`.
+Read all six before writing code. Where spec and handoff disagree, the spec
 wins - raise it. Where `DECISIONS.md` amends either, `DECISIONS.md` wins.
 
 ## The one rule that matters most
@@ -27,12 +29,20 @@ properties, stop and ask.
   Dev dependencies are listed in DECISIONS.md, decision 8. Ask before adding anything.
 
 ## Workflow
-- Build in the seven phases in `docs/plan.md`. Each has an acceptance gate.
+- Build in the phases in `docs/plan.md`: Phases 0 to 7 are the original build,
+  Phases 8 to 15 the public-audience redesign. Each has an acceptance gate.
   Do not start a phase until the previous gate is green.
-- Commit on `main` at each green gate without asking, and push the gate commit to GitHub
-  (the designer authorised gate pushes on 2026-09-18). CI runs lint, tests, balance and build.
+- Phases 0 to 7: commit on `main` at each green gate without asking, and push the gate
+  commit to GitHub (the designer authorised gate pushes on 2026-09-18).
+- Phases 8 to 15: work on a feature branch, never on `main`. Commit each green gate to
+  that branch without asking. The branch reaches `main` only through a pull request the
+  designer approves, and nothing is deployed without their approval. Push the branch and
+  open the pull request at the Phase 15 gate, or earlier if the designer asks.
+- GitHub Actions has never run (every run stopped on a billing block), so run every gate
+  locally: `npm run lint && npm run test && npm run balance && npm run build && npm run e2e`.
 - Stop and wait for the designer at: the Phase 2 provisional-numbers sign-off,
-  the Phase 4 human playtest, and completion.
+  the Phase 4 human playtest, the Phase 11 and Phase 13 design reviews, the decision
+  on optional Phase 14, and completion.
 - Update the status emojis and progress percentage in `docs/plan.md` as you go.
 - Engine and content first. No UI until Phase 1 tests pass.
 - When the spec is silent or contradictory, choose, log it in `DECISIONS.md`,
@@ -45,6 +55,9 @@ properties, stop and ask.
 - Never tell the player a decision was right or wrong.
 - Show causal links with the probability change they caused, not as fate.
 - Biosecurity content stays at policy level: no technical specifics.
+- Public-audience redesign (Phases 8 to 15): also follow `DECISIONS.md` F12: captions carry
+  the prefix for groups of figures, no subject is promised that the content does not cover,
+  and benefits and dangers are both represented.
 
 ## Commands
 - `npm run dev` - dev server
@@ -54,7 +67,8 @@ properties, stop and ask.
   most restrictive option is never best in any profile (Rules 4 and 5).
   Add `-- --table` for every option's value
 - `npm run e2e` - Playwright browser tests against the production bundle (crisis
-  turns, debrief, 3-second budget, axe, keyboard, reproducibility)
+  turns, debrief, 3-second budget, axe, keyboard, reproducibility, regressions).
+  It reuses any server already on port 4173, so stop a stale `vite preview` first
 - `npm run build` - type check, then static bundle (must stay under 16 MB)
 - `npm run lint` - includes the engine-isolation and banned-API rules
 

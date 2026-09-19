@@ -112,6 +112,18 @@ function visibleShare(choice: Choice, all: Content): number {
   return visible / (visible + hidden);
 }
 
+// ---------------------------------------------------------------- ending copy (spec Section 14)
+
+describe("ending copy", () => {
+  test("no ending tells the player a decision was right or wrong", () => {
+    const verdict = /\b(right|wrong|correct|incorrect|mistake|should have|good decision|bad decision|almost everything well|not a failure of your unit)\b/i;
+    for (const ending of content.endings) {
+      expect(ending.text, ending.id).not.toMatch(verdict);
+      expect(ending.title, ending.id).not.toMatch(verdict);
+    }
+  });
+});
+
 // ---------------------------------------------------------------- sources
 
 describe("evidence sources", () => {
