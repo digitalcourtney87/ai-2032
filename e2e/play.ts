@@ -17,6 +17,8 @@ export const LABEL = {
   investIn: /^Invest in/,
   newsHeading: "What the world noticed",
   next: /^(Next briefing|Read your debrief)$/,
+  keepGoing: "Keep going",
+  pauseHeading: "That was your first decision",
 } as const;
 
 export type TrackName = "Evaluation science" | "Provenance infrastructure" | "Diplomacy" | "Defensive cyber";
@@ -41,6 +43,8 @@ export interface TurnPlan {
   prefer?: string;
   track?: TrackName;
   forecast?: number;
+  /** Leave the first-decision pause on screen instead of clicking Keep going. */
+  stopAtPause?: boolean;
 }
 
 /** Plays one whole turn from its briefing through to the next briefing (or the debrief). Returns the option taken. */
@@ -69,11 +73,30 @@ export async function finishTurn(page: Page, plan: TurnPlan = {}): Promise<strin
   }
   await expect(news).toBeVisible();
   await page.getByRole("button", { name: LABEL.next }).click();
+  await passThePause(page, plan.stopAtPause);
   return taken;
+}
+
+/**
+ * After the news: waits for whichever comes next, the one-time first-decision pause
+ * (after turn 1 only), the next briefing or the debrief. Clicks Keep going at the
+ * pause unless told to stay. Returns whether the pause was on screen.
+ */
+export async function passThePause(page: Page, stay = false): Promise<boolean> {
+  const keepGoing = page.getByRole("button", { name: LABEL.keepGoing });
+  const briefing = page.getByRole("button", { name: LABEL.continueToForecast });
+  await expect(keepGoing.or(briefing).or(page.getByTestId("debrief")).first()).toBeVisible();
+  if (!(await keepGoing.isVisible())) return false;
+  if (!stay) {
+    await keepGoing.click();
+    await expect(briefing).toBeVisible();
+  }
+  return true;
 }
 
 /** Plays turns until the named scenario's briefing is on screen. */
 export async function playUntil(page: Page, title: string, plan: TurnPlan = {}) {
+  await passThePause(page);
   for (let turn = 0; turn < 8; turn++) {
     if ((await scenarioTitle(page)) === title) return;
     await playTurn(page, plan);
