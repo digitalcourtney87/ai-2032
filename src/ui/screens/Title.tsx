@@ -24,7 +24,7 @@ export function Title({ initialSeed, onStart }: Props) {
   return (
     <div>
       <Figure {...COVER} className="mb-6" />
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">A decision game</p>
+      <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">A decision game</p>
       <h1 className="mt-2 text-4xl">AI 2032</h1>
       <p className="mt-6 text-lg">
         You are Director of the UK Frontier Technology Risk Unit, reporting to the Prime Minister and the National Security Council

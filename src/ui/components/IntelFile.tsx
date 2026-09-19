@@ -20,7 +20,7 @@ export function IntelFile({ reports, heading = "Intelligence file" }: Props) {
       <ul className="mt-2 space-y-2 text-sm">
         {reports.map((report, index) => (
           <li key={index} className="border-t border-rule pt-2 first:border-t-0 first:pt-0">
-            <span className="block font-mono text-[10px] uppercase tracking-wider text-muted">
+            <span className="block font-mono text-xs uppercase tracking-wider text-muted">
               Turn {report.turn} &middot; {SOURCE_LABEL[report.source]}
             </span>
             {report.text}

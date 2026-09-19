@@ -61,7 +61,7 @@ export function Debrief({ view, rankings, whatIf, onRestart }: Props) {
     <div className="space-y-8" data-testid="debrief">
       <header>
         {mark && <Figure {...mark} className="mb-6 max-w-[12rem]" />}
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">October 2032 &middot; Your record</p>
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted">October 2032 &middot; Your record</p>
         <h1 ref={heading} tabIndex={-1} className="mt-2 text-4xl outline-none">{ending?.title}</h1>
         <p className="mt-6 text-lg">{ending?.text}</p>
         {debrief.backlash && <p className="mt-4">{pub.backlashText}</p>}

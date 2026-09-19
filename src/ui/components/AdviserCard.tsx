@@ -14,13 +14,13 @@ interface Props {
 export function AdviserCard({ adviser, stance, recommends, memory, forecast }: Props) {
   return (
     <article className="border border-rule p-3">
-      <p className="font-mono text-[10px] uppercase tracking-wider text-muted">Adviser file</p>
+      <p className="font-mono text-xs uppercase tracking-wider text-muted">Adviser file</p>
       <h3 className="mt-1 font-semibold">
         {adviser.name} <span className="font-normal text-muted">&middot; {adviser.role}</span>
       </h3>
       {memory && <p className="mt-1 text-sm italic">&ldquo;{memory}&rdquo;</p>}
       <p className="mt-1 text-sm">&ldquo;{stance}&rdquo;</p>
-      <p className="mt-1 font-mono text-[11px] text-muted">
+      <p className="mt-1 font-mono text-xs text-muted">
         Recommends option {recommends}
         {forecast !== undefined && <> &middot; puts the forecast at {percent(forecast)}</>}
       </p>

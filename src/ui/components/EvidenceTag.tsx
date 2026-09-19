@@ -17,7 +17,7 @@ export function EvidenceTag({ evidence, severity, reduced = false }: Props) {
   return (
     <dl className="grid grid-cols-2 gap-x-6 border-y border-rule py-3 text-sm">
       <div>
-        <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-muted">
+        <dt className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-muted">
           <Icon name="evidence" />
           Evidence
         </dt>
@@ -25,7 +25,7 @@ export function EvidenceTag({ evidence, severity, reduced = false }: Props) {
         {!reduced && <dd className="text-xs text-muted">{EVIDENCE_MEANING[evidence]}</dd>}
       </div>
       <div>
-        <dt className="font-mono text-[10px] uppercase tracking-wider text-muted">Severity if it goes wrong</dt>
+        <dt className="font-mono text-xs uppercase tracking-wider text-muted">Severity if it goes wrong</dt>
         <dd className="font-mono font-medium">{SEVERITY_LABEL[severity]}</dd>
       </div>
     </dl>

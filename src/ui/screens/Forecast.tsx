@@ -21,7 +21,7 @@ export function Forecast({ view, scenario, onForecast }: Props) {
     <div className="space-y-6">
       <section aria-labelledby="forecast-question">
         <h2 id="forecast-question" className="text-xl">
-          <span className="mb-2 flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-wider text-muted">
+          <span className="mb-2 flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-wider text-muted">
             <Icon name="forecast" />
             Forecast
           </span>
@@ -47,7 +47,7 @@ export function Forecast({ view, scenario, onForecast }: Props) {
           onChange={(event) => setValue(Number(event.target.value))}
           className="mt-2 w-full accent-(--accent)"
         />
-        <div className="flex justify-between font-mono text-[10px] uppercase tracking-wider text-muted" aria-hidden="true">
+        <div className="flex justify-between font-mono text-xs uppercase tracking-wider text-muted" aria-hidden="true">
           <span>0% will not happen</span>
           <span>50%</span>
           <span>100% certain</span>

@@ -35,11 +35,11 @@ export function CalibrationPanel({ view }: { view: DisplayedState }) {
               <CartesianGrid stroke="var(--rule)" strokeDasharray="0" vertical={false} />
               <XAxis type="number" dataKey="forecast" domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} unit="%" stroke="var(--ink)"
                 axisLine={{ stroke: "var(--ink)", strokeWidth: 1 }} tickLine={{ stroke: "var(--rule)" }}
-                tick={{ fill: "var(--muted)", fontSize: 11, fontFamily: "IBM Plex Mono, ui-monospace, monospace" }}
+                tick={{ fill: "var(--muted)", fontSize: 12, fontFamily: "IBM Plex Mono, ui-monospace, monospace" }}
                 label={{ value: "What you forecast", position: "insideBottom", offset: -18, fill: "var(--muted)" }} />
               <YAxis type="number" dataKey="observed" domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} unit="%" stroke="var(--ink)"
                 axisLine={{ stroke: "var(--ink)", strokeWidth: 1 }} tickLine={{ stroke: "var(--rule)" }}
-                tick={{ fill: "var(--muted)", fontSize: 11, fontFamily: "IBM Plex Mono, ui-monospace, monospace" }}
+                tick={{ fill: "var(--muted)", fontSize: 12, fontFamily: "IBM Plex Mono, ui-monospace, monospace" }}
                 width={52} label={{ value: "How often it happened", angle: -90, position: "insideLeft", offset: -14, fill: "var(--muted)", style: { textAnchor: "middle" } }} />
               <ZAxis type="number" dataKey="count" range={[36, 160]} />
               <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 100, y: 100 }]} stroke="var(--muted)" strokeDasharray="2 4" />

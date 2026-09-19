@@ -38,7 +38,7 @@ export function Briefing({ view, scenario, onContinue }: Props) {
 
       {assessment && (
         <section aria-label="Assessment">
-          <h2 className="font-mono text-[10px] uppercase tracking-wider text-muted">{crisis ? "Unconfirmed report" : "Assessment"}</h2>
+          <h2 className="font-mono text-xs uppercase tracking-wider text-muted">{crisis ? "Unconfirmed report" : "Assessment"}</h2>
           <p className="mt-1">{assessment.text}</p>
           {!crisis && (
             <p className="mt-1 text-xs text-muted">Assessments are sometimes wrong. How often depends on the evidence rating and on your State Capacity.</p>
