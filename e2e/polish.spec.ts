@@ -198,8 +198,17 @@ test("reduced motion is honoured, and no screen scrolls sideways on a phone", as
 
   await page.getByRole("button", { name: LABEL.start }).click();
   await overflows("briefing");
-  await toDecision(page);
+  await page.getByRole("button", { name: LABEL.continueToForecast }).click();
+  await overflows("forecast");
+  await page.getByRole("button", { name: LABEL.lockIn }).click();
   await overflows("decision");
+  await page.locator('input[name="choice"]:enabled').first().check();
+  await overflows("decision with a choice previewed");
+  await page.getByRole("button", { name: LABEL.confirm }).click();
+  await page.locator('input[name="track"]:enabled').first().check();
+  await overflows("investment");
+  await page.getByRole("button", { name: LABEL.investIn }).click();
+  await overflows("news");
   await page.goto("/?seed=PHONE-2");
   await page.getByRole("button", { name: LABEL.start }).click();
   await playTurn(page);
