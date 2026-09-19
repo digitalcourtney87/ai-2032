@@ -737,7 +737,7 @@ test("each reviewed decision leads with what was chosen, keeps its tag in view a
   await openAllPanels(page);                                                  // every "Why this tag" open
   const everything = (await reviews.allInnerTexts()).join(" ");
   expect(everything).toContain("Under this game's assumptions, the chance of");
-  // Quoted labels name events and states of the world, such as “the authentication result was correct”, never the decision,
+  // Quoted labels name events and states of the world, such as “the authentication result matched”, never the decision,
   // so they are set aside; every word the sentences add around them is checked.
   expect(everything.replace(/“[^”]*”/g, "“…”")).not.toMatch(/\b(right|wrong|correct|incorrect|mistake|should have)\b/i);
 });

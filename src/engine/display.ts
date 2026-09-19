@@ -10,7 +10,10 @@ import type { DisplayedState, Estimate, GameState } from "./types";
 
 const clamp = (value: number) => Math.min(100, Math.max(0, value));
 
-/** Spec Section 5: half-width = 30 - 0.25 x State Capacity. */
+/**
+ * Spec Section 5: half-width = 30 - 0.25 x State Capacity. Engine-internal: the exact
+ * number would give State Capacity away, so only the rounded band leaves (DECISIONS.md, B45).
+ */
 export function bandHalfWidth(state: GameState): number {
   return state.display.bandBase - state.display.bandPerCapacityPoint * state.metrics.stateCapacity;
 }
@@ -24,7 +27,6 @@ function estimate(state: GameState, key: "systemicRisk" | "cooperation"): Estima
     low: clamp(Math.floor(mid - halfWidth)),
     mid: clamp(Math.round(mid)),
     high: clamp(Math.ceil(mid + halfWidth)),
-    halfWidth,
   };
 }
 

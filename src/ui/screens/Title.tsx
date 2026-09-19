@@ -3,6 +3,7 @@ import { COVER } from "../art/plates";
 import { Button } from "../components/Button";
 import { Figure } from "../components/Figure";
 import { newSeedCode } from "../format";
+import { titlePaceLine } from "../copy";
 import { overrideCount, pub } from "../useGame";
 import { Facilitator } from "./Facilitator";
 
@@ -46,7 +47,7 @@ export function Title({ initialSeed, onStart, headingRef }: Props) {
       <form onSubmit={submit} className="mt-6">
         <Button type="submit">Try your first decision</Button>
         <p className="mt-3 text-sm text-muted">
-          About 25 minutes for {pub.totalTurns} decisions. There is no correct AI policy to find.
+          {titlePaceLine(pub.totalTurns)}
         </p>
         {overrideCount > 0 && (
           <p className="mt-4 border border-ink p-3 text-sm" role="note">

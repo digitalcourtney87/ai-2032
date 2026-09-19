@@ -17,6 +17,10 @@ import { METRIC_LABEL, percent, TRACK_LABEL } from "../format";
 
 export const PREFIX = "Under this game's assumptions";
 
+/** A briefing or purchase, judged against the fact it was about — never as a right or wrong call. */
+export const INTEL_MATCHED = "Matched the fact";
+export const INTEL_MISSED = "Did not match the fact";
+
 const points = (value: number) => `${Math.abs(Math.round(value))} point${Math.abs(Math.round(value)) === 1 ? "" : "s"}`;
 
 /** The verdict half of a luck tag. It describes the option's standing, never the player's judgement. */
@@ -45,7 +49,7 @@ export function whatIfSentences(result: CounterfactualResult, scenarioTitle: str
   const incidents = `moved serious incidents from ${percent(asPlayed.seriousIncidentShare)} of runs to ${percent(changed.seriousIncidentShare)}`;
   const sentences = [
     unaffordable
-      ? `${PREFIX}, “${newText}” cost more Political Capital than you had at the time, so each replay used the nearest affordable option instead. That substitution ${incidents}.`
+      ? `${PREFIX}, “${newText}” cost more Political Capital than you had at the time. A replay takes it only when that world's capital can pay for it; otherwise it uses the nearest affordable option. Across those replays it ${incidents}.`
       : `${PREFIX}, choosing “${newText}” instead of “${asPlayedText}” in ${scenarioTitle} ${incidents}.`,
   ];
   const moved = (Object.keys(METRIC_LABEL) as MetricKey[])
@@ -171,7 +175,7 @@ export function leastLikelyOutcome(debrief: { luck: readonly { links: readonly L
   const chances = debrief.luck.flatMap((entry, index) =>
     entry.links.filter((link) => link.probability > 0 && link.probability < 1).map((link) => ({ index, link })));
   // An event reads as something that happened. A hidden fact is a state of the world, named in condition
-  // language ("the authentication result was inaccurate"), so it is used only when no event was at stake.
+  // language ("the authentication result did not match"), so it is used only when no event was at stake.
   const events = chances.filter((chance) => chance.link.kind === "event");
   const pool = events.length > 0 ? events : chances;
   const happened = pool.filter((chance) => chance.link.happened);

@@ -59,8 +59,8 @@ describe("standing-investment copy (DECISIONS.md, F11)", () => {
 describe("conditions in words", () => {
   test("a negated draw reads as a plain negative, not 'it is not the case that'", () => {
     const draw = (key: string) => ({ draw: { key, probability: 0.5 } });
-    expect(describeCondition({ ...draw("authentication-correct"), not: true })).toBe("the authentication result was inaccurate");
-    expect(describeCondition(draw("authentication-correct"))).toBe("the authentication result was correct");
+    expect(describeCondition({ ...draw("authentication-correct"), not: true })).toBe("the authentication result did not match");
+    expect(describeCondition(draw("authentication-correct"))).toBe("the authentication result matched");
     expect(describeCondition({ ...draw("alarm-real"), not: true })).toBe("the warning was false");
     for (const key of ["recording-authentic", "forensics-in-time", "authentication-correct", "alarm-real"]) {
       expect(describeCondition({ ...draw(key), not: true })).not.toContain("it is not the case that");

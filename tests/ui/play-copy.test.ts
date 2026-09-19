@@ -20,6 +20,7 @@ import {
   STILL_OPEN_NOTE,
   stopHereNote,
   THINK_IT_OVER,
+  titlePaceLine,
   verbalChance,
   WHAT_NEXT_NOTE,
   whoBacksWhat,
@@ -201,6 +202,7 @@ describe("copy rules (spec Section 14) for the play screens", () => {
     estimateLine("Dr Maya Shah", 0.52),
     ASSESSMENT_CAVEAT,
     ESTIMATES_CAPTION,
+    titlePaceLine(pub.totalTurns),
   ];
 
   test("no sentence tells the player a decision was right or wrong", () => {
@@ -213,6 +215,10 @@ describe("copy rules (spec Section 14) for the play screens", () => {
 
   test("the caption over the advisers' estimates begins with the prefix (DECISIONS F12)", () => {
     expect(ESTIMATES_CAPTION).toMatch(/^Under this game's assumptions, /);
+  });
+
+  test("the title names the length of a run without calling a policy correct", () => {
+    expect(titlePaceLine(8)).toBe("About 25 minutes for 8 decisions. The game does not pick a policy for you.");
   });
 });
 

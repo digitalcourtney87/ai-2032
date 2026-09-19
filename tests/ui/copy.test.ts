@@ -1,10 +1,10 @@
 import { describe, expect, test } from "vitest";
 import {
-  BRIER_GLOSS, calibrationBins, causalSentence, compositeSentence, DEFEND_PROMPT, DISCUSSION_PROMPTS, leastLikelyOutcome, linkSentence, outcomeSentence,
-  pivotalDecision, pivotSentence, PREFIX, profileShareSentence, runSummaryText, soundSentence, standing, TALK_INTRO, tallySentence, tagText,
-  TEASER, whatIfEndingCaption, whatIfEndingRows, whatIfSentences,
+  BRIER_GLOSS, calibrationBins, causalSentence, compositeSentence, DEFEND_PROMPT, DISCUSSION_PROMPTS, INTEL_MATCHED, INTEL_MISSED,
+  leastLikelyOutcome, linkSentence, outcomeSentence, pivotalDecision, pivotSentence, PREFIX, profileShareSentence, runSummaryText,
+  soundSentence, standing, TALK_INTRO, tallySentence, tagText, TEASER, whatIfEndingCaption, whatIfEndingRows, whatIfSentences,
 } from "../../src/ui/debrief/copy";
-import { createGame, displayed, reduce, type CounterfactualResult, type GameState, type LuckLink, type RunSummary } from "../../src/engine";
+import { counterfactual, createGame, displayed, reduce, type CounterfactualResult, type GameState, type LuckLink, type RunSummary } from "../../src/engine";
 import { loadContent } from "../../src/content";
 
 const arm = (overrides: Partial<RunSummary> = {}): RunSummary => ({
@@ -25,6 +25,7 @@ describe("copy rules (spec Section 14)", () => {
   const everySentence = [
     ...whatIfSentences(result, "The Open-Weight Release", "Welcome the release", "Negotiate evaluation access"),
     ...whatIfSentences({ ...result, changed: result.asPlayed }, "The Open-Weight Release", "A", "B"),
+    ...whatIfSentences(result, "The Open-Weight Release", "Welcome the release", "An export ban", true),
     soundSentence(true, 1, 4), soundSentence(false, 4, 4),
     causalSentence("An attack", 0.22, 0.3), causalSentence("An attack", 0.3, 0.2), causalSentence("An attack", 0.2, 0.2),
     outcomeSentence("An attack", 0.38, true), outcomeSentence("An attack", 0.38, false),
@@ -38,6 +39,7 @@ describe("copy rules (spec Section 14)", () => {
   const everyOtherLine = [
     ...DISCUSSION_PROMPTS, DEFEND_PROMPT, TALK_INTRO, BRIER_GLOSS, ...Object.values(TEASER),
     profileShareSentence({ benign: 30, contested: 40, hard: 30 }),
+    INTEL_MATCHED, INTEL_MISSED,
   ];
 
   test("every simulated statistic is prefixed \"Under this game's assumptions\"", () => {
@@ -63,12 +65,47 @@ describe("copy rules (spec Section 14)", () => {
     expect(score).toContain("rose by 0.6");
   });
 
-  test("an unaffordable what-if names the substitution instead of claiming the replay took the option", () => {
+  test("an unaffordable what-if describes per-world substitution, not that every replay substituted", () => {
     const [incidents, metrics] = whatIfSentences(result, "The Open-Weight Release", "Welcome the release", "An export ban", true);
     expect(incidents).toContain("cost more Political Capital than you had at the time");
+    expect(incidents).toContain("only when that world's capital can pay for it");
     expect(incidents).toContain("the nearest affordable option");
+    expect(incidents).not.toContain("each replay");
     expect(incidents).toContain("moved serious incidents from 31% of runs to 24%");
     expect(metrics).toContain("lowered median Innovation by 4 points");
+  });
+
+  test("an unaffordable what-if through the engine still requests the option, and the copy does not claim every replay substituted", () => {
+    const content = loadContent();
+    const TRACKS = ["evaluation", "provenance", "diplomacy", "defensiveCyber"] as const;
+    const costliest = (state: GameState) =>
+      [...state.current!.choices].filter((c) => c.status === "available").sort((a, b) => b.cost - a.cost)[0]!;
+    let found: { history: GameState["history"]; changeAt: number; choiceId: string; profile: GameState["world"]["profile"]; seed: number } | null = null;
+    for (let i = 0; i < 30 && !found; i++) {
+      const decisionStates: GameState[] = [];
+      let state = createGame(`WHAT-IF-COST-${i}`, content);
+      while (state.phase !== "debrief") {
+        if (state.phase === "forecast") state = reduce(state, { type: "FORECAST", value: 0.5 }, content);
+        else if (state.phase === "decide") {
+          if (state.current!.canBuyInfo && !state.current!.boughtInfo) {
+            state = reduce(state, { type: "BUY_INFO" }, content);
+            continue;
+          }
+          decisionStates.push(state);
+          state = reduce(state, { type: "DECIDE", choiceId: costliest(state).id }, content);
+        } else if (state.phase === "invest") state = reduce(state, { type: "INVEST", track: TRACKS.find((t) => state.tracks[t] < 3)! }, content);
+        else state = reduce(state, { type: "ADVANCE" }, content);
+      }
+      const changeAt = decisionStates.findIndex((s) => s.current!.choices.some((c) => c.status === "unaffordable"));
+      const option = changeAt >= 0 ? decisionStates[changeAt]!.current!.choices.find((c) => c.status === "unaffordable") : undefined;
+      if (option) found = { history: state.history, changeAt, choiceId: option.id, profile: state.world.profile, seed: state.world.seed };
+    }
+    expect(found).not.toBeNull();
+    const result = counterfactual(found!.history, found!.changeAt, found!.choiceId, 40, content, { profile: found!.profile, baseSeed: found!.seed });
+    expect(result.newChoiceId).toBe(found!.choiceId);
+    const [incidents] = whatIfSentences(result, "Scenario", "as played", found!.choiceId, true);
+    expect(incidents).toContain("only when that world's capital can pay for it");
+    expect(incidents).not.toContain("each replay");
   });
 });
 

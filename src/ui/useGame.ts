@@ -118,7 +118,8 @@ export function useGame() {
 
   const view = useMemo(() => (session.game ? displayed(session.game) : null), [session.game]);
   // For each decision, the options the player could not afford at the time, so the debrief's What-if can
-  // label them instead of hiding them: a replay substitutes the nearest affordable option (DECISIONS.md, B38).
+  // label them instead of hiding them. A replay takes the option when that world's capital can pay;
+  // otherwise it substitutes the nearest affordable option (DECISIONS.md, B38, F24).
   const unaffordable = useMemo<UnaffordableAt[]>(
     () => session.decisionStates.map((state) => ({
       capital: state.politicalCapital,

@@ -174,7 +174,7 @@ export const FACT_LABEL: Record<SeedFact, { name: string; whenTrue: string; when
 const DRAW_LABEL: Record<string, { text: string; not: string }> = {
   "recording-authentic": { text: "the recording was authentic", not: "the recording was not authentic" },
   "forensics-in-time": { text: "forensics finished before polling day", not: "forensics did not finish before polling day" },
-  "authentication-correct": { text: "the authentication result was correct", not: "the authentication result was inaccurate" },
+  "authentication-correct": { text: "the authentication result matched", not: "the authentication result did not match" },
   "alarm-real": { text: "the warning was real", not: "the warning was false" },
 };
 

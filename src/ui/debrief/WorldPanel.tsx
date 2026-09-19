@@ -1,4 +1,4 @@
-import { profileShareSentence } from "./copy";
+import { INTEL_MATCHED, INTEL_MISSED, profileShareSentence } from "./copy";
 import { FACT_LABEL, percent, PROFILE_LABEL } from "../format";
 import { pub, published } from "../useGame";
 import type { DisplayedState, SeedFact } from "../../engine";
@@ -43,7 +43,7 @@ export function WorldPanel({ view }: { view: DisplayedState }) {
                 <ul className="mt-1 space-y-1 text-sm">
                   {reports.map((report, index) => (
                     <li key={index}>
-                      <span className="font-semibold">{report.correct ? "Pointed the right way" : "Pointed the wrong way"}:</span> turn {report.turn},{" "}
+                      <span className="font-semibold">{report.correct ? INTEL_MATCHED : INTEL_MISSED}:</span> turn {report.turn},{" "}
                       {SOURCE[report.source].toLowerCase()}. &ldquo;{report.text}&rdquo;
                     </li>
                   ))}

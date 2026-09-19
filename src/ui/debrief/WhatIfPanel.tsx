@@ -29,7 +29,7 @@ export function WhatIfPanel({ view, whatIf, unaffordable, changeAt, onChangeAt }
   const alternatives = scenario.choices.filter((c) => c.id !== record.choiceId && !record.lockedChoiceIds.includes(c.id));
   const chosenAlternative = alternatives.find((c) => picked?.at === changeAt && c.id === picked.choiceId) ?? alternatives[0];
   // Unaffordable options stay on offer, labelled: hiding them would hide the capital lesson, and a silent
-  // substitution would claim the replay took an option it did not. The result names the substitution instead.
+  // substitution would claim the replay took an option it did not. The result describes per-world substitution.
   const unaffordableAt = unaffordable[changeAt];
   const over = (id: string) => unaffordableAt?.options.find((option) => option.id === id);
   const substitution = chosenAlternative ? over(chosenAlternative.id) : undefined;

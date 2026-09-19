@@ -322,3 +322,8 @@ export function worldLink(base: string, search: string, seedCode: string): strin
   if (cfg) params.set("cfg", cfg);
   return `${base}?${params.toString()}`;
 }
+
+/** How long a run takes, and that the game is not a policy to find (DECISIONS.md, F12). */
+export function titlePaceLine(turns: number): string {
+  return `About 25 minutes for ${turns} decisions. The game does not pick a policy for you.`;
+}

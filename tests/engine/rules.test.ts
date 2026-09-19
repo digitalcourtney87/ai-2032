@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { createGame, displayed, reduce, type Content, type GameState } from "../../src/engine";
+import { bandHalfWidth } from "../../src/engine/display";
 import { oddsOf } from "../../src/engine/resolve";
 import { first, fixture, playThrough, playTurn } from "./fixture";
 
@@ -20,10 +21,19 @@ const withMetrics = (state: GameState, metrics: Partial<GameState["metrics"]>): 
 const attackFires = (state: GameState) => playThrough(state, fixture, first).at(-1)!.outcomes.find((o) => o.eventId === "attack")!.fired;
 
 describe("estimate bands", () => {
+  // The exact half-width stays inside the engine: it would give away State Capacity (DECISIONS.md, B45).
   test.each([[0, 30], [40, 20], [100, 5]])("at State Capacity %i the half-width is %i", (capacity, halfWidth) => {
-    const view = displayed(withMetrics(createGame("BAND", fixture), { stateCapacity: capacity }));
-    expect(view.estimates.systemicRisk.halfWidth).toBe(halfWidth);
-    expect(view.estimates.cooperation.halfWidth).toBe(halfWidth);
+    expect(bandHalfWidth(withMetrics(createGame("BAND", fixture), { stateCapacity: capacity }))).toBe(halfWidth);
+  });
+
+  test.each([[40, 20], [100, 5]])("at State Capacity %i the shown band spans %i either side, rounded outwards", (capacity, halfWidth) => {
+    for (let i = 0; i < 50; i++) {
+      const view = displayed(withMetrics(createGame(`span-${i}`, fixture), { stateCapacity: capacity, systemicRisk: 50, cooperation: 50 }));
+      for (const { low, high } of Object.values(view.estimates)) {
+        expect(high - low).toBeGreaterThanOrEqual(2 * halfWidth);
+        expect(high - low).toBeLessThan(2 * halfWidth + 2);
+      }
+    }
   });
 
   test("the band always contains the true value, and is stable within a turn", () => {
@@ -43,11 +53,15 @@ describe("estimate bands", () => {
 });
 
 describe("truth stays in the engine", () => {
+  const sentinel = { systemicRisk: 37.123, cooperation: 61.457, stateCapacity: 43.891 };
+  /** Plays to just after the decision, when the turn context holds the most. */
+  const midTurn = (metrics: Partial<GameState["metrics"]>) => {
+    const state = reduce(withMetrics(createGame("HIDDEN", fixture), metrics), { type: "FORECAST", value: 0.5 }, fixture);
+    return reduce(state, { type: "DECIDE", choiceId: "B" }, fixture);
+  };
+
   test("displayed() exposes no true hidden value before the debrief", () => {
-    const sentinel = { systemicRisk: 37.123, cooperation: 61.457, stateCapacity: 43.891 };
-    let state = withMetrics(createGame("HIDDEN", fixture), sentinel);
-    state = reduce(state, { type: "FORECAST", value: 0.5 }, fixture);
-    state = reduce(state, { type: "DECIDE", choiceId: "B" }, fixture);
+    const state = midTurn(sentinel);
     expect(state.current!.oddsAtTheTime.length).toBeGreaterThan(0);
 
     const view = displayed(state);
@@ -57,6 +71,15 @@ describe("truth stays in the engine", () => {
     expect(view.debrief).toBeUndefined();
     expect(view.current!.oddsAtTheTime).toEqual([]);
     expect(json).not.toContain("cyberOffenceLed");
+  });
+
+  // A leak need not be the raw number. A field computed from a hidden value without
+  // rounding moves when that value moves, however slightly, and so gives it away.
+  test("no displayed field moves with a hidden value", () => {
+    const baseline = displayed(midTurn(sentinel));
+    for (const key of Object.keys(sentinel) as (keyof typeof sentinel)[]) {
+      expect(displayed(midTurn({ ...sentinel, [key]: sentinel[key] + 1e-6 })), key).toEqual(baseline);
+    }
   });
 
   test("the debrief unlocks the truth", () => {
