@@ -140,7 +140,7 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
 
 - [ ] 🟨 **Phase 15: Accessibility sweep, docs and handover**
   - [x] � Extended axe, overflow and keyboard walk over every new screen and state, in light and dark, at phone and desktop sizes: 9 new tests in `e2e/polish.spec.ts` at the B42 bar, including reflow at 320 px, focus-ring contrast and the phone's sticky bar; Playwright timeout 60 s, preview reused only off CI (`DECISIONS.md` B43)
-  - [ ] ⬜ README, `DECISIONS.md` and this plan updated; human-only items listed as open
+  - [x] 🟩 README, `DECISIONS.md` and this plan updated; human-only items listed as open; the playtest and timing protocol in `docs/playtest.md`; deferred work listed below
   - [ ] ⬜ Gate: all local gates green; the pull request is ready for the designer. Stop at completion.
 
 ## Owned by the designer, not the build
@@ -148,11 +148,30 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
 These parts of the definition of done cannot be passed by the builder and will be reported as open, never as done:
 
 - The Phase 4 playtest (a person finishing a run without code or docs)
-- Spec milestone M5: ten solo testers and one facilitated group of eight
-- First-time completion in under 30 minutes, and two of five testers naming a decision they would defend despite its outcome
-- The three willingness-to-pay sessions in the spec's commercial note
-- Whether the spec's commercial note (a paid workshop layer, and the three willingness-to-pay sessions above) still applies now that the game is a personal project for everyone (`DECISIONS.md` decision 14)
-- Sign-off of `DECISIONS.md` decision 14 and section F (the public-audience redesign)
-- The design reviews at the Phase 11 and Phase 13 gates, and the decision on optional Phase 14
 - The Phase 11 newcomer check: at least one person new to the game plays the opening and one turn, then answers the handoff's four questions: can they understand the dilemma, choose without specialist knowledge, explain the visible consequences, and do they want to continue? Open until run and written up.
+- The newcomer playtest (spec milestone M5 for a general audience; the playtest row in `DECISIONS.md` section F; the protocol is `docs/playtest.md`): ten solo testers from the general public with no professional background in AI policy, government or forecasting. An informal group sharing one seed code is optional. It reports:
+  - the spec's six metrics (Section 13): most-chosen option share per scenario below 60%; completion rate 80% or above; replay within a week 30% or above; testers who name a decision they would defend despite a bad outcome 50% or above, with two of five as the floor for a five-person round; the forecast slider used meaningfully (not left at 50%) in 70% of forecasts; testers who say the game pushed a policy line below 20%, split evenly by direction (its own question: whether the game seemed to favour one kind of policy)
+  - the engagement handoff's four approachability checks: understands the dilemma; chooses without specialist knowledge; can explain the visible consequences; wants to continue (chooses Keep going at the pause after turn 1)
+  - one neutrality question, asked in these words and reported on its own: "Did the game try to convince you AI is dangerous, or that it is safe?"
+  - testers who choose Stop here at the pause still count: they answer the neutrality, policy and approachability questions, and their turn-1 option and forecast come from the pause card
+  - per-step timing against the spec's budget: about 3 minutes a turn, about 5 minutes from the title to the pause card, about 25 minutes to the debrief, and under 30 minutes for a newcomer without help
+- The age range for playtesters (the game includes an election deepfake and a biosecurity scenario)
+- A preview address for playtesters, which only the designer can approve (no deploy is approved): phone testers need one, and so does the replay-within-a-week follow-up, which is reported as not measured without it
+- Sign-off of each row in `DECISIONS.md` section F, including the proposed withdrawal of the spec's commercial note; confirmed rows move to section A
+- The designer's answers on the deferred list below
 - Merging the redesign's pull request, and any deploy
+
+For the record, and the designer's rather than the build's: the review of the opening and one representative turn at the Phase 11 gate (2026-09-19), the review of the debrief at the Phase 13 gate (2026-09-19), and the decision on optional Phase 14 (not approved on 2026-09-19).
+
+## Deferred, not in this plan
+
+Raised while planning the public-audience redesign and left out on purpose. Each needs the designer's decision before it becomes work.
+
+- **Authored one-line adviser gists.** Advisers show only public fields today (D5): name, role, "Cares about", the option they back and their stance. A written gist per adviser per scenario is new content: it needs authoring, the copy-rule tests, and a check that no gist gives away an adviser's hidden bias, which `publicContent()` deliberately leaves out (`src/content/public.ts`). Wait until a playtest asks for it.
+- **A chance event on turn 1.** Under current content no world event can fire on turn 1 (event windows open at Scenario 2), so the first consequences only ever report the player's own headline, and the pause card cannot yet show chance at work. Making turn 1 eventful is a content change (for example a delay-0 event on a Scenario 1 option) that needs a balance rerun and a section E entry in `DECISIONS.md`.
+- **New everyday-stakes scenarios, such as hospitals or scams.** The engagement handoff's "use everyday stakes" is met here through framing only; the handoff itself says these are framing ideas, not claims that the scenarios exist. New scenarios mean new content with its real-world evidence, a balance rerun against Rules 4, 5 and 7, and a change to the eight-turn sequence (B1).
+- **The `Estimate.halfWidth` field.** `displayed()` hands every component each estimate's unrounded half-width, 30 − 0.25 × the true State Capacity, so the hidden value can be read back exactly from the data. No screen renders it, and the redesign never reads it (non-negotiable 4). The band on screen is rounded outwards and narrows State Capacity only to within about 4 points, which is spec Section 5's intended signal, not a leak. The engine fix is pull request #2 (branch `fix/estimate-halfwidth-leak`, logged there as `DECISIONS.md` B43). Merge it to `main`, then merge `main` into this branch before this pull request, and renumber this branch's new B rows if they collide with its B43.
+- **A same-world rewind.** Replaying one decision in the same world, after the debrief has revealed that world, would become a hindsight oracle that turns one draw into a verdict (B39; the debrief-order row in section F). What if across 1,000 fresh worlds, and the seed link for someone who has not played that world, stay the sanctioned ways to ask "what if".
+- **Editable assumptions for ordinary players after the debrief.** The facilitator panel stays behind `?facilitator=1`, unchanged (decision 14). Offering "change the model and play again" to everyone is a new feature: it needs copy that keeps clear the numbers are assumptions, not findings, and a design for how an edited world is labelled when it is shared.
+- **The Web Share API.** Sharing is clipboard only (decision 11), and the browser tests check that nothing is sent. A native share sheet would help on phones, but it changes that rule and cannot be tested in headless Chromium.
+- **A Playwright mobile project.** The phone checks set a 360 × 740 viewport on desktop Chromium. A second project with a mobile device profile would add touch input and a mobile user agent, but would roughly double the e2e run time. Add it, scoped with tags, if a playtest finds a touch-only problem.
