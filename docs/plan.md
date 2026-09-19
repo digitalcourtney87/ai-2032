@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `86%` of build steps (54 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
+**Overall Progress:** `90%` of build steps (57 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -126,10 +126,10 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 Consequences in four parts in the main column: Your decision, What the world noticed, What you can measure now, Still unknown
   - [x] 🟩 Gate: all local gates green. Stop for the designer's review of the opening and one representative turn.
 
-- [ ] ⬜ **Phase 12: First-decision pause (the five-minute taster)**
-  - [ ] ⬜ A pause after turn 1's consequences in every game, with "Keep going" and "Stop here"; no engine or content change
-  - [ ] ⬜ End-to-end helpers click through the pause
-  - [ ] ⬜ Gate: all local gates green; a run that pauses and continues reproduces an uninterrupted run. Commit on the feature branch.
+- [x] 🟩 **Phase 12: First-decision pause (the five-minute taster)**
+  - [x] 🟩 A pause after turn 1's consequences in every game, with "Keep going" and "Stop here"; no engine or content change
+  - [x] 🟩 End-to-end helpers click through the pause
+  - [x] 🟩 Gate: all local gates green; a run stopped at the pause, with Stop here opened, and then continued reproduces a replay of the same world from its link (`e2e/engagement.spec.ts`). Keep going only changes the interface stage (`App.tsx`), so it plays on in the same state. Commit on the feature branch.
 
 - [ ] ⬜ **Phase 13: A debrief for everyone**
   - [ ] ⬜ New order: At a glance, What if (preselected), Decision quality versus luck, collapsible reference panels, Talk it over, Share your run
