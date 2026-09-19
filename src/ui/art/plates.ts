@@ -17,93 +17,99 @@ import threshold2032 from "./threshold-2032.webp";
 
 export interface Plate {
   src: string;
-  figure: string;
   caption: string;
+  /** Pixel size of the webp file, so the page reserves the plate's space before it loads. */
+  width: number;
+  height: number;
 }
+
+/** The cover and scenario plates are 960 by 540; the ending marks are 384 by 384. */
+const WIDE = { width: 960, height: 540 } as const;
+const MARK = { width: 384, height: 384 } as const;
 
 export const COVER: Plate = {
   src: cover,
-  figure: "Fig. 00",
-  caption: "Cover sheet. Frontier Technology Risk Unit, 2026–2032.",
+  caption: "A government building, a map of Britain and Ireland, and a table stacked with files.",
+  ...WIDE,
 };
 
 export const SCENARIO_PLATES: Record<string, Plate> = {
   "attribution-gap": {
     src: attributionGap,
-    figure: "Fig. 01",
     caption: "Unattributed links between sites on a public network.",
+    ...WIDE,
   },
   "open-weight-release": {
     src: openWeightRelease,
-    figure: "Fig. 02",
     caption: "Weights leaving a store as open cargo.",
+    ...WIDE,
   },
   "biology-result": {
     src: biologyResult,
-    figure: "Fig. 03",
     caption: "A screening desk and a locked cabinet. Policy, not a protocol.",
+    ...WIDE,
   },
   "graduate-collapse": {
     src: graduateCollapse,
-    figure: "Fig. 04",
     caption: "An empty professional floor after hiring stalled.",
+    ...WIDE,
   },
   "deepfake-election": {
     src: deepfakeElection,
-    figure: "Fig. 05",
     caption: "A polling station and a wall of identical blank screens.",
+    ...WIDE,
   },
   "sandbagging-finding": {
     src: sandbaggingFinding,
-    figure: "Fig. 06",
     caption: "An evaluation room with a second room behind the glass.",
+    ...WIDE,
   },
   "incident-cyber": {
     src: incidentCyber,
-    figure: "Fig. 07",
     caption: "A substation and a control room after a disruption.",
+    ...WIDE,
   },
   "incident-bio": {
     src: incidentBio,
-    figure: "Fig. 08",
     caption: "A customs hall. An allied plot is a policy event, not a specimen.",
+    ...WIDE,
   },
   "false-alarm": {
     src: falseAlarm,
-    figure: "Fig. 09",
     caption: "A situation room waiting on a warning that may be empty.",
+    ...WIDE,
   },
   "threshold-2032": {
     src: threshold2032,
-    figure: "Fig. 10",
     caption: "A gate on a map. The 2032 deployment line.",
+    ...WIDE,
   },
 };
 
 export const ENDING_PLATES: Record<string, Plate> = {
   "responsible-ai-power": {
     src: endingResponsibleAiPower,
-    figure: "Fig. E1",
     caption: "A civic plan in balance.",
+    ...MARK,
   },
   fortress: {
     src: endingFortress,
-    figure: "Fig. E2",
     caption: "A thick-walled station, well informed and closed.",
+    ...MARK,
   },
   "deregulated-frontier": {
     src: endingDeregulatedFrontier,
-    figure: "Fig. E3",
     caption: "An open gate and unfenced ground.",
+    ...MARK,
   },
   "dependent-state": {
     src: endingDependentState,
-    figure: "Fig. E4",
     caption: "A small hall beside a much larger terminal.",
+    ...MARK,
   },
   "unknown-frontier": {
     src: endingUnknownFrontier,
-    figure: "Fig. E5",
     caption: "A surveyed horizon with nothing resolved.",
+    ...MARK,
   },
 };

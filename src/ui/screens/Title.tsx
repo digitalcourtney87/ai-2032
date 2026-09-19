@@ -23,7 +23,7 @@ export function Title({ initialSeed, onStart }: Props) {
 
   return (
     <div>
-      <Figure src={COVER.src} figure={COVER.figure} caption={COVER.caption} state="720pt" className="mb-6" />
+      <Figure {...COVER} className="mb-6" />
       <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">A decision game</p>
       <h1 className="mt-2 text-4xl">AI 2032</h1>
       <p className="mt-6 text-lg">

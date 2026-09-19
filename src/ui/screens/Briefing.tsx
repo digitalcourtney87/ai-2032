@@ -27,7 +27,7 @@ export function Briefing({ view, scenario, onContinue }: Props) {
 
   return (
     <div className="space-y-6">
-      {plate && <Figure src={plate.src} figure={plate.figure} caption={plate.caption} state="720pt" />}
+      {plate && <Figure {...plate} />}
       <p className="text-lg">{scenario.briefing}</p>
       <EvidenceTag evidence={scenario.evidenceStrength} severity={scenario.severity} reduced={crisis} />
       {crisis && (

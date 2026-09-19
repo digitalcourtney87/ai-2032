@@ -41,7 +41,7 @@ export function App() {
 
   if (!view) {
     return (
-      <AppShell chrome={{}} steps={["Cover"]} stepIndex={0} stepsLabel="Document" figureId="Cover · 720pt">
+      <AppShell>
         <Title
           initialSeed={seedFromUrl()}
           onStart={(seedCode) => {
@@ -65,7 +65,6 @@ export function App() {
         steps={DEBRIEF_STEPS}
         stepIndex={0}
         stepsLabel="Record contents"
-        figureId="Debrief · Record · 720pt"
         status={<StatusPanel view={view} />}
       >
         <Debrief
@@ -120,7 +119,6 @@ export function App() {
       steps={visibleSteps}
       stepIndex={activeIndex}
       stepsLabel="Steps in this turn"
-      figureId={`Turn ${turn} · ${currentStep} · 720pt`}
       status={<StatusPanel view={view} before={reporting ? before : null} />}
     >
       {scenario.isCrisis && (

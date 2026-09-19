@@ -108,7 +108,7 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 Docs: `DECISIONS.md` decision 14 and section F; Phases 8 to 15 here; `CLAUDE.md` reading list and branch workflow
   - [x] 🟩 Gate: all local gates green (e2e 19 passed in 13.8 s); baseline e2e timing recorded; crash bug fixed with a regression test. Committed on the feature branch.
 
-- [ ] ⬜ **Phase 9: The opening**
+- [ ] 🟨 **Phase 9: The opening**
   - [ ] ⬜ Dilemma-first title screen; the primary button reads "Try your first decision" and sits inside the first viewport at 375×667, 726×900 and 1280×800
   - [ ] ⬜ Seed field inside "Play the same world as a friend", open when the link carries a seed; the fictional-unit disclaimer stays
   - [ ] ⬜ Print-production labels removed (figure ids, 720PT, 48MM, "Fig. NN"); mono microlabels at least 12px
