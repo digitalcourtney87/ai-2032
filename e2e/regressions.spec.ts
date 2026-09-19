@@ -2,7 +2,7 @@
 // Each test failed before its fix landed.
 
 import { expect, test } from "@playwright/test";
-import { finishTurn, LABEL, scenarioTitle, startGame, toDecision } from "./play";
+import { finishTurn, LABEL, playTurn, scenarioTitle, startGame, toDecision } from "./play";
 
 test("commissioning analysis after picking an option it makes unaffordable clears the pick instead of crashing", async ({ page }) => {
   // Seed STALE-PICK: buying analysis and taking C, D and B on turns 1 to 3 leaves
@@ -28,4 +28,31 @@ test("commissioning analysis after picking an option it makes unaffordable clear
   // The player can still take an option they can afford, and the game goes on.
   expect(await finishTurn(page, { prefer: "D" })).toBe("D");
   await expect(page.getByRole("heading", { level: 1 })).not.toHaveText("The Graduate Collapse");
+});
+
+test("the final turn never lists an investment step, even on its consequences", async ({ page }) => {
+  await startGame(page, "FINAL-RAIL");
+  const rail = page.getByRole("navigation", { name: "Steps in this turn" });
+  for (let turn = 1; turn <= 6; turn++) await playTurn(page);
+
+  // Turn 7 took an investment. Its consequences show while view.current is already the final turn.
+  await toDecision(page);
+  await page.locator('input[name="choice"]:enabled').first().check();
+  await page.getByRole("button", { name: LABEL.confirm }).click();
+  await page.locator('input[name="track"]:enabled').first().check();
+  await page.getByRole("button", { name: LABEL.investIn }).click();
+  await expect(page.getByRole("heading", { name: LABEL.newsHeading })).toBeVisible();
+  await expect(rail).toContainText("Investment");
+  await page.getByRole("button", { name: LABEL.next }).click();
+
+  expect(await scenarioTitle(page)).toBe("The 2032 Threshold");
+  await toDecision(page);
+  await expect(rail).not.toContainText("Investment");
+  await page.locator('input[name="choice"]:enabled').first().check();
+  await page.getByRole("button", { name: LABEL.confirm }).click();
+  await expect(page.getByRole("heading", { name: LABEL.newsHeading })).toBeVisible();
+  await expect(rail.locator('[aria-current="step"]')).toContainText("Consequences");
+  await expect(rail).not.toContainText("Investment");
+  await page.getByRole("button", { name: LABEL.next }).click();
+  await expect(page.getByTestId("debrief")).toBeVisible();
 });

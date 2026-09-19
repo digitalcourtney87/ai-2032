@@ -94,7 +94,12 @@ export function App() {
   const isInterrupt = !pub.sequence.includes(scenario.id);
   const stepIndex = stage === "briefing" ? 0 : stage === "news" ? 4 : view.phase === "forecast" ? 1 : view.phase === "decide" ? 2 : 3;
   const current = view.current;
-  const visibleSteps = STEPS.filter((step) => !(step === "Investment" && view.current?.isFinal));
+  // The final decision takes no investment. While the news reports a turn, the engine has already
+  // moved on: after the investment of the turn before the final one, `current` is the final turn,
+  // and after the final decision it is cleared. So while reporting, the finished game is what marks
+  // the final turn.
+  const finalTurn = reporting ? view.phase === "debrief" : Boolean(current?.isFinal);
+  const visibleSteps = STEPS.filter((step) => !(step === "Investment" && finalTurn));
   const currentStep = STEPS[stepIndex] ?? "Briefing";
   const activeIndex = Math.max(0, visibleSteps.indexOf(currentStep));
 
