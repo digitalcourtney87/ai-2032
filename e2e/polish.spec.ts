@@ -118,6 +118,9 @@ for (const colorScheme of ["light", "dark"] as const) {
     await expectNoSeriousViolations(page, "investment ladder with a track selected");
     await page.getByRole("button", { name: LABEL.investIn }).click();
     await expectNoSeriousViolations(page, "news");
+    await page.getByText("What these measures mean").click();
+    await expect(page.getByText(/each turn adds \d+ Political Capital/)).toBeVisible();
+    await expectNoSeriousViolations(page, "news with the measures explained");
     await page.getByRole("button", { name: LABEL.next }).click();
 
     await playUntil(page, "The Deepfake Election");

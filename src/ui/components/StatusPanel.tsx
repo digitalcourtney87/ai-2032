@@ -1,7 +1,9 @@
 import { EstimateBand } from "./EstimateBand";
 import { Icon, type IconName } from "./Icon";
 import { MetricBar } from "./MetricBar";
-import { METRIC_MEANING, TRACK_LABEL } from "../format";
+import { capitalRulesLine } from "../copy";
+import { METRIC_LABEL, METRIC_MEANING, METRIC_ORDER, TRACK_LABEL } from "../format";
+import { pub } from "../useGame";
 import type { DisplayedState, Track } from "../../engine";
 
 const EXACT = ["nationalSecurity", "economy", "publicTrust", "innovation", "socialStability"] as const;
@@ -71,6 +73,27 @@ export function StatusPanel({ view, before }: Props) {
           ))}
         </ul>
       </section>
+
+      {/* The meanings were only in title= tooltips, which keyboard and touch users never see. */}
+      <details className="border-t border-rule pt-4 text-sm">
+        <summary className="cursor-pointer py-1 font-semibold">What these measures mean</summary>
+        <dl className="mt-2 space-y-2">
+          <div>
+            <dt className="font-semibold">Political Capital</dt>
+            <dd className="text-muted">What you spend on decisions and analysis. {capitalRulesLine(pub.rules)}</dd>
+          </div>
+          {METRIC_ORDER.map((metric) => (
+            <div key={metric}>
+              <dt className="font-semibold">{METRIC_LABEL[metric]}</dt>
+              <dd className="text-muted">{METRIC_MEANING[metric]}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-2 text-xs text-muted">
+          The first five are known exactly. Systemic AI Risk and International Cooperation are estimates shown as a range; State Capacity is
+          shown only as a label.
+        </p>
+      </details>
     </aside>
   );
 }
