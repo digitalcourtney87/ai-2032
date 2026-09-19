@@ -23,6 +23,8 @@ function formatBase(base: BaseProbability | "certain" | undefined): string {
 /** "View assumptions": the probability table behind a scenario (spec Section 11). Design assumptions, not forecasts. */
 export function Assumptions({ scenarioId }: { scenarioId: string }) {
   const options = published.options[scenarioId] ?? [];
+  // A facilitator's weights need not sum to 100 (B41), so each profile is shown as its share of the total, as the world panel shows it.
+  const totalWeight = PROFILES.reduce((sum, p) => sum + published.profiles[p].weight, 0);
   return (
     <div className="space-y-5 text-sm">
       <p className="text-muted">
@@ -65,7 +67,7 @@ export function Assumptions({ scenarioId }: { scenarioId: string }) {
               <tr className="border-b border-rule text-muted">
                 <th scope="col" className="py-1 pr-2 font-normal">Latent fact</th>
                 {PROFILES.map((p) => (
-                  <th key={p} scope="col" className="py-1 pr-2 text-right font-normal">{PROFILE_LABEL[p]} ({published.profiles[p].weight}%)</th>
+                  <th key={p} scope="col" className="py-1 pr-2 text-right font-normal">{PROFILE_LABEL[p]} ({Math.round((published.profiles[p].weight / totalWeight) * 100)}%)</th>
                 ))}
               </tr>
             </thead>

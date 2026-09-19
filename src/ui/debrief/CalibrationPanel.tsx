@@ -1,5 +1,5 @@
 import { CartesianGrid, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, XAxis, YAxis, ZAxis } from "recharts";
-import { calibrationBins } from "./copy";
+import { BRIER_GLOSS, calibrationBins } from "./copy";
 import { ADVISER_ORDER, percent } from "../format";
 import { pub } from "../useGame";
 import type { DisplayedState } from "../../engine";
@@ -8,10 +8,11 @@ import type { DisplayedState } from "../../engine";
 export function CalibrationPanel({ view }: { view: DisplayedState }) {
   const debrief = view.debrief!;
   const bins = calibrationBins(debrief.forecasts);
+  // You first, then the advisers in their usual order: a comparison, not a ranking to climb.
   const scores = [
     { name: "You", score: debrief.brier },
     ...ADVISER_ORDER.map((id) => ({ name: pub.advisers.find((a) => a.id === id)!.name, score: debrief.adviserBrier[id] ?? 0 })),
-  ].sort((a, b) => a.score - b.score);
+  ];
 
   return (
     <div className="space-y-5">
@@ -20,8 +21,7 @@ export function CalibrationPanel({ view }: { view: DisplayedState }) {
         <strong data-testid="brier" className="tabular-nums">
           {debrief.brier.toFixed(3)}
         </strong>
-        . It is the average squared gap between each forecast and what happened: 0 is perfect, and always answering 50% scores 0.250.
-        With eight forecasts it is a rough measure.
+        . {BRIER_GLOSS}
       </p>
 
       <figure>
@@ -73,7 +73,7 @@ export function CalibrationPanel({ view }: { view: DisplayedState }) {
       </table>
 
       <table className="w-full max-w-sm text-sm">
-        <caption className="pb-1 text-left font-semibold">Brier scores, best first</caption>
+        <caption className="pb-1 text-left font-semibold">Forecast scores on the same questions (lower is closer)</caption>
         <tbody>
           {scores.map((row) => (
             <tr key={row.name} className={`border-b border-rule ${row.name === "You" ? "font-semibold" : ""}`}>

@@ -741,3 +741,21 @@ test("each reviewed decision leads with what was chosen, keeps its tag in view a
   // so they are set aside; every word the sentences add around them is checked.
   expect(everything.replace(/“[^”]*”/g, "“…”")).not.toMatch(/\b(right|wrong|correct|incorrect|mistake|should have)\b/i);
 });
+
+test("the world panel reads the draw odds from the weights in force, and the Brier score is explained in plain words", async ({ page }) => {
+  await page.goto("/?facilitator=1&seed=WEIGHTS");
+  await page.locator("#weight-benign").fill("50");                           // 50 / 40 / 30: shares of 42%, 33% and 25%
+  await page.goto(await page.getByTestId("participant-link").innerText());
+  await page.getByRole("button", { name: LABEL.start }).click();
+  await playToDebrief(page);
+
+  await openPanel(page, /The world you were in/);
+  await expect(page.getByText(/a benign world 42% of the time, a contested one 33% and a hard one 25%/)).toBeVisible();
+  await page.getByText("View assumptions").click();                            // the assumptions table shows the same shares
+  await expect(page.getByRole("columnheader", { name: "Benign world (42%)" })).toBeVisible();
+  await openPanel(page, /Calibration/);
+  await expect(page.getByText(/Lower means closer\./)).toBeVisible();
+  const scores = page.getByRole("table", { name: /^Forecast scores on the same questions/ });   // a comparison, not a ranking
+  await expect(scores.getByRole("rowheader").first()).toHaveText("You");
+  await expect(page.getByText("Brier scores, best first")).toHaveCount(0);
+});
