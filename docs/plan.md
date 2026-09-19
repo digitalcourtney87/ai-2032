@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `90%` of build steps (57 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
+**Overall Progress:** `94%` of build steps (59 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -131,10 +131,10 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 End-to-end helpers click through the pause
   - [x] 🟩 Gate: all local gates green; a run stopped at the pause, with Stop here opened, and then continued reproduces a replay of the same world from its link (`e2e/engagement.spec.ts`). Keep going only changes the interface stage (`App.tsx`), so it plays on in the same state. Commit on the feature branch.
 
-- [ ] ⬜ **Phase 13: A debrief for everyone**
-  - [ ] ⬜ New order: At a glance, What if (preselected), Decision quality versus luck, collapsible reference panels, Talk it over, Share your run
-  - [ ] ⬜ Existing panel headings, test ids and copy rules kept
-  - [ ] ⬜ Gate: all local gates green. Stop for the designer's review.
+- [ ] 🟨 **Phase 13: A debrief for everyone**
+  - [x] 🟩 New order: At a glance, What if (preselected), Decision quality versus luck, collapsible reference panels, Talk it over, Share your run
+  - [x] 🟩 Existing panel headings, test ids and copy rules kept
+  - [ ] 🟨 Gate: all local gates green (e2e 62 passed); awaiting the designer's review.
 
 - [ ] ⬜ **Phase 14 (optional): Save and resume**, only if the designer approves `DECISIONS.md` F7
   - [ ] ⬜ The action log, never the game state, saved in this browser; opt-in "Continue" on the title screen
