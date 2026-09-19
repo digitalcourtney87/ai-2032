@@ -111,6 +111,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.getByText("Look again at the briefing and your advisers").click();
     await expectNoSeriousViolations(page, "decision with the briefing recap open");
     await page.locator('input[name="choice"]:enabled').first().check();
+    await expectNoSeriousViolations(page, "decision with a choice previewed");
     await page.getByRole("button", { name: LABEL.confirm }).click();
     await expectNoSeriousViolations(page, "investment");
     await page.locator('input[name="track"]:enabled').first().check();

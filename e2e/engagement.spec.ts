@@ -429,3 +429,32 @@ test.describe("briefing and forecast", () => {
     await expect(page.getByRole("link", { name: "Skip to the main content" })).toHaveCount(1);
   });
 });
+
+// ---------------------------------------------------------------- Phase 11: decision, investment and consequences
+
+test.describe("decision, investment and consequences", () => {
+  test("choosing an option previews the Political Capital it would leave", async ({ page }) => {
+    await startGame(page, "PREVIEW-E2E");
+    await toDecision(page);
+    await expect(page.getByText("Choose an option to see what it would cost.")).toBeVisible();
+    const capital = Number((await page.getByLabel(/^\d+ Political Capital$/).getAttribute("aria-label"))!.split(" ")[0]);
+    const option = page.locator('input[name="choice"]:enabled').first();
+    const id = (await option.getAttribute("id"))!.replace("choice-", "");
+    const cost = Number(/Cost:\s*(\d+) Political Capital/.exec(await page.locator(`#choice-${id}-detail`).innerText())![1]);
+
+    await option.check();
+    await expect(page.getByText(`Option ${id}: Political Capital ${capital} → ${capital - cost} (costs ${cost}).`)).toBeVisible();
+    await expect(page.getByRole("heading", { name: `If you choose option ${id}` })).toBeVisible();
+    await expect(page.getByText("plans do not always work out", { exact: false })).toBeVisible();
+    await expect(page.getByRole("button", { name: `Confirm option ${id}` })).toBeEnabled();
+  });
+
+  test("on a desktop, the Political Capital an option would leave is in view as soon as it is picked", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await startGame(page, "PREVIEW-DESKTOP");
+    await toDecision(page);
+    await page.locator('input[name="choice"]:enabled').first().check();
+    await expect(page.getByText(/^Option [A-E]: Political Capital \d+ → \d+/)).toBeInViewport();
+    await expect(page.getByRole("button", { name: LABEL.confirm })).toBeInViewport();
+  });
+});

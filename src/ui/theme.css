@@ -200,6 +200,28 @@ input, select, textarea {
   outline-offset: 2px;
 }
 
+/* On an inverted (ink) ground, such as a selected option card, the accent ring falls
+   below 3:1 against ink; draw it in the paper colour there (WCAG 1.4.11). */
+.bg-ink :focus-visible {
+  outline-color: var(--paper);
+}
+
+/* The Decision screen's confirm bar sticks to the bottom of the viewport at every width,
+   so the Political Capital an option would leave is in view as soon as it is picked; but
+   only when the viewport is tall enough. At high zoom or on a landscape phone it would
+   cover half the screen (WCAG 1.4.10). Keep keyboard focus from scrolling under it
+   (WCAG 2.4.11). */
+@media (min-height: 36rem) {
+  [data-decision-bar] {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+  html:has([data-decision-bar]) {
+    scroll-padding-bottom: 9rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     transition-duration: 0.01ms !important;
