@@ -1,10 +1,27 @@
 # Plan execution handoff: public-engagement UI (Phases 8–15)
 
-2026-09-19
+2026-09-19 (updated same day, after Phase 9)
+
+## Current state — resume here
+
+**Phases 8 and 9 are complete and committed on the feature branch `redesign/public-engagement`. The next session starts at Phase 10** ("Briefing and forecast"), beginning with its "Before Task 10.1" checklist (`git tag -f phase-10-start`, verify `continueToForecast` in `e2e/play.ts`, `e2e/engagement.spec.ts` exists).
+
+Commits on the branch, oldest first: `36a7e50` (8.2 helpers/axe), `89f9774` (8.3–8.6 fixes and guards), `3426a90` (Phase 8 gate), `d8b5172` (9.1 print labels), `54a6c37` (9.2 12px labels), `1a90529` (9.3 dilemma-first opening), `ed5b215` (9.4 link-preview meta), `a67434a` (9.5 decisions record), `55153c2` (Phase 9 gate).
+
+State at the Phase 9 gate: lint clean; `npm run test` 257 passed; `npm run balance` passed (35.4/27.5/37.1); `npm run build` → `dist` 1,976 KB; `npm run e2e` **29 passed**; no `Begin` in `src`/`e2e`; no `figureId`/`720pt`/`48mm` in `src`. Progress: 73% (46 of 63).
+
+Notes a new session needs:
+
+- Pull request #2 (`fix/estimate-halfwidth-leak`) was still **OPEN** when checked; the designer chose to start without it. The plan says to merge `origin/main` into the branch if it lands later — check `gh pr view 2 --json state --jq .state`.
+- The leftover planning worktree `.claude/worktrees/ui-engagement-handoff-plan-7de72b` was **deleted** — its second tsconfig made `eslint .` fail on every file. Keep `.claude/worktrees/` free of tsconfig-bearing checkouts or lint breaks again.
+- `docs/plan.md` and `DECISIONS.md` now carry the Phases 8–15 blocks and section F rows (Phase 8 Task 8.7); Phase 9's records are written (Task 9.5). Keep ticking status lines as you go.
+- `e2e/play.ts` has the `LABEL` constants — `LABEL.start` is `"Try your first decision"`. `e2e/engagement.spec.ts` holds the Phase 9 tests. The debrief root has `data-testid="debrief"`.
+- Two real bugs were fixed along the way: a stale selected-option crash after commissioning analysis, and the final turn's steps rail listing Investment. Regression tests live in `e2e/regressions.spec.ts`.
+- The title h1 takes App's step-heading ref through a `headingRef` prop; the focus effect skips the title until a game has started. Phase 12 and 14 anchor on this.
 
 ## Purpose of the next session
 
-Execute the implementation plan at `docs/plans/2026-09-19-public-engagement-ui.md`. The plan is complete, self-contained and committed on `main` (commit `96d6c72`). Nothing from it has been implemented yet — the codebase is unchanged since `a11ef34`.
+Execute the implementation plan at `docs/plans/2026-09-19-public-engagement-ui.md`. The plan is complete, self-contained and committed on `main` (commit `96d6c72`). Phases 8–9 are done (see "Current state" above); the codebase baseline was `a11ef34`.
 
 The plan implements the public-audience redesign briefed in `docs/ui-engagement-handoff.md`: the user's clarification there ("Everyone — it should be interesting to everyone") is the authoritative audience, superseding the spec's workshop framing.
 
@@ -45,5 +62,5 @@ Human-only items (newcomer playtest timing, whether anyone uses "Continue your g
 
 ## Useful context, not required
 
-- The planning session's worktree is `.claude/worktrees/ui-engagement-handoff-plan-7de72b` (branch `claude/ui-engagement-handoff-plan-7de72b`, now equal to `main`). You may work there or in the main checkout; its scratchpad drafts under `/private/tmp/` are disposable — the committed plan supersedes them.
+- The planning session's worktree `.claude/worktrees/ui-engagement-handoff-plan-7de72b` has been removed (it broke `eslint .`; see "Current state"). Its branch `claude/ui-engagement-handoff-plan-7de72b` still exists and equals `main`. Scratchpad drafts under `/private/tmp/` are disposable — the committed plan supersedes them.
 - The plan was machine-drafted and adversarially reviewed but not machine-executed: where it and the code disagree, the code wins — follow the plan's own "stop and ask" escape hatches rather than forcing an anchor.
