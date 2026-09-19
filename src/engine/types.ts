@@ -387,11 +387,11 @@ export type Action =
   | { type: "INVEST"; track: Track }
   | { type: "ADVANCE" };
 
+/** No half-width: unrounded, it would reveal State Capacity (DECISIONS.md, B43). */
 export interface Estimate {
   low: number;
   mid: number;
   high: number;
-  halfWidth: number;
 }
 
 /** The only view of the game a component may render (handoff invariant 3). */
