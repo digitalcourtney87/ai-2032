@@ -115,6 +115,7 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.getByRole("button", { name: LABEL.confirm }).click();
     await expectNoSeriousViolations(page, "investment");
     await page.locator('input[name="track"]:enabled').first().check();
+    await expectNoSeriousViolations(page, "investment ladder with a track selected");
     await page.getByRole("button", { name: LABEL.investIn }).click();
     await expectNoSeriousViolations(page, "news");
     await page.getByRole("button", { name: LABEL.next }).click();

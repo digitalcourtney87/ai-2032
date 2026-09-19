@@ -457,4 +457,19 @@ test.describe("decision, investment and consequences", () => {
     await expect(page.getByText(/^Option [A-E]: Political Capital \d+ → \d+/)).toBeInViewport();
     await expect(page.getByRole("button", { name: LABEL.confirm })).toBeInViewport();
   });
+
+  test("the investment ladder spells out this turn's level change", async ({ page }) => {
+    await startGame(page, "LADDER-E2E");
+    await toDecision(page);
+    await page.locator('input[name="choice"]:enabled').first().check();
+    await page.getByRole("button", { name: LABEL.confirm }).click();
+    await expect(page.getByRole("group", { name: LABEL.investGroup })).toBeVisible();
+    await expect(page.getByText(/^This turn: level/)).toHaveCount(0);
+
+    await page.getByRole("radio", { name: /^Evaluation science/ }).check();
+    await expect(page.getByText("This turn: level 0 → 1. Takes effect when the turn ends.")).toBeVisible();
+    await expect(page.getByText("Bonus per level: State Capacity +4")).toBeVisible();
+    await expect(page.getByText("A government incident-response model in the unscheduled crisis")).toBeVisible();
+    await expect(page.getByText("(still ahead)").first()).toBeVisible();
+  });
 });

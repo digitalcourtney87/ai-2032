@@ -1,17 +1,11 @@
 import { useState } from "react";
 import { Button } from "../components/Button";
-import { Icon, type IconName } from "../components/Icon";
-import { TRACK_LABEL, TRACK_MILESTONES, trackBonusText } from "../format";
+import { TrackLadder } from "../components/TrackLadder";
+import { LADDER_CAPTION, ladderIntro } from "../copy";
+import { TRACK_LABEL, trackBonusText, TRACKS } from "../format";
+import { milestonesFor } from "../preparation";
 import { pub } from "../useGame";
 import type { DisplayedState, Track } from "../../engine";
-
-const TRACKS: Track[] = ["evaluation", "provenance", "diplomacy", "defensiveCyber"];
-const TRACK_ICON: Record<Track, IconName> = {
-  evaluation: "evaluation",
-  provenance: "provenance",
-  diplomacy: "diplomacy",
-  defensiveCyber: "defensiveCyber",
-};
 
 interface Props {
   view: DisplayedState;
@@ -21,55 +15,27 @@ interface Props {
 /** Step 5: one point into one track. Tracks unlock later options, which is where preparation pays. */
 export function Invest({ view, onInvest }: Props) {
   const [selected, setSelected] = useState<Track | null>(null);
+  const points = pub.totalTurns - 1;                // one a turn; the final decision takes none (decision 3)
+  const levels = TRACKS.length * 3;
 
   return (
     <div className="space-y-6">
       <fieldset>
         <legend className="text-xl font-semibold">Standing investment</legend>
-        <p className="mt-1 text-sm text-muted">
-          One point, every turn, into one track. It costs no Political Capital. You have seven points in the whole game and twelve levels to
-          fill, so you cannot prepare for everything.
-        </p>
-        <div className="mt-4 space-y-3">
-          {TRACKS.map((track) => {
-            const level = view.tracks[track];
-            const full = level >= 3;
-            const on = selected === track;
-            const inputId = `track-${track}`;
-            return (
-              <div key={track} className={`border p-4 ${on ? "border-ink bg-ink text-paper" : "border-rule"} ${full ? "opacity-60" : ""}`}>
-                <div className="flex gap-3">
-                  <input
-                    id={inputId}
-                    type="radio"
-                    name="track"
-                    className="mt-1.5 size-4 accent-current"
-                    checked={on}
-                    disabled={full}
-                    onChange={() => setSelected(track)}
-                    aria-describedby={`${inputId}-detail`}
-                  />
-                  <div>
-                    <label htmlFor={inputId} className="font-semibold">
-                      <Icon name={TRACK_ICON[track]} className="mr-1" />
-                      {TRACK_LABEL[track]}{" "}
-                      <span className={`font-mono font-normal ${on ? "opacity-80" : "text-muted"}`}>&middot; level {level} of 3</span>
-                    </label>
-                    <div id={`${inputId}-detail`} className="mt-1 text-sm">
-                      <p>{trackBonusText(pub.trackBonuses[track])} per level</p>
-                      <ul className={on ? "opacity-80" : "text-muted"}>
-                        {TRACK_MILESTONES[track].map((milestone) => (
-                          <li key={milestone.text}>
-                            Level {milestone.level}: {milestone.text}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <p className="mt-1 text-sm text-muted">{ladderIntro(points, levels, Math.min(view.turn, points))}</p>
+        <p className="mt-1 text-sm text-muted">{LADDER_CAPTION}</p>
+        <div className="mt-4 space-y-4">
+          {TRACKS.map((track) => (
+            <TrackLadder
+              key={track}
+              track={track}
+              level={view.tracks[track]}
+              bonus={trackBonusText(pub.trackBonuses[track])}
+              rungs={milestonesFor(track, view, pub)}
+              selected={selected === track}
+              onSelect={() => setSelected(track)}
+            />
+          ))}
         </div>
       </fieldset>
       <Button disabled={selected === null} onClick={() => selected && onInvest(selected)}>
