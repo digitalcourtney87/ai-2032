@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `73%` of build steps (46 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
+**Overall Progress:** `79%` of build steps (50 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -114,11 +114,11 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 Print-production labels removed (figure ids, 720PT, 48MM, "Fig. NN"); mono microlabels at least 12px
   - [x] 🟩 Gate: `e2e/engagement.spec.ts` checks the button position at the three sizes; all local gates green (e2e 29 passed in 12.8 s). Committed on the feature branch.
 
-- [ ] 🟨 **Phase 10: Briefing and forecast**
-  - [ ] ⬜ Advisers: "Cares about", "Backs option X" and a "Who backs what" split, from public content only
-  - [ ] ⬜ Forecast: gut feel first, then "Compare with your advisers" on the same 0 to 100 scale; "Lock in N%" always enabled
-  - [ ] ⬜ Play-screen sentence builders in `src/ui/copy.ts`, unit-tested against the copy rules
-  - [ ] ⬜ Gate: all local gates green; axe clean on the new states in light and dark. Commit on the feature branch.
+- [x] � **Phase 10: Briefing and forecast**
+  - [x] 🟩 Advisers: "Cares about", "Backs option X" and a "Who backs what" split, from public content only
+  - [x] 🟩 Forecast: gut feel first, then "Compare with your advisers" on the same 0 to 100 scale; "Lock in N%" always enabled
+  - [x] 🟩 Play-screen sentence builders in `src/ui/copy.ts`, unit-tested against the copy rules
+  - [x] 🟩 Gate: all local gates green; axe clean on the new states in light and dark. Commit on the feature branch.
 
 - [ ] ⬜ **Phase 11: Decision, investment and consequences**
   - [ ] ⬜ `publicContent()` gains the Political Capital rules and track bonuses; investment copy corrected (`DECISIONS.md` F10, F11)
