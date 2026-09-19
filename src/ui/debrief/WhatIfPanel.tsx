@@ -1,28 +1,31 @@
 import { useState } from "react";
 import { Assumptions } from "./Assumptions";
-import { whatIfMethod, whatIfSentences } from "./copy";
+import { whatIfEndingCaption, whatIfEndingRows, whatIfMethod, whatIfSentences } from "./copy";
 import { Button } from "../components/Button";
-import { PROFILE_LABEL } from "../format";
+import { percent, PROFILE_LABEL } from "../format";
 import { pub, WHAT_IF_RUNS, type WhatIfAnswer } from "../useGame";
 import type { DisplayedState } from "../../engine";
 
 interface Props {
   view: DisplayedState;
   whatIf: (changeAt: number, newChoiceId: string) => Promise<WhatIfAnswer>;
+  /** The decision to change, by its place in the history. The debrief holds it, so At a glance can choose it. */
+  changeAt: number;
+  onChangeAt: (index: number) => void;
 }
 
-/** Panel 6: counterfactual reruns of any one decision, phrased as the model's output and never as a finding. */
-export function WhatIfPanel({ view, whatIf }: Props) {
+/** Counterfactual reruns of any one decision, phrased as the model's output and never as a finding. */
+export function WhatIfPanel({ view, whatIf, changeAt, onChangeAt }: Props) {
   const history = view.history ?? [];
-  const [changeAt, setChangeAt] = useState(0);
-  const [newChoiceId, setNewChoiceId] = useState("");
+  // The alternative picked, and for which decision: choosing another decision starts again from its first alternative.
+  const [picked, setPicked] = useState<{ at: number; choiceId: string } | null>(null);
   const [answer, setAnswer] = useState<(WhatIfAnswer & { changeAt: number }) | null>(null);
   const [running, setRunning] = useState(false);
 
   const record = history[changeAt]!;
   const scenario = pub.scenarios[record.scenarioId]!;
   const alternatives = scenario.choices.filter((c) => c.id !== record.choiceId && !record.lockedChoiceIds.includes(c.id));
-  const chosenAlternative = alternatives.find((c) => c.id === newChoiceId) ?? alternatives[0];
+  const chosenAlternative = alternatives.find((c) => picked?.at === changeAt && c.id === picked.choiceId) ?? alternatives[0];
 
   async function run() {
     if (!chosenAlternative) return;
@@ -35,12 +38,16 @@ export function WhatIfPanel({ view, whatIf }: Props) {
   }
 
   const shown = answer && answer.changeAt === changeAt && answer.result.newChoiceId === chosenAlternative?.id ? answer : null;
+  const sentences = shown
+    ? whatIfSentences(shown.result, scenario.title, scenario.choices.find((c) => c.id === record.choiceId)?.text ?? record.choiceId, chosenAlternative?.text ?? "")
+    : [];
 
   return (
     <div className="space-y-4">
       <p>
-        Change one decision and the model replays the game {WHAT_IF_RUNS.toLocaleString("en-GB")} times: fresh dice, the same kind of world,
-        and every other decision as you made it.
+        Pick one decision and something else you could have done. The game replays your whole run {WHAT_IF_RUNS.toLocaleString("en-GB")} times
+        with fresh dice in the same kind of world, keeping every other decision as you made it, and compares the replays with and without the
+        change. One game is a single roll of the dice; many replays show what a change tends to do.
       </p>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
@@ -49,7 +56,7 @@ export function WhatIfPanel({ view, whatIf }: Props) {
             id="what-if-decision"
             className="mt-1 block w-full border border-rule bg-paper p-2"
             value={changeAt}
-            onChange={(event) => { setChangeAt(Number(event.target.value)); setNewChoiceId(""); }}
+            onChange={(event) => onChangeAt(Number(event.target.value))}
           >
             {history.map((r, index) => (
               <option key={r.turn} value={index}>
@@ -64,7 +71,7 @@ export function WhatIfPanel({ view, whatIf }: Props) {
             id="what-if-option"
             className="mt-1 block w-full border border-rule bg-paper p-2"
             value={chosenAlternative?.id ?? ""}
-            onChange={(event) => setNewChoiceId(event.target.value)}
+            onChange={(event) => setPicked({ at: changeAt, choiceId: event.target.value })}
           >
             {alternatives.map((c) => (
               <option key={c.id} value={c.id}>{c.id}. {c.text}</option>
@@ -76,11 +83,34 @@ export function WhatIfPanel({ view, whatIf }: Props) {
         {running ? "Rerunning…" : `Rerun ${WHAT_IF_RUNS.toLocaleString("en-GB")} games`}
       </Button>
 
-      <div aria-live="polite">
+      {/* Announce the run and its headline only; the full result, table included, is there to read, not to be read out. */}
+      <p className="sr-only" role="status">
+        {running ? `Rerunning ${WHAT_IF_RUNS.toLocaleString("en-GB")} games.` : (sentences[0] ?? "")}
+      </p>
+      <div>
         {shown && (
           <blockquote className="border-l-4 border-ink pl-4" data-testid="what-if-result" data-milliseconds={shown.milliseconds}>
-            {whatIfSentences(shown.result, scenario.title, scenario.choices.find((c) => c.id === record.choiceId)?.text ?? record.choiceId, chosenAlternative?.text ?? "")
-              .map((sentence) => <p key={sentence} className="mt-1 first:mt-0">{sentence}</p>)}
+            {sentences.map((sentence) => <p key={sentence} className="mt-1 first:mt-0">{sentence}</p>)}
+            {/* A table, not paragraphs: every paragraph in the result is a prefixed sentence or the closing caveat. */}
+            <table className="mt-3 w-full max-w-md text-sm">
+              <caption className="pb-1 text-left font-semibold">{whatIfEndingCaption(shown.result.runs)}</caption>
+              <thead>
+                <tr className="border-b border-rule text-left text-muted">
+                  <th scope="col" className="py-1 pr-2 font-normal">Ending</th>
+                  <th scope="col" className="py-1 pr-2 text-right font-normal">Your choices, replayed</th>
+                  <th scope="col" className="py-1 text-right font-normal">With the change</th>
+                </tr>
+              </thead>
+              <tbody>
+                {whatIfEndingRows(shown.result).map((row) => (
+                  <tr key={row.endingId} className="border-b border-rule">
+                    <th scope="row" className="py-1 pr-2 text-left font-normal">{pub.endings[row.endingId]?.title ?? row.endingId}</th>
+                    <td className="py-1 pr-2 text-right font-mono">{percent(row.asPlayed)}</td>
+                    <td className="py-1 text-right font-mono">{percent(row.changed)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
             <p className="mt-2 text-sm text-muted">
               {whatIfMethod(shown.result, PROFILE_LABEL[shown.result.profile])} Computed in {(shown.milliseconds / 1000).toFixed(2)} seconds.
             </p>

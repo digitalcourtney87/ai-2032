@@ -759,3 +759,32 @@ test("the world panel reads the draw odds from the weights in force, and the Bri
   await expect(scores.getByRole("rowheader").first()).toHaveText("You");
   await expect(page.getByText("Brier scores, best first")).toHaveCount(0);
 });
+
+test("a what-if shows how the 1,000 replays ended, in a table captioned as the model's output", async ({ page }) => {
+  await startGame(page, "WHATIF-1");
+  await playToDebrief(page);
+  await expect(page.getByText("Weighing the options you had")).toHaveCount(0, { timeout: 10_000 });
+  await page.getByLabel("The decision to change").selectOption({ index: 2 });
+  await page.getByRole("button", { name: "Rerun 1,000 games" }).click();
+
+  const result = page.getByTestId("what-if-result");
+  await expect(result).toBeVisible();
+  const table = result.getByRole("table");
+  await expect(table.locator("caption")).toHaveText(/^Under this game's assumptions, how the 1,000 replays ended/);
+  await expect(table.getByRole("columnheader")).toHaveText(["Ending", "Your choices, replayed", "With the change"]);
+  const rows = await table.locator("tbody tr").evaluateAll((trs) => trs.map((tr) => [...tr.querySelectorAll("td")].map((td) => td.textContent ?? "")));
+  expect(rows.length).toBeGreaterThan(0);
+  for (const column of [0, 1]) {
+    const shares = rows.map((cells) => cells[column]!);
+    for (const share of shares) expect(share).toMatch(/^\d{1,3}%$/);
+    const total = shares.reduce((sum, share) => sum + Number.parseInt(share, 10), 0);
+    expect(Math.abs(total - 100)).toBeLessThanOrEqual(rows.length);        // shares of the runs, give or take rounding
+  }
+
+  expect(await result.evaluate((el) => el.closest("[aria-live]") === null)).toBe(true);   // the table is not read out
+  await expect(page.getByRole("status").filter({ hasText: /^Under this game's assumptions, choosing / })).toHaveCount(1);   // the headline is
+  const sentences = await result.locator("p").allInnerTexts();                 // the table adds no paragraph
+  for (const sentence of sentences.slice(0, -1)) expect(sentence.startsWith("Under this game's assumptions")).toBe(true);
+  expect(sentences.at(-1)).toContain("This is the model's output, not a finding.");
+  await expect(page.getByLabel("The decision to change")).toHaveValue("2");
+});

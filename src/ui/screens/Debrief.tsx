@@ -3,7 +3,7 @@ import { ENDING_PLATES } from "../art/plates";
 import { Button } from "../components/Button";
 import { Figure } from "../components/Figure";
 import { CalibrationPanel } from "../debrief/CalibrationPanel";
-import { runSummary, runSummaryText, TEASER } from "../debrief/copy";
+import { pivotalDecision, runSummary, runSummaryText, TEASER } from "../debrief/copy";
 import { NeverSawPanel } from "../debrief/NeverSawPanel";
 import { Panel } from "../debrief/Panel";
 import { QualityPanel } from "../debrief/QualityPanel";
@@ -33,6 +33,8 @@ export function Debrief({ view, rankings, whatIf, onRestart }: Props) {
   const heading = useRef<HTMLHeadingElement>(null);
   const [copied, setCopied] = useState<"text" | "json" | null>(null);
   const [showJson, setShowJson] = useState(false);
+  // The decision the What if panel changes. It opens on the decision to argue about, the same one on every replay of this run.
+  const [whatIfAt, setWhatIfAt] = useState(() => (view.debrief ? pivotalDecision(view.debrief) : 0));
   useEffect(() => { heading.current?.focus(); window.scrollTo(0, 0); }, []);
 
   const debrief = view.debrief;
@@ -67,7 +69,7 @@ export function Debrief({ view, rankings, whatIf, onRestart }: Props) {
       </header>
 
       <Panel {...section("panel-what-if")} title="What if you had chosen differently?">
-        <WhatIfPanel view={view} whatIf={whatIf} />
+        <WhatIfPanel view={view} whatIf={whatIf} changeAt={whatIfAt} onChangeAt={setWhatIfAt} />
       </Panel>
       <Panel {...section("panel-quality")} title="Decision quality versus luck">
         <QualityPanel view={view} rankings={rankings} />
