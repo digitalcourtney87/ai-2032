@@ -407,4 +407,25 @@ test.describe("briefing and forecast", () => {
     await expect(page.locator("#briefing-recap")).toHaveAttribute("open", "");
     expect(await overflow(), "decision with the recap open").toBeLessThanOrEqual(0);
   });
+
+  test("the rail's past Briefing step opens the folded briefing", async ({ page }) => {
+    await startGame(page, "RECAP-2");
+    const rail = page.getByRole("navigation", { name: "Steps in this turn" });
+    await expect(rail.getByRole("link")).toHaveCount(0); // nothing to go back to on the briefing itself
+
+    await toForecast(page);
+    const link = rail.getByRole("link", { name: /Briefing/ });
+    expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(24); // WCAG 2.2 target size
+    await link.click();
+    await expect(page.locator("#briefing-recap")).toHaveAttribute("open", "");
+    await expect(page.locator("#briefing-recap > summary")).toBeFocused();
+
+    await page.getByRole("button", { name: LABEL.lockIn }).click();
+    await expect(page.getByRole("group", { name: LABEL.decisionGroup })).toBeVisible();
+    await rail.getByRole("link", { name: /Briefing/ }).click();
+    await expect(page.locator("#briefing-recap")).toHaveAttribute("open", "");
+    await expect(page.locator("#briefing-recap > summary")).toBeFocused();
+    // The skip link leads to the step itself, which on this step is not the briefing.
+    await expect(page.getByRole("link", { name: "Skip to the main content" })).toHaveCount(1);
+  });
 });

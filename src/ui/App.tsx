@@ -114,7 +114,7 @@ export function App() {
 
   return (
     <AppShell
-      skip={{ href: "#main", label: "Skip to the briefing" }}
+      skip={{ href: "#main", label: "Skip to the main content" }}
       chrome={{
         turn,
         totalTurns: pub.totalTurns,
@@ -124,6 +124,8 @@ export function App() {
       steps={visibleSteps}
       stepIndex={activeIndex}
       stepsLabel="Steps in this turn"
+      // On the forecast and decision steps the briefing is folded at the foot of the page (BriefingRecap).
+      stepHrefs={stage === "play" && (view.phase === "forecast" || view.phase === "decide") ? ["#briefing-recap"] : undefined}
       status={<StatusPanel view={view} before={reporting ? before : null} />}
     >
       {scenario.isCrisis && (
