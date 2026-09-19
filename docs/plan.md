@@ -114,7 +114,7 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 Print-production labels removed (figure ids, 720PT, 48MM, "Fig. NN"); mono microlabels at least 12px
   - [x] 🟩 Gate: `e2e/engagement.spec.ts` checks the button position at the three sizes; all local gates green (e2e 29 passed in 12.8 s). Committed on the feature branch.
 
-- [ ] ⬜ **Phase 10: Briefing and forecast**
+- [ ] 🟨 **Phase 10: Briefing and forecast**
   - [ ] ⬜ Advisers: "Cares about", "Backs option X" and a "Who backs what" split, from public content only
   - [ ] ⬜ Forecast: gut feel first, then "Compare with your advisers" on the same 0 to 100 scale; "Lock in N%" always enabled
   - [ ] ⬜ Play-screen sentence builders in `src/ui/copy.ts`, unit-tested against the copy rules
