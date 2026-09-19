@@ -190,3 +190,18 @@ test("the title screen has no steps rail", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "AI 2032" })).toBeVisible();
   await expect(page.getByRole("navigation")).toHaveCount(0);
 });
+
+// ---------------------------------------------------------------- sharing a link
+
+/** The same words describe the page to search engines and to link previews in chat apps. */
+const DESCRIPTION =
+  "A browser game about the benefits and dangers of AI. Govern as a fictional UK official from 2026 to 2032 and see what might change your mind. About 25 minutes.";
+
+test("a shared link carries a plain description for link previews", async ({ page }) => {
+  await page.goto("/");
+  const meta = (attribute: string) => page.locator(`head > meta[${attribute}]`);
+  await expect(meta('name="description"')).toHaveAttribute("content", DESCRIPTION);
+  await expect(meta('property="og:title"')).toHaveAttribute("content", "AI 2032");
+  await expect(meta('property="og:description"')).toHaveAttribute("content", DESCRIPTION);
+  await expect(meta('property="og:type"')).toHaveAttribute("content", "website");
+});
