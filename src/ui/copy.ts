@@ -3,8 +3,12 @@
 // They take public content as parameters and never import ./useGame.
 // The debrief's builders live in ./debrief/copy.ts.
 
-import { ADVISER_ORDER, formatMonth, percent } from "./format";
-import type { PublicAdviser, PublicChoice, PublicScenario } from "../content";
+import { ADVISER_ORDER, DOMAIN_LABEL, formatMonth, METRIC_LABEL, percent, signed, TRACK_LABEL, type ExactMetric } from "./format";
+import type { PublicAdviser, PublicChoice, PublicRules, PublicScenario } from "../content";
+import type { CapacityLabel, Domain, Track } from "../engine";
+import type { Band, MeasuredChange, TurnConsequences } from "./consequences";
+import type { MilestoneStatus } from "./preparation";
+import type { ChoicePreview, PreviewRow } from "./preview";
 
 // ---------------------------------------------------------------- the forecast
 
@@ -132,3 +136,132 @@ export const ASSESSMENT_CAVEAT = "Analysts can misjudge this. How often depends 
  */
 export const ESTIMATES_CAPTION =
   "Under this game's assumptions, these are your advisers' own estimates, not facts, and each adviser is sometimes off. At the end you will see how close each of them came.";
+
+// ---------------------------------------------------------------- Phase 11: decision, investment and consequences
+// A group of simulated figures is introduced by a caption that begins "Under this
+// game's assumptions" (DECISIONS.md, F12). Political Capital is the player's own
+// budget, not a simulated statistic, so capital sentences carry no prefix, except the
+// income rules, which name a Public Trust threshold.
+
+/** The caption over the options' stated effects, on the Decision screen. */
+export const DECISION_INTRO = "Under this game's assumptions, each option lists the effects officials expect. Every option also has effects you cannot see from here.";
+export const OFFICIALS_EXPECT = "Under this game's assumptions, officials expect:";
+export const NO_STATED_EFFECT = "Under this game's assumptions, officials expect no immediate effect you can see.";
+/** The preview before any option is selected. */
+export const PREVIEW_PROMPT = "Choose an option above to see the Political Capital it would leave and what officials expect it to do.";
+
+/** The one-line, live summary beside the Confirm button. */
+export function previewSummary(preview: ChoicePreview | null): string {
+  if (!preview) return "Choose an option to see what it would cost.";
+  if (preview.capitalAfter !== null) return `Option ${preview.id}: Political Capital ${preview.capitalNow} → ${preview.capitalAfter} (costs ${preview.cost}).`;
+  if (preview.status === "unaffordable") return `Option ${preview.id}: ${unaffordableLine(preview.cost, preview.capitalNow)} Choose another option.`;
+  return `Option ${preview.id} is locked. Choose another option.`;
+}
+
+/** "National Security +4 (now 52)". Estimates and the label get the stated change only. */
+export function previewRowText(row: PreviewRow): string {
+  const change = `${METRIC_LABEL[row.metric]} ${signed(row.delta)}`;
+  if (row.now !== null) return `${change} (now ${row.now})`;
+  return row.metric === "stateCapacity" ? `${change} (shown only as a label)` : `${change} (an estimate, with no exact figure)`;
+}
+
+/**
+ * Always shown in the preview, with or without a selection. Never a per-option "may
+ * fail", which would expose hidden conditions.
+ */
+export function previewCaveat(isFinal: boolean): string {
+  const movers = isFinal ? "background change and events" : "background change, events and this turn's investment";
+  return `Officials' expectations are not promises: plans do not always work out. Other effects are not shown, and ${movers} also move the numbers.`;
+}
+
+export const unaffordableLine = (cost: number, have: number) => `Costs ${cost}; you have ${have}.`;
+export const levelHaveLine = (level: number) => `You have level ${level}.`;
+
+/**
+ * Why some options in this scenario cost less. `turnsLeft` counts this turn, capped at
+ * the turns left in the game. The pricing class ("restrictive") is not public, so the
+ * note says "some options" and the prices on the cards already include the discount.
+ */
+export function windowNote(domain: Domain, turnsLeft: number, rules: PublicRules): string {
+  const span = turnsLeft === 1 ? "this turn only" : turnsLeft === 2 ? "this turn and next" : `for ${turnsLeft} turns, counting this one`;
+  return `Some options here cost ${rules.windowDiscount} less Political Capital than usual (never below ${rules.windowMinCost}) ${span}, because a public incident in ${DOMAIN_LABEL[domain]} has made restrictions easier to pass. The costs shown already include this.`;
+}
+
+/** Why some options cost more while the economy booms. Economy is a simulated figure, so the note carries the prefix. */
+export function boomNote(rules: PublicRules): string {
+  return `Under this game's assumptions, the economy is booming (Economy ${rules.boomEconomyAt} or above), so some of the more restrictive options cost ${rules.boomSurcharge} more Political Capital than usual. The costs shown already include this.`;
+}
+
+// The investment ladder.
+
+export function ladderIntro(points: number, levels: number, thisPoint: number): string {
+  return `One point each turn, into one track. It costs no Political Capital. You have ${points} points in the whole game and ${levels} levels to fill, so you cannot prepare for everything. This is point ${thisPoint} of ${points}.`;
+}
+export const LADDER_CAPTION = "Under this game's assumptions, each level adds its bonus once, when you reach it.";
+export const thisTurnLine = (from: number) => `This turn: level ${from} → ${from + 1}. Takes effect when the turn ends.`;
+export const TRACK_COMPLETE = "Complete: all three levels reached.";
+export const MILESTONE_STATUS: Record<MilestoneStatus, string | null> = {
+  ahead: "still ahead",
+  outOfReach: "too few turns left to reach this level in time",
+  passed: "no remaining turn uses this",
+  standing: null,
+};
+
+// The consequences screen.
+
+export const chosenLine = (id: string, text: string) => `You chose option ${id}: ${text}`;
+export function spentLine(chose: NonNullable<TurnConsequences["chose"]>, infoCost: number): string {
+  return chose.boughtAnalysis
+    ? `It cost ${chose.costPaid} Political Capital, and the analysis ${infoCost} more.`
+    : `It cost ${chose.costPaid} Political Capital.`;
+}
+/** Under "Your decision": where the point went, never the level change (see trackLevelsLine). */
+export const investmentPointLine = (track: Track) => `You put this turn's investment point into ${TRACK_LABEL[track]}.`;
+/**
+ * Every track level that changed, listed with the measured changes and never under "Your
+ * decision": a rise beyond the investment point comes from effects the player cannot see.
+ */
+export const trackLevelsLine = (changes: TurnConsequences["trackChanges"]) =>
+  `Standing investment: ${changes.map((c) => `${TRACK_LABEL[c.track]} level ${c.from} → ${c.to}`).join("; ")}.`;
+export const HEADLINES_NOTE = "Headlines report what was noticed, which is not always what happened.";
+export const DECISION_AS_REPORTED = "Your decision, as reported";
+export const ALSO_REPORTED = "Also reported";
+export const NOTHING_ELSE = "Nothing else made the news this turn.";
+/** Revealed findings are drawn at a reliability below 100 (resolve.ts), like the briefing's assessment. */
+export const FINDINGS_CAVEAT = "Findings are not always accurate, like any assessment.";
+
+/** A policy window opened by this turn's events. `turnsLeft` is capped at the turns left in the game. */
+export function windowOpenedNote(domain: Domain, turnsLeft: number, rules: PublicRules): string {
+  const span = turnsLeft === 1 ? "next turn" : `for the next ${turnsLeft} turns`;
+  return `After this public incident in ${DOMAIN_LABEL[domain]}, some options in that area will cost ${rules.windowDiscount} less Political Capital (never below ${rules.windowMinCost}) ${span}. Restrictions are easiest to pass after harm.`;
+}
+
+export function measuredCaption(isFinal: boolean): string {
+  const causes = isFinal ? "your decision, any events reported above, background trends and effects you cannot see" : "your decision, your investment, any events reported above, background trends and effects you cannot see";
+  return `Under this game's assumptions, these are the changes you can measure since you decided. Each one combines ${causes}.`;
+}
+export const measuredRowText = (row: MeasuredChange) => `${METRIC_LABEL[row.metric]}: ${row.before} → ${row.after} (${signed(row.delta)})`;
+export const unchangedLine = (metrics: ExactMetric[]) => `No change: ${metrics.map((m) => METRIC_LABEL[m]).join(", ")}.`;
+
+/** Next turn's Political Capital. How income works is in the glossary (capitalRulesLine). */
+export function capitalLine(capital: NonNullable<TurnConsequences["capital"]>): string {
+  return `Political Capital: ${capital.leftAfterSpending} left after this turn's spending; ${capital.nextTurn} to start the next turn.`;
+}
+
+/** How Political Capital comes in, for the glossary. It names a Public Trust threshold, so it carries the prefix. */
+export function capitalRulesLine(rules: PublicRules): string {
+  return `Under this game's assumptions, each turn adds ${rules.perTurn} Political Capital; at most ${rules.carryCap} unspent points carry over; Public Trust at ${rules.trustBonusAt} or above adds 1, and at ${rules.trustPenaltyAt} or below takes 1 away.`;
+}
+
+export const capacityLine = (before: CapacityLabel, after: CapacityLabel) => `Under this game's assumptions, State Capacity is now ${after} (it was ${before}).`;
+
+/** The estimates as they stand. Never a change: the bands are redrawn every turn. */
+export function estimatesNowLine(systemicRisk: Band, cooperation: Band): string {
+  return `Under this game's assumptions, Systemic AI Risk is now estimated at ${systemicRisk.low}–${systemicRisk.high} and International Cooperation at ${cooperation.low}–${cooperation.high}. Estimates are redrawn every turn, so a shift in a band is not a measured change.`;
+}
+
+export function openQuestionLine(unknown: NonNullable<TurnConsequences["unknown"]>): string {
+  const yours = unknown.forecast === null ? "" : `You forecast ${percent(unknown.forecast)}. `;
+  return `${yours}${unknown.question} It resolves by ${formatMonth(unknown.resolvesBy)}; you will see how it turned out in the debrief.`;
+}
+export const LATER_NOTE = "Some effects of decisions may surface later, if at all.";
