@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { BriefingRecap } from "../components/BriefingRecap";
 import { Button } from "../components/Button";
 import { Icon } from "../components/Icon";
 import { formatEffects, LEVER_LABEL, TRACK_LABEL } from "../format";
@@ -128,6 +129,9 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
       <Button disabled={chosen === null} onClick={() => chosen && onDecide(chosen)}>
         {chosen ? `Confirm option ${chosen}` : "Choose an option"}
       </Button>
+
+      {/* After Confirm, so the keyboard order above is unchanged. The forecast is locked, so the advisers' estimates can show. */}
+      <BriefingRecap view={view} scenario={scenario} showForecasts />
     </div>
   );
 }

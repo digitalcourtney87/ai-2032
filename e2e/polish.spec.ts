@@ -103,9 +103,13 @@ for (const colorScheme of ["light", "dark"] as const) {
     await expectNoSeriousViolations(page, "forecast");
     await page.getByRole("button", { name: "Compare with your advisers" }).click();
     await expectNoSeriousViolations(page, "forecast with the advisers' estimates shown");
+    await page.getByText("Look again at the briefing and your advisers").click();
+    await expectNoSeriousViolations(page, "forecast with the briefing recap open");
     await page.getByRole("button", { name: LABEL.lockIn }).click();
     await page.getByRole("button", { name: /^Commission analysis/ }).click();
     await expectNoSeriousViolations(page, "decision");
+    await page.getByText("Look again at the briefing and your advisers").click();
+    await expectNoSeriousViolations(page, "decision with the briefing recap open");
     await page.locator('input[name="choice"]:enabled').first().check();
     await page.getByRole("button", { name: LABEL.confirm }).click();
     await expectNoSeriousViolations(page, "investment");

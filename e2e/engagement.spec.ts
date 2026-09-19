@@ -210,6 +210,7 @@ test("a shared link carries a plain description for link previews", async ({ pag
 // ---------------------------------------------------------------- Phase 10: briefing and forecast
 
 test.describe("briefing and forecast", () => {
+  const RECAP = "Look again at the briefing and your advisers";
   const COMPARE = "Compare with your advisers";
 
   const toForecast = async (page: Page) => {
@@ -363,5 +364,47 @@ test.describe("briefing and forecast", () => {
     const stem = page.getByTestId("adviser-mark").first().locator(":scope > span").last();
     const stemBox = (await stem.boundingBox())!;
     expect(await drawn(stem, { x: stemBox.x - 1, y: stemBox.y, width: stemBox.width + 2, height: stemBox.height })).toBe(true);
+  });
+
+  test("the briefing can be read again, folded, on the forecast and decision steps", async ({ page }) => {
+    await startGame(page, "RECAP-1");
+    const stances = await page.getByRole("region", { name: "Advisers" }).locator("article blockquote").allInnerTexts();
+    expect(stances).toHaveLength(4);
+
+    await toForecast(page);
+    const recap = page.locator("#briefing-recap");
+    await expect(recap).not.toHaveAttribute("open");
+    await recap.getByText(RECAP).click();
+    await expect(recap.locator("article blockquote")).toHaveText(stances);
+    await expect(recap.getByText(/Puts the chance at \d+%/)).toHaveCount(0); // no estimates before the player's own forecast
+    await expect(recap.getByText(/^Under this game’s assumptions, these are their forecasts for this turn’s question: /)).toHaveCount(0);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(page.getByRole("region", { name: "Assessment" })).toHaveCount(1);
+
+    await page.getByRole("button", { name: LABEL.lockIn }).click();
+    await expect(page.getByRole("group", { name: LABEL.decisionGroup })).toBeVisible();
+    await expect(recap).not.toHaveAttribute("open"); // a new step, so a new, folded recap
+    await recap.getByText(RECAP).click();
+    await expect(recap.locator("article blockquote")).toHaveText(stances);
+    await expect(recap.getByText(/Puts the chance at \d+%/)).toHaveCount(4); // the forecast is locked now
+    await expect(recap.getByText(/^Under this game’s assumptions, these are their forecasts for this turn’s question: /)).toBeVisible(); // what the chance is of
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+  });
+
+  test("nothing scrolls sideways on a phone with the estimates or the recap open", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    const overflow = () => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    await startGame(page, "PHONE-FORECAST");
+    await toForecast(page);
+    await page.getByRole("button", { name: COMPARE }).click();
+    await page.getByText(RECAP).click();
+    expect(await overflow(), "forecast with the estimates and the recap open").toBeLessThanOrEqual(0);
+
+    // The decision step with the recap open adds the split, four cards and their estimates.
+    await page.getByRole("button", { name: LABEL.lockIn }).click();
+    await expect(page.getByRole("group", { name: LABEL.decisionGroup })).toBeVisible();
+    await page.getByText(RECAP).click();
+    await expect(page.locator("#briefing-recap")).toHaveAttribute("open", "");
+    expect(await overflow(), "decision with the recap open").toBeLessThanOrEqual(0);
   });
 });

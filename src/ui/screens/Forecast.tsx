@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BriefingRecap } from "../components/BriefingRecap";
 import { Button } from "../components/Button";
 import { ForecastScale } from "../components/ForecastScale";
 import { adviserRange, estimateLine, ESTIMATES_CAPTION, initials, resolvesLine } from "../copy";
@@ -86,6 +87,8 @@ export function Forecast({ view, scenario, onForecast }: Props) {
       </section>
 
       <Button onClick={() => onForecast(value / 100)}>Lock in {value}%</Button>
+
+      <BriefingRecap view={view} scenario={scenario} />
     </div>
   );
 }
