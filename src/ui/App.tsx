@@ -49,6 +49,15 @@ export function App() {
     window.scrollTo(0, 0);
   }, [stepKey]);
 
+  /** Play again on the debrief, and Back to the start on the pause: keep a facilitator's edited assumptions, drop the seed for a new world. */
+  function backToStart() {
+    const params = new URLSearchParams(window.location.search);
+    params.delete("seed");
+    const query = params.toString();
+    window.history.replaceState(null, "", query ? `?${query}` : window.location.pathname);
+    reset();
+  }
+
   if (!view) {
     return (
       <AppShell>
@@ -82,14 +91,7 @@ export function App() {
           view={view}
           rankings={rankings}
           whatIf={whatIf}
-          onRestart={() => {
-            // Play again keeps a facilitator's edited assumptions but drops the seed, for a new world.
-            const params = new URLSearchParams(window.location.search);
-            params.delete("seed");
-            const query = params.toString();
-            window.history.replaceState(null, "", query ? `?${query}` : window.location.pathname);
-            reset();
-          }}
+          onRestart={backToStart}
         />
       </AppShell>
     );
@@ -110,7 +112,14 @@ export function App() {
           {PAUSE_HEADING}
         </h1>
         <div className="mt-6">
-          <FirstDecision view={view} before={before} scenario={pausedOn} resolved={resolved} onContinue={() => setStage("briefing")} />
+          <FirstDecision
+            view={view}
+            before={before}
+            scenario={pausedOn}
+            resolved={resolved}
+            onContinue={() => setStage("briefing")}
+            onRestart={backToStart}
+          />
         </div>
       </AppShell>
     );

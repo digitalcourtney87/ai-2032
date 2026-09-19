@@ -124,6 +124,8 @@ for (const colorScheme of ["light", "dark"] as const) {
     await page.getByRole("button", { name: LABEL.next }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(LABEL.pauseHeading);
     await expectNoSeriousViolations(page, "first-decision pause");
+    await page.getByRole("button", { name: "Stop here" }).click();
+    await expectNoSeriousViolations(page, "first-decision pause with Stop here open");
     await page.getByRole("button", { name: LABEL.keepGoing }).click();
 
     await playUntil(page, "The Deepfake Election");
@@ -221,6 +223,8 @@ test("reduced motion is honoured, and no screen scrolls sideways on a phone", as
   await page.getByRole("button", { name: LABEL.start }).click();
   await playTurn(page, { stopAtPause: true });
   await overflows("first-decision pause");
+  await page.getByRole("button", { name: "Stop here" }).click();
+  await overflows("first-decision pause with Stop here open");
   await page.getByRole("button", { name: LABEL.keepGoing }).click();
   await playToDebrief(page);
   await overflows("debrief");

@@ -582,3 +582,112 @@ test("on a small phone, Keep going is inside the first screen of the pause", asy
   const box = await page.getByRole("button", { name: LABEL.keepGoing }).boundingBox();
   expect(box!.y + box!.height).toBeLessThanOrEqual(667);
 });
+
+async function runSummaryJson(page: Page): Promise<string> {
+  await page.getByRole("button", { name: "Show as JSON" }).click();
+  return page.getByLabel("Run summary", { exact: true }).innerText();
+}
+
+test("Stop here offers a link to this world that keeps the edits, drops facilitator mode and sends nothing", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/?facilitator=1&seed=PAUSE-LINK");
+  await page.getByText("Base odds of events").click();
+  await page.locator("#event-infra-attack-whenTrue").fill("90");
+  await expect(page.getByText(/1 number edited/)).toBeVisible();
+  const participant = await page.getByTestId("participant-link").innerText();
+  expect(new URL(participant).searchParams.get("cfg")).toBeTruthy();
+  await page.goto(participant);
+  await page.getByRole("button", { name: LABEL.start }).click();
+  await playTurn(page, { stopAtPause: true });
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(LABEL.pauseHeading);
+
+  const requests: string[] = [];
+  page.on("request", (request) => requests.push(request.url()));
+  const stop = page.getByRole("button", { name: "Stop here" });
+  await expect(stop).toHaveAttribute("aria-expanded", "false");
+  await stop.click();
+  await expect(stop).toHaveAttribute("aria-expanded", "true");
+  const link = new URL(await page.getByTestId("world-link").innerText());
+  expect(link.searchParams.get("seed")).toBe("PAUSE-LINK");
+  expect(link.searchParams.get("cfg")).toBe(new URL(participant).searchParams.get("cfg"));
+  expect(link.searchParams.has("facilitator")).toBe(false);
+  await expect(page.getByText(/It is not saved progress/)).toBeVisible();
+
+  await page.getByRole("button", { name: "Copy link to this world" }).click();
+  await expect(page.getByText("Link copied.")).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(link.toString());
+  expect(requests).toEqual([]);                                                  // nothing was fetched or sent, not even from this site
+
+  await expect(page.getByText("Back to the start opens the title page with a new world.")).toBeVisible();
+  await page.getByRole("button", { name: "Back to the start" }).click();
+  await expect(page.getByRole("button", { name: LABEL.start })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();         // a step change: focus on the title's h1
+  const url = new URL(page.url());
+  expect(url.searchParams.get("seed")).toBeNull();                              // like Play again: a new world next time
+  expect(url.searchParams.get("cfg")).toBe(link.searchParams.get("cfg"));       // the edited assumptions stay
+});
+
+test("on a small phone, Stop here brings its panel into view", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await startGame(page, "PAUSE-REVEAL");
+  await playTurn(page, { stopAtPause: true });
+  await page.getByRole("button", { name: "Stop here" }).click();
+  await expect(page.getByRole("button", { name: "Copy link to this world" })).toBeInViewport();
+  await expect(page.getByRole("button", { name: "Stop here" })).toBeFocused();   // opening the panel leaves focus on the toggle
+  await expect(page.getByRole("button", { name: "Stop here" })).toBeInViewport();
+});
+
+test("at 400% zoom, opening Stop here keeps the focused toggle on screen", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 256 });                       // 1280×1024 at 400%: WCAG reflow
+  await startGame(page, "PAUSE-ZOOM");
+  await playTurn(page, { stopAtPause: true });
+  const stop = page.getByRole("button", { name: "Stop here" });
+  await stop.focus();
+  await page.keyboard.press("Enter");
+  await expect(stop).toHaveAttribute("aria-expanded", "true");
+  await expect(stop).toBeFocused();
+  await expect(stop).toBeInViewport();
+});
+
+test("Keep going still works after opening Stop here", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await startGame(page, "PAUSE-CHANGE-MIND");
+  await playTurn(page, { stopAtPause: true });
+  const stop = page.getByRole("button", { name: "Stop here" });
+  await stop.click();
+  await expect(page.getByTestId("world-link")).toContainText("seed=PAUSE-CHANGE-MIND");
+  await page.getByRole("button", { name: "Copy link to this world" }).click();
+  await expect(page.getByText("Link copied.")).toBeVisible();
+  await stop.click();                                                            // close the panel, then open it again
+  await stop.click();
+  await expect(page.getByTestId("world-link")).toBeVisible();
+  await expect(page.getByText("Link copied.")).toHaveCount(0);                   // nothing copied since it reopened
+  await page.getByRole("button", { name: LABEL.keepGoing }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("The Open-Weight Release");
+});
+
+test("a run that pauses, opens Stop here and keeps going matches a replay from the world link", async ({ browser }) => {
+  test.slow();                                                                   // two whole games
+  const plan = { prefer: "B", track: "Diplomacy" as const, forecast: 35 };
+  const runs: string[] = [];
+
+  const kept = await (await browser.newContext()).newPage();
+  await startGame(kept, "TASTER-SAME");
+  await playTurn(kept, { ...plan, stopAtPause: true });
+  await kept.getByRole("button", { name: "Stop here" }).click();
+  const link = await kept.getByTestId("world-link").innerText();
+  await kept.getByRole("button", { name: LABEL.keepGoing }).click();             // the player looked at Stop here, then went on
+  await playToDebrief(kept, plan);
+  runs.push(await runSummaryJson(kept));
+  await kept.context().close();
+
+  const replay = await (await browser.newContext()).newPage();
+  await replay.goto(link);                                                       // what a friend, or the player later, opens
+  await replay.getByRole("button", { name: LABEL.start }).click();
+  await playToDebrief(replay, plan);
+  runs.push(await runSummaryJson(replay));
+  await replay.context().close();
+
+  expect(runs[1]).toBe(runs[0]);
+  expect(runs[0]).toContain("TASTER-SAME");
+});
