@@ -121,9 +121,9 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 Gate: all local gates green; axe clean on the new states in light and dark. Commit on the feature branch.
 
 - [ ] ⬜ **Phase 11: Decision, investment and consequences**
-  - [ ] ⬜ `publicContent()` gains the Political Capital rules and track bonuses; investment copy corrected (`DECISIONS.md` F10, F11)
-  - [ ] ⬜ Choice preview (Political Capital left, stated effects) and a track ladder with the next unlock, from pure, unit-tested helpers
-  - [ ] ⬜ Consequences in four parts in the main column: Your decision, What the world noticed, What you can measure now, Still unknown
+  - [x] 🟩 `publicContent()` gains the Political Capital rules and track bonuses; investment copy corrected (`DECISIONS.md` F10, F11)
+  - [x] 🟩 Choice preview (Political Capital left, stated effects) and a track ladder with the next unlock, from pure, unit-tested helpers
+  - [x] 🟩 Consequences in four parts in the main column: Your decision, What the world noticed, What you can measure now, Still unknown
   - [ ] ⬜ Gate: all local gates green. Stop for the designer's review of the opening and one representative turn.
 
 - [ ] ⬜ **Phase 12: First-decision pause (the five-minute taster)**
@@ -156,4 +156,5 @@ These parts of the definition of done cannot be passed by the builder and will b
 - Whether the spec's commercial note (a paid workshop layer, and the three willingness-to-pay sessions above) still applies now that the game is a personal project for everyone (`DECISIONS.md` decision 14)
 - Sign-off of `DECISIONS.md` decision 14 and section F (the public-audience redesign)
 - The design reviews at the Phase 11 and Phase 13 gates, and the decision on optional Phase 14
+- The Phase 11 newcomer check: at least one person new to the game plays the opening and one turn, then answers the handoff's four questions: can they understand the dilemma, choose without specialist knowledge, explain the visible consequences, and do they want to continue? Open until run and written up.
 - Merging the redesign's pull request, and any deploy
