@@ -107,7 +107,7 @@ export function BriefingContent({ view, scenario, showForecasts = false }: Props
         </details>
       )}
 
-      {!crisis && <IntelFile reports={earlier} heading="What you have been told so far" />}
+      {!crisis && <IntelFile reports={earlier} heading="What you have been told so far" collapsible />}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 // Public-audience redesign (docs/ui-engagement-handoff.md, DECISIONS.md section F).
 // New behaviour is tested here; the older gates keep their own spec files.
 
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { LABEL, finishTurn, playToDebrief, playTurn, playUntil, startGame, toDecision } from "./play";
 
@@ -209,6 +210,12 @@ test("a shared link carries a plain description for link previews", async ({ pag
 // ---------------------------------------------------------------- Phase 10: briefing and forecast
 
 test.describe("briefing and forecast", () => {
+  /** The same bar as Phase 8's expectNoSeriousViolations in polish.spec.ts (DECISIONS B42): no violations at any impact, best-practice rules included. */
+  const expectAxeClean = async (page: Page, where: string) => {
+    const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"]).analyze();
+    expect(results.violations.map((v) => `${where}: ${v.impact} ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target}`)).toEqual([]);
+  };
+
   test("each adviser says what they care about and what they back, and every open option shows who backs it", async ({ page }) => {
     await startGame(page, "BRIEF-1");
     const cards = page.getByRole("region", { name: "Advisers" }).getByRole("article");
@@ -228,5 +235,19 @@ test.describe("briefing and forecast", () => {
     await expect(page.getByText(/Convening and alliances/)).toHaveCount(0);
 
     await expect(page.getByRole("region", { name: "Assessment" }).getByRole("heading", { name: "What your analysts think" })).toBeVisible();
+  });
+
+  test("earlier reports are folded behind a count on the briefing", async ({ page }) => {
+    await startGame(page, "BRIEF-2");
+    await playTurn(page);
+    const summary = page.getByText(/^What you have been told so far \(\d+ reports?\)$/);
+    await expect(summary).toBeVisible();
+    await expect(page.getByText(/Turn 1 · Briefing assessment/i)).toBeHidden();
+    await summary.click();
+    await expect(page.getByText(/Turn 1 · Briefing assessment/i)).toBeVisible();
+    for (const colorScheme of ["light", "dark"] as const) {
+      await page.emulateMedia({ colorScheme });
+      await expectAxeClean(page, `briefing with earlier reports open (${colorScheme})`);
+    }
   });
 });
