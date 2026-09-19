@@ -1,11 +1,12 @@
-// Phase 7 gate: an automated accessibility pass (axe) reports no serious
-// violations, and the same seed code reproduces an identical run start to finish.
+// Phase 7 gate: an automated accessibility pass (axe) reports no violations at any
+// impact, best-practice rules included, and the same seed code reproduces an
+// identical run start to finish.
 // Also: the seed round-trips through the URL, the facilitator editor shares its
 // edits by link, and the game is fully keyboard operable.
 
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { playToDebrief, playTurn, playUntil, startGame, toDecision } from "./play";
+import { LABEL, playToDebrief, playTurn, playUntil, startGame, toDecision } from "./play";
 
 async function summaryOf(page: Page): Promise<string> {
   await page.getByRole("button", { name: "Show as JSON" }).click();
@@ -20,6 +21,7 @@ test("the same seed code and the same actions reproduce an identical run, start 
     const page = await (await browser.newContext()).newPage();
     await startGame(page, "REPRODUCE-ME");
     await playToDebrief(page, { prefer: "B", track: "Diplomacy", forecast: 35 });
+    await expect(page.getByText("Weighing the options you had")).toHaveCount(0, { timeout: 10_000 });  // rankings arrive from the worker
     const tags = await page.getByTestId("luck-tag").allInnerTexts();
     runs.push(JSON.stringify({ summary: await summaryOf(page), ending: await page.getByRole("heading", { level: 1 }).innerText(), tags }));
     await page.context().close();
@@ -30,14 +32,14 @@ test("the same seed code and the same actions reproduce an identical run, start 
 
 test("the seed code round-trips through the URL", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Begin" }).click();                 // no code entered: a new one is generated
+  await page.getByRole("button", { name: LABEL.start }).click();                 // no code entered: a new one is generated
   const seed = new URL(page.url()).searchParams.get("seed");
   expect(seed).toMatch(/^[0-9A-Z]{4}-[0-9A-Z]{4}$/);
   const assessment = await page.getByRole("region", { name: "Assessment" }).innerText();
 
   await page.goto(page.url());                                              // the shared link
   await expect(page.getByLabel(/^Seed code/)).toHaveValue(seed!);
-  await page.getByRole("button", { name: "Begin" }).click();
+  await page.getByRole("button", { name: LABEL.start }).click();
   expect(await page.getByRole("region", { name: "Assessment" }).innerText()).toBe(assessment);
 });
 
@@ -65,7 +67,7 @@ test("a facilitator's edits travel in the participant link and show up in the de
   await page.goto(link);                                                     // what a participant opens
   await expect(page.getByText("This session uses edited assumptions.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Facilitator settings" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Begin" }).click();
+  await page.getByRole("button", { name: LABEL.start }).click();
   expect(new URL(page.url()).searchParams.get("cfg")).toBeTruthy();          // the edits stay in the URL beside the seed
   await playToDebrief(page);
   await page.getByText("View assumptions").click();
@@ -75,46 +77,50 @@ test("a facilitator's edits travel in the participant link and show up in the de
 
 // ---------------------------------------------------------------- accessibility
 
+/**
+ * No axe violations at any impact, with axe's best-practice rules as well as WCAG 2.2 AA.
+ * heading-order and page-has-heading-one are best-practice rules: they are what checks that
+ * heading levels never skip and that each screen has one h1. The name is kept because later phases call it.
+ */
 async function expectNoSeriousViolations(page: Page, where: string) {
-  const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
-  const serious = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
-  expect(serious.map((v) => `${where}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target}`)).toEqual([]);
+  const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"]).analyze();
+  expect(results.violations.map((v) => `${where}: ${v.impact} ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target}`)).toEqual([]);
 }
 
 for (const colorScheme of ["light", "dark"] as const) {
-  test(`axe finds no serious violations on any screen (${colorScheme})`, async ({ page }) => {
+  test(`axe finds no violations on any screen (${colorScheme})`, async ({ page }) => {
     await page.emulateMedia({ colorScheme });
     await page.goto("/?facilitator=1&seed=AXE-RUN");
     await page.getByText("Base odds of events").click();
     await expectNoSeriousViolations(page, "title and facilitator panel");
 
-    await page.getByRole("button", { name: "Begin" }).click();
+    await page.getByRole("button", { name: LABEL.start }).click();
     await expectNoSeriousViolations(page, "briefing");
     await page.getByText("Real-world evidence behind this fictional scenario").click();
     await expectNoSeriousViolations(page, "briefing with evidence open");
 
-    await page.getByRole("button", { name: "Continue to your forecast" }).click();
+    await page.getByRole("button", { name: LABEL.continueToForecast }).click();
     await expectNoSeriousViolations(page, "forecast");
-    await page.getByRole("button", { name: /^Lock in/ }).click();
+    await page.getByRole("button", { name: LABEL.lockIn }).click();
     await page.getByRole("button", { name: /^Commission analysis/ }).click();
     await expectNoSeriousViolations(page, "decision");
     await page.locator('input[name="choice"]:enabled').first().check();
-    await page.getByRole("button", { name: /^Confirm option/ }).click();
+    await page.getByRole("button", { name: LABEL.confirm }).click();
     await expectNoSeriousViolations(page, "investment");
     await page.locator('input[name="track"]:enabled').first().check();
-    await page.getByRole("button", { name: /^Invest in/ }).click();
+    await page.getByRole("button", { name: LABEL.investIn }).click();
     await expectNoSeriousViolations(page, "news");
-    await page.getByRole("button", { name: "Next briefing" }).click();
+    await page.getByRole("button", { name: LABEL.next }).click();
 
     await playUntil(page, "The Deepfake Election");
     await expectNoSeriousViolations(page, "crisis briefing");
     await toDecision(page);
     await expectNoSeriousViolations(page, "crisis decision");
     await page.locator('input[name="choice"]:enabled').first().check();
-    await page.getByRole("button", { name: /^Confirm option/ }).click();
+    await page.getByRole("button", { name: LABEL.confirm }).click();
     await page.locator('input[name="track"]:enabled').first().check();
-    await page.getByRole("button", { name: /^Invest in/ }).click();
-    await page.getByRole("button", { name: /^(Next briefing|Read your debrief)$/ }).click();
+    await page.getByRole("button", { name: LABEL.investIn }).click();
+    await page.getByRole("button", { name: LABEL.next }).click();
 
     await playToDebrief(page);
     await expect(page.getByText("Weighing the options you had")).toHaveCount(0, { timeout: 10_000 });
@@ -137,10 +143,10 @@ test("a whole turn can be played with the keyboard alone", async ({ page }) => {
     throw new Error(`Could not reach ${name} by keyboard`);
   };
 
-  await focusOn(/^Begin$/);
+  await focusOn(new RegExp(`^${LABEL.start}$`));
   await press("Enter");
   await expect(page.getByRole("heading", { level: 1 })).toBeFocused();      // focus follows the player to each new step
-  await focusOn(/^Continue to your forecast$/);
+  await focusOn(new RegExp(`^${LABEL.continueToForecast}$`));
   await press("Enter");
 
   await press("Tab");                                                        // the slider is the first control on the step
@@ -154,15 +160,15 @@ test("a whole turn can be played with the keyboard alone", async ({ page }) => {
   await press("Tab");                                                        // into the option group
   await press("Space");
   await expect(page.locator('input[name="choice"]:checked')).toHaveCount(1);
-  await focusOn(/^Confirm option/);
+  await focusOn(LABEL.confirm);
   await press("Enter");
 
   await press("Tab");
   await press("Space");
-  await focusOn(/^Invest in/);
+  await focusOn(LABEL.investIn);
   await press("Enter");
-  await expect(page.getByRole("heading", { name: "What the world noticed" })).toBeVisible();
-  await focusOn(/^Next briefing$/);
+  await expect(page.getByRole("heading", { name: LABEL.newsHeading })).toBeVisible();
+  await focusOn(LABEL.next);
   await press("Enter");
   await expect(page.getByRole("heading", { level: 1 })).not.toHaveText("The Attribution Gap");
 });
@@ -176,15 +182,15 @@ test("reduced motion is honoured, and no screen scrolls sideways on a phone", as
   };
   await page.goto("/?facilitator=1&seed=PHONE");
   await overflows("title");
-  const duration = await page.getByRole("button", { name: "Begin" }).evaluate((el) => getComputedStyle(el).transitionDuration);
+  const duration = await page.getByRole("button", { name: LABEL.start }).evaluate((el) => getComputedStyle(el).transitionDuration);
   expect(parseFloat(duration)).toBeLessThan(0.001);
 
-  await page.getByRole("button", { name: "Begin" }).click();
+  await page.getByRole("button", { name: LABEL.start }).click();
   await overflows("briefing");
   await toDecision(page);
   await overflows("decision");
   await page.goto("/?seed=PHONE-2");
-  await page.getByRole("button", { name: "Begin" }).click();
+  await page.getByRole("button", { name: LABEL.start }).click();
   await playTurn(page);
   await playToDebrief(page);
   await overflows("debrief");

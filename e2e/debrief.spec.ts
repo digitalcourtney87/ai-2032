@@ -12,7 +12,7 @@ const TAGS = ["Sound and fortunate", "Sound and unlucky", "Risky and fortunate",
 async function scriptedRun(page: Page, seedCode: string) {
   await startGame(page, seedCode);
   for (const forecast of FORECASTS) await playTurn(page, { forecast });
-  await expect(page.getByText("Your record")).toBeVisible();
+  await expect(page.getByTestId("debrief")).toBeVisible();
 }
 
 test("the debrief has the six panels of spec Section 11", async ({ page }) => {

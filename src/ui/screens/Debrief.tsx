@@ -58,7 +58,7 @@ export function Debrief({ view, rankings, whatIf, onRestart }: Props) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-testid="debrief">
       <header>
         {mark && <Figure src={mark.src} figure={mark.figure} caption={mark.caption} state="48mm" className="mb-6 max-w-[12rem]" />}
         <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">October 2032 &middot; Your record</p>
