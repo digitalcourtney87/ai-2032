@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `95%` of build steps (60 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
+**Overall Progress:** `100%` of build steps (63 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
@@ -114,13 +114,13 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 Print-production labels removed (figure ids, 720PT, 48MM, "Fig. NN"); mono microlabels at least 12px
   - [x] 🟩 Gate: `e2e/engagement.spec.ts` checks the button position at the three sizes; all local gates green (e2e 29 passed in 12.8 s). Committed on the feature branch.
 
-- [x] � **Phase 10: Briefing and forecast**
+- [x] 🟩 **Phase 10: Briefing and forecast**
   - [x] 🟩 Advisers: "Cares about", "Backs option X" and a "Who backs what" split, from public content only
   - [x] 🟩 Forecast: gut feel first, then "Compare with your advisers" on the same 0 to 100 scale; "Lock in N%" always enabled
   - [x] 🟩 Play-screen sentence builders in `src/ui/copy.ts`, unit-tested against the copy rules
   - [x] 🟩 Gate: all local gates green; axe clean on the new states in light and dark. Commit on the feature branch.
 
-- [x] � **Phase 11: Decision, investment and consequences** — built; the designer answered the review's three questions (`DECISIONS.md` F19, F20)
+- [x] 🟩 **Phase 11: Decision, investment and consequences** — built; the designer answered the review's three questions (`DECISIONS.md` F19, F20)
   - [x] 🟩 `publicContent()` gains the Political Capital rules and track bonuses; investment copy corrected (`DECISIONS.md` F10, F11)
   - [x] 🟩 Choice preview (Political Capital left, stated effects) and a track ladder with the next unlock, from pure, unit-tested helpers
   - [x] 🟩 Consequences in four parts in the main column: Your decision, What the world noticed, What you can measure now, Still unknown
@@ -131,17 +131,17 @@ Phases 8 to 15 are the public-audience redesign: the brief is `docs/ui-engagemen
   - [x] 🟩 End-to-end helpers click through the pause
   - [x] 🟩 Gate: all local gates green; a run stopped at the pause, with Stop here opened, and then continued reproduces a replay of the same world from its link (`e2e/engagement.spec.ts`). Keep going only changes the interface stage (`App.tsx`), so it plays on in the same state. Commit on the feature branch.
 
-- [x] � **Phase 13: A debrief for everyone**
+- [x] 🟩 **Phase 13: A debrief for everyone**
   - [x] 🟩 New order: At a glance, What if (preselected), Decision quality versus luck, collapsible reference panels, Talk it over, Share your run
   - [x] 🟩 Existing panel headings, test ids and copy rules kept
-  - [x] � Gate: all local gates green (e2e 62 passed); the designer's review returned nine rulings, all recorded in `DECISIONS.md` F24 — six kept as built, three implemented (the Unknown Frontier ending, plain draw-label negations, labelled unaffordable What if options).
+  - [x] 🟩 Gate: all local gates green (e2e 62 passed); the designer's review returned nine rulings, all recorded in `DECISIONS.md` F24 — six kept as built, three implemented (the Unknown Frontier ending, plain draw-label negations, labelled unaffordable What if options).
 
 - [x] ⬛ **Phase 14 (optional): Save and resume** — declined by the designer at the Phase 13 review; not built.
 
-- [ ] 🟨 **Phase 15: Accessibility sweep, docs and handover**
-  - [x] � Extended axe, overflow and keyboard walk over every new screen and state, in light and dark, at phone and desktop sizes: 9 new tests in `e2e/polish.spec.ts` at the B42 bar, including reflow at 320 px, focus-ring contrast and the phone's sticky bar; Playwright timeout 60 s, preview reused only off CI (`DECISIONS.md` B43)
+- [x] 🟩 **Phase 15: Accessibility sweep, docs and handover**
+  - [x] 🟩 Extended axe, overflow and keyboard walk over every new screen and state, in light and dark, at phone and desktop sizes: 9 new tests in `e2e/polish.spec.ts` at the B42 bar, including reflow at 320 px, focus-ring contrast and the phone's sticky bar; Playwright timeout 60 s, preview reused only off CI (`DECISIONS.md` B43)
   - [x] 🟩 README, `DECISIONS.md` and this plan updated; human-only items listed as open; the playtest and timing protocol in `docs/playtest.md`; deferred work listed below
-  - [ ] 🟨 Gate from a clean clone on 2026-09-19: all local gates green; unit tests 375 passed; e2e 71 passed in 35.8 s (Phase 8 baseline: 17 in 13.2 s; Phase 8 gate: 19 in 13.8 s; before this phase: 62 in 24.1 s); slowest test 11.3 s; `dist` 2016 KB. Next: the pull request for the designer. Stop at completion.
+  - [x] 🟩 Gate from a clean clone on 2026-09-19: all local gates green; unit tests 375 passed; e2e 71 passed in 35.8 s (Phase 8 baseline: 17 in 13.2 s; Phase 8 gate: 19 in 13.8 s; before this phase: 62 in 24.1 s); slowest test 11.3 s; `dist` 2016 KB. Pull request https://github.com/digitalcourtney87/ai-2032/pull/3 opened for the designer. Stop at completion.
 
 ## Owned by the designer, not the build
 
