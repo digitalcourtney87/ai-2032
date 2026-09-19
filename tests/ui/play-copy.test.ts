@@ -2,7 +2,21 @@
 // of spec Section 14 apply to them as they do to the debrief's builders.
 
 import { describe, expect, test } from "vitest";
-import { adviserRange, capitalise, estimateLine, initials, resolvesLine, verbalChance } from "../../src/ui/copy";
+import {
+  adviserRange,
+  ASSESSMENT_CAVEAT,
+  backersLine,
+  backsLine,
+  capitalise,
+  estimateLine,
+  ESTIMATES_CAPTION,
+  initials,
+  listOf,
+  PREPARED_UNBACKED,
+  resolvesLine,
+  verbalChance,
+  whoBacksWhat,
+} from "../../src/ui/copy";
 import { loadContent, publicContent } from "../../src/content";
 
 const pub = publicContent(loadContent());
@@ -103,5 +117,93 @@ describe("the estimates list and the marks", () => {
     expect(initials("James Harcourt")).toBe("JH");
     const all = pub.advisers.map((a) => initials(a.name));
     expect(new Set(all).size).toBe(pub.advisers.length);
+  });
+});
+
+describe("advisers", () => {
+  test("backsLine names the option and its text, or the option alone", () => {
+    expect(backsLine("A", "Voluntary incident-reporting pact with developers and insurers.")).toBe(
+      "Backs option A: Voluntary incident-reporting pact with developers and insurers.",
+    );
+    expect(backsLine("A")).toBe("Backs option A.");
+  });
+
+  test("listOf joins names the British way, with no serial comma", () => {
+    expect(listOf([])).toBe("");
+    expect(listOf(["Dr Maya Shah"])).toBe("Dr Maya Shah");
+    expect(listOf(["Dr Maya Shah", "Amelia Chen"])).toBe("Dr Maya Shah and Amelia Chen");
+    expect(listOf(["A", "B", "C"])).toBe("A, B and C");
+  });
+
+  test("backersLine covers an option nobody backs", () => {
+    expect(backersLine(["Dr Maya Shah", "Amelia Chen"])).toBe("Backed by Dr Maya Shah and Amelia Chen.");
+    expect(backersLine([])).toBe("No adviser backs this option.");
+  });
+
+  test("an option opened by investment that nobody backs is not described as rejected", () => {
+    expect(PREPARED_UNBACKED).toBe("Your advisers' recommendations do not include this option.");
+    expect(backersLine([], true)).toBe(PREPARED_UNBACKED);
+    expect(backersLine(["Dr Maya Shah"], true)).toBe("Backed by Dr Maya Shah.");
+  });
+});
+
+describe("whoBacksWhat: one row per open option", () => {
+  test("lists every open option in order, with its backers in adviser order, including options nobody backs", () => {
+    const s = scenario("attribution-gap");
+    const rows = whoBacksWhat(s, s.choices, pub.advisers);
+    expect(rows.map((r) => [r.id, r.backers])).toEqual([
+      ["A", ["Dr Maya Shah", "Amelia Chen"]],
+      ["B", []],
+      ["C", ["James Harcourt"]],
+      ["D", ["David Okafor"]],
+    ]);
+    expect(rows[0]!.text).toBe(s.choices[0]!.text);
+  });
+
+  test("marks an option opened by investment", () => {
+    const s = scenario("deepfake-election");
+    const rows = whoBacksWhat(s, s.choices, pub.advisers);
+    expect(rows.find((r) => r.id === "E")?.prepared).toBe(true);
+    expect(rows.find((r) => r.id === "A")?.prepared).toBe(false);
+  });
+
+  test("no adviser in any scenario backs an option that can be locked, so the split always names all four", () => {
+    for (const s of Object.values(pub.scenarios)) {
+      const open = s.choices.filter((c) => c.unlock === null);
+      const named = whoBacksWhat(s, open, pub.advisers).flatMap((r) => r.backers);
+      expect(named.length, s.id).toBe(pub.advisers.length);
+    }
+  });
+});
+
+describe("copy rules (spec Section 14) for the play screens", () => {
+  const s = scenario("attribution-gap");
+  const everySentence = [
+    ...Array.from({ length: 101 }, (_, p) => verbalChance(p)),
+    adviserRange(35, [0.52, 0.68]),
+    adviserRange(10, [0.4, 0.4]),
+    adviserRange(null, [0.52, 0.68]),
+    resolvesLine("2029-12", false),
+    resolvesLine("2034-10", true),
+    backersLine([]),
+    backersLine([], true),
+    backersLine(["Dr Maya Shah"]),
+    backsLine("A"),
+    ...s.choices.map((c) => backsLine(c.id, c.text)),
+    estimateLine("Dr Maya Shah", 0.52),
+    ASSESSMENT_CAVEAT,
+    ESTIMATES_CAPTION,
+  ];
+
+  test("no sentence tells the player a decision was right or wrong", () => {
+    for (const sentence of everySentence) expect(sentence).not.toMatch(/\b(right|wrong|correct|incorrect|mistake|should have|good decision|bad decision)\b/i);
+  });
+
+  test("British spelling in the fixed copy", () => {
+    for (const sentence of everySentence) expect(sentence).not.toMatch(/\b(color|favor|honor|center|behavior|defense|analyze|organize|realize|recognize|prioritize|catalog)\b/i);
+  });
+
+  test("the caption over the advisers' estimates begins with the prefix (DECISIONS F12)", () => {
+    expect(ESTIMATES_CAPTION).toMatch(/^Under this game's assumptions, /);
   });
 });

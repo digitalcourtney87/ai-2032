@@ -3,7 +3,8 @@
 // They take public content as parameters and never import ./useGame.
 // The debrief's builders live in ./debrief/copy.ts.
 
-import { formatMonth, percent } from "./format";
+import { ADVISER_ORDER, formatMonth, percent } from "./format";
+import type { PublicAdviser, PublicChoice, PublicScenario } from "../content";
 
 // ---------------------------------------------------------------- the forecast
 
@@ -68,3 +69,66 @@ export function initials(name: string): string {
   const lastWord = words[words.length - 1] ?? "";
   return `${firstWord.charAt(0)}${words.length > 1 ? lastWord.charAt(0) : ""}`.toUpperCase();
 }
+
+// ---------------------------------------------------------------- the advisers
+
+/** "A, B and C" (no serial comma). */
+export function listOf(items: readonly string[]): string {
+  if (items.length <= 1) return items[0] ?? "";
+  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+}
+
+/**
+ * "Backs option A: Voluntary incident-reporting pact with developers and insurers.",
+ * or "Backs option A." when the card leaves the option's text to the split.
+ */
+export const backsLine = (choiceId: string, choiceText?: string) =>
+  choiceText ? `Backs option ${choiceId}: ${choiceText}` : `Backs option ${choiceId}.`;
+
+/**
+ * Under an option opened by investment that no adviser backs. In the content every
+ * such option is unbacked, because each adviser's recommendation was written among the
+ * base options, so "No adviser backs this option." would read as a verdict on the
+ * player's preparation.
+ */
+export const PREPARED_UNBACKED = "Your advisers' recommendations do not include this option.";
+
+/** The line under an option in the split. `prepared`: the option was opened by the player's investment. */
+export const backersLine = (names: readonly string[], prepared = false) =>
+  names.length > 0 ? `Backed by ${listOf(names)}.` : prepared ? PREPARED_UNBACKED : "No adviser backs this option.";
+
+export interface WhoBacksRow {
+  id: string;
+  text: string;
+  /** Opened by the player's investment. */
+  prepared: boolean;
+  /** Adviser names, in ADVISER_ORDER. Empty when nobody backs the option. */
+  backers: string[];
+}
+
+/** One row per open option, in the order given, with the advisers who recommend it. Uses only public fields. */
+export function whoBacksWhat(scenario: PublicScenario, options: readonly PublicChoice[], advisers: readonly PublicAdviser[]): WhoBacksRow[] {
+  const nameOf = (id: string) => {
+    const adviser = advisers.find((a) => a.id === id);
+    if (!adviser) throw new Error(`Unknown adviser "${id}"`);
+    return adviser.name;
+  };
+  return options.map((choice) => ({
+    id: choice.id,
+    text: choice.text,
+    prepared: choice.unlock !== null,
+    backers: ADVISER_ORDER.filter((id) => scenario.advisers[id].recommends === choice.id).map(nameOf),
+  }));
+}
+
+// ---------------------------------------------------------------- fixed captions
+
+/** Under the analysts' assessment on the briefing. New copy avoids "wrong" (DECISIONS F12). */
+export const ASSESSMENT_CAVEAT = "Analysts can misjudge this. How often depends on how strong the evidence is and on your State Capacity.";
+
+/**
+ * Opens the advisers' estimates once the player compares. The estimates are figures the
+ * game generates, so the group begins with the prefix (DECISIONS F12).
+ */
+export const ESTIMATES_CAPTION =
+  "Under this game's assumptions, these are your advisers' own estimates, not facts, and each adviser is sometimes off. At the end you will see how close each of them came.";
