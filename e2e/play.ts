@@ -8,7 +8,7 @@ import { expect, type Page } from "@playwright/test";
  * change touches this file rather than every spec.
  */
 export const LABEL = {
-  start: "Begin",
+  start: "Try your first decision",
   continueToForecast: "Continue to your forecast",
   lockIn: /^Lock in/,
   decisionGroup: "Your decision",

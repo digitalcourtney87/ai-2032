@@ -4,6 +4,79 @@
 import { expect, test, type Page } from "@playwright/test";
 import { LABEL, finishTurn, playToDebrief, playTurn, playUntil, startGame, toDecision } from "./play";
 
+// ---------------------------------------------------------------- the opening (dilemma first)
+
+/** A phone, the reviewer's window and a laptop: the first decision must be on the first screen of each. */
+const FIRST_SCREENS = [
+  { width: 375, height: 667 },
+  { width: 726, height: 900 },
+  { width: 1280, height: 800 },
+];
+
+/** A facilitator's link with one edited probability (the same edit polish.spec.ts makes), so the title shows its notice. */
+const FACILITATOR_LINK = "/?seed=WORKSHOP&cfg=eyJldmVudHMiOnsiaW5mcmEtYXR0YWNrIjp7IndoZW5UcnVlIjo5MH19fQ";
+
+for (const viewport of FIRST_SCREENS) {
+  test(`the first decision is on the first screen at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    for (const url of ["/", "/?seed=FRIEND-01", FACILITATOR_LINK]) {        // plain, a friend's link, a facilitator's link
+      await page.goto(url);
+      await page.evaluate(async () => { await document.fonts.ready; });     // measure the real type, not the fallback
+      const box = await page.getByRole("button", { name: LABEL.start }).boundingBox();
+      expect(box, url).not.toBeNull();
+      expect(box!.y, `${url}: top of the button`).toBeGreaterThanOrEqual(0);
+      expect(box!.y + box!.height, `${url}: bottom of the button`).toBeLessThanOrEqual(viewport.height);
+      expect(box!.x + box!.width, `${url}: right edge of the button`).toBeLessThanOrEqual(viewport.width);
+    }
+  });
+}
+
+test("the opening leads with the dilemma and counts the decisions from the content", async ({ page }) => {
+  await startGame(page, "COUNT-1");                                         // the game's own count, from the header
+  const total = /^Turn 1 of (\d+)/.exec(await page.getByText(/^Turn 1 of \d+/).innerText())?.[1];
+  expect(total).toBeTruthy();
+
+  await page.goto("/");
+  await expect(page.getByText(/^AI could make us healthier, wealthier and safer\./)).toBeVisible();
+  await expect(page.getByText(new RegExp(`^About 25 minutes for ${total} decisions\\.`))).toBeVisible();
+  // One line per decision: the static list must change when the content does.
+  await expect(page.getByRole("region", { name: "What you will face" }).getByRole("listitem")).toHaveCount(Number(total));
+  await expect(page.getByText("The Frontier Technology Risk Unit and its advisers are fictional.")).toBeVisible();
+});
+
+test("the seed code waits in a disclosure, and the first decision plays the code it holds", async ({ page }) => {
+  await page.goto("/");
+  const seedField = page.getByLabel(/^Seed code/);
+  await expect(seedField).toBeHidden();
+  await page.getByText("Play the same world as a friend").click();
+  await seedField.fill("FRIEND-02");
+  await expect(seedField).toBeVisible();                                   // typing does not close the disclosure
+  await page.getByRole("button", { name: LABEL.start }).click();
+  await expect(page.getByRole("button", { name: LABEL.continueToForecast })).toBeVisible();
+  expect(new URL(page.url()).searchParams.get("seed")).toBe("FRIEND-02");
+
+  await page.goto("/?seed=FRIEND-01");                                     // a friend's link opens it, filled in
+  await expect(seedField).toBeVisible();
+  await expect(seedField).toHaveValue("FRIEND-01");
+  await page.getByRole("button", { name: LABEL.start }).click();
+  await expect(page.getByRole("button", { name: LABEL.continueToForecast })).toBeVisible();
+  expect(new URL(page.url()).searchParams.get("seed")).toBe("FRIEND-01");
+});
+
+test("Play again brings focus back to the title heading", async ({ page }) => {
+  const title = page.getByRole("heading", { level: 1, name: "AI 2032" });
+  await page.goto("/");
+  await page.evaluate(async () => { await document.fonts.ready; });        // React has rendered and run its effects
+  await expect(title).toBeVisible();
+  // A first visit leaves focus alone: focusing the h1 by script on load draws the focus ring round the name.
+  expect(await page.evaluate(() => document.activeElement === document.body), "first visit: focus stays on the page").toBe(true);
+
+  await startGame(page, "FOCUS-1");
+  await playToDebrief(page);
+  await page.getByRole("button", { name: /^Play (again|a new world)$/ }).click();   // Phase 13 renames it "Play a new world"
+  await expect(title).toBeFocused();
+});
+
 // ---------------------------------------------------------------- print-production labels
 
 /**

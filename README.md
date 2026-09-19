@@ -36,7 +36,7 @@ Every game is fixed by a seed code, shown in the header and carried in the URL a
 
 - The same seed code and the same actions always give the same run, start to finish.
 - Everyone who enters the same code plays the same hidden world **and faces the same dice**. If two players both cut the odds of an event, it fires for both or for neither; outcomes differ only where decisions differ. That is what makes a workshop comparison fair.
-- Codes are case-insensitive. Leave the box blank and the game makes a new eight-character code (Crockford base32, so no I, L, O or U to misread).
+- Codes are case-insensitive. The box is under **Play the same world as a friend** on the title screen, and opens by itself when the URL carries a code. Leave it blank and the game makes a new eight-character code (Crockford base32, so no I, L, O or U to misread).
 - A code reveals nothing about the world behind it: it is hashed to a 32-bit number, and the profile and five latent facts are drawn from that.
 
 Share a run by sharing the URL.

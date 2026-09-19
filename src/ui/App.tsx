@@ -33,9 +33,13 @@ export function App() {
   const heading = useRef<HTMLHeadingElement>(null);
 
   // Move focus to the step heading whenever the step changes, for keyboard and screen-reader users.
+  // Not on a first visit to the title: focusing its h1 by script on load draws the focus ring round
+  // "AI 2032" for every visitor. Once any game has started, coming back to the title focuses it.
   const stepKey = view ? `${view.turn}:${view.phase}:${stage}` : "title";
+  const started = useRef(false);
   useEffect(() => {
-    heading.current?.focus();
+    if (stepKey !== "title") started.current = true;
+    if (started.current) heading.current?.focus();
     window.scrollTo(0, 0);
   }, [stepKey]);
 
@@ -43,6 +47,7 @@ export function App() {
     return (
       <AppShell>
         <Title
+          headingRef={heading}
           initialSeed={seedFromUrl()}
           onStart={(seedCode) => {
             // The seed code lives in the URL so a run can be shared and reproduced.
