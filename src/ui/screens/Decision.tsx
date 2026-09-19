@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../components/Button";
 import { Icon } from "../components/Icon";
 import { formatEffects, LEVER_LABEL, TRACK_LABEL } from "../format";
@@ -17,7 +17,16 @@ interface Props {
 export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
   const ctx = view.current!;
+  // Commissioning analysis costs Political Capital and can put the picked option out of reach.
+  // The pick counts only while its live status is "available": a stale pick would send an illegal DECIDE.
+  const chosen = ctx.choices.find((o) => o.id === selected && o.status === "available")?.id ?? null;
   const purchased = view.intel.find((r) => r.turn === view.turn && r.source === "purchase");
+  const bought = purchased !== undefined;
+  const analysis = useRef<HTMLParagraphElement>(null);
+  // The Commission button unmounts once the analysis arrives, so focus moves to what was bought.
+  useEffect(() => {
+    if (bought) analysis.current?.focus();
+  }, [bought]);
   const statusOf = (id: string) => ctx.choices.find((o) => o.id === id)!.status;
   // Options opened by earlier investment come first: this is where preparation pays (spec Section 4).
   const prepared = (id: string, unlock: unknown) => (unlock && statusOf(id) !== "locked" ? 0 : 1);
@@ -31,7 +40,9 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
           <h2 className="font-semibold">Commission analysis</h2>
           {purchased ? (
             <>
-              <p className="mt-1">{purchased.text}</p>
+              <p ref={analysis} tabIndex={-1} className="mt-1 outline-none">
+                {purchased.text}
+              </p>
               <p className="mt-1 text-xs text-muted">A second, independent reading. It is more reliable when State Capacity is higher, and it can still be wrong.</p>
             </>
           ) : (
@@ -57,7 +68,7 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
           {ordered.map((choice) => {
             const option = ctx.choices.find((o) => o.id === choice.id)!;
             const available = option.status === "available";
-            const on = selected === choice.id;
+            const on = chosen === choice.id;
             const inputId = `choice-${choice.id}`;
             return (
               <div key={choice.id} className={`border p-4 ${on ? "border-ink bg-ink text-paper" : "border-rule"} ${available ? "" : "opacity-60"}`}>
@@ -114,8 +125,8 @@ export function Decision({ view, scenario, onBuyInfo, onDecide }: Props) {
         </div>
       </fieldset>
 
-      <Button disabled={selected === null} onClick={() => selected && onDecide(selected)}>
-        {selected ? `Confirm option ${selected}` : "Choose an option"}
+      <Button disabled={chosen === null} onClick={() => chosen && onDecide(chosen)}>
+        {chosen ? `Confirm option ${chosen}` : "Choose an option"}
       </Button>
     </div>
   );
