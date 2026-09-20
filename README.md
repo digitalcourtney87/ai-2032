@@ -83,7 +83,7 @@ There is no backend, so the debrief ends with **Share your run**. **Copy run sum
 | --- | --- |
 | `src/engine/` | The game. Pure, deterministic TypeScript. No React, no DOM, no wall clock, no `Math.random` |
 | `src/content/` | Scenarios, events, advisers and endings as JSON, validated by Zod at load. `index.ts` is the only door from the interface: it serves a public view with hidden effects stripped, and publishes the assumptions to the debrief |
-| `src/ui/` | React screens that render `displayed(state)`, and pure, unit-tested helpers for what they say and preview (`copy.ts`, `preview.ts`, `preparation.ts`, `consequences.ts`). The raw game state never leaves `useGame.ts` |
+| `src/ui/` | React screens that render `displayed(state)`, and pure, unit-tested helpers for what they say and preview (`copy.ts`, `preview.ts`, `preparation.ts`, `consequences.ts`). Raw game state stays inside `session.ts` and `useGame.ts` |
 | `src/workers/` | Web Worker for what-if reruns and luck-tag rollouts |
 | `scripts/` | The balance harness |
 | `tests/`, `e2e/` | Vitest suites for the engine, content, copy rules and interface helpers; Playwright suites for the browser gates |
@@ -96,9 +96,10 @@ There is no backend, so the debrief ends with **Share your run**. **Copy run sum
 - [docs/ui-engagement-handoff.md](docs/ui-engagement-handoff.md): why the interface was reworked for a general audience
 - [docs/plan.md](docs/plan.md): the implementation plan, its progress, and the items only people can complete
 - [docs/plans/2026-09-19-public-engagement-ui.md](docs/plans/2026-09-19-public-engagement-ui.md): the public-audience redesign, task by task
+- [docs/plans/2026-09-20-architecture-reliability.md](docs/plans/2026-09-20-architecture-reliability.md): debrief-calculation recovery, effective configuration, condition contract and completed-turn ownership
 - [docs/playtest.md](docs/playtest.md): how to run the newcomer playtest and time each step
 - [DECISIONS.md](DECISIONS.md): every choice made where the spec was silent, every number that is not in the spec, and the balance-tuning log, including why Rule 7 is judged across all worlds pooled
 
 ## Status
 
-The seven build phases are complete. The public-audience redesign (Phases 8 to 15 in [docs/plan.md](docs/plan.md)) is built on a branch; [docs/plan.md](docs/plan.md) records the date and results of its last local gate run. It awaits the designer's review and has not been deployed. The parts that need people remain open: a newcomer playtest with ten members of the public, the under-30-minute and about-three-minutes-a-turn timing checks, the "would defend a decision despite its outcome" measure, and the designer's sign-off on the redesign's decisions (`DECISIONS.md` section F). See the end of [docs/plan.md](docs/plan.md) and [docs/playtest.md](docs/playtest.md).
+The seven build phases are complete. The public-audience redesign (Phases 8 to 15 in [docs/plan.md](docs/plan.md)) is on `main`; it awaits the designer's review and has not been deployed. Architecture reliability (calculation recovery, invalid `cfg` fallback, the supported condition contract, and completed-turn ownership) is on `codex/architecture-reliability`; [the plan](docs/plans/2026-09-20-architecture-reliability.md) records its local gate. The parts that need people remain open: a newcomer playtest with ten members of the public, the under-30-minute and about-three-minutes-a-turn timing checks, the "would defend a decision despite its outcome" measure, and the designer's sign-off on the redesign's decisions (`DECISIONS.md` section F). See the end of [docs/plan.md](docs/plan.md) and [docs/playtest.md](docs/playtest.md).

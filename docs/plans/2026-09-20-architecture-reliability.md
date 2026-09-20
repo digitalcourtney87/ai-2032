@@ -8,7 +8,7 @@
 
 **Tech stack:** Existing TypeScript, React 18, Zod, Vitest and Playwright; browser Web Workers. No new dependencies.
 
-**Status:** Proposed implementation plan, not implemented. Based on three Sol investigations of revision `9a1d07e`. Line anchors below describe that revision; locate named functions if they move.
+**Status:** Mandatory Tasks 0–9 implemented on `codex/architecture-reliability` (2026-09-20). Section 7 (full probabilistic condition grammar) remains deferred. Based on three Sol investigations of revision `9a1d07e`. Line anchors below describe that revision; locate named functions if they move.
 
 ## 1. Findings and priorities
 
@@ -282,6 +282,24 @@ The port check must print nothing before the e2e run; inspect and stop only a kn
 6. Commit documentation and final verification record. Prepare a reviewable summary/PR when requested by the execution workflow; merge and deployment remain outside this plan's authorisation.
 
 **Done means:** known failures settle and recover visibly; effective configuration cannot break startup; supported content and interpretation agree; completed turns have one owner; current authored gameplay is unchanged; all required gates pass.
+
+### Task 9 verification (2026-09-20)
+
+Starting revision for this work: `3b47cbc` on `main` (docs after `9a1d07e`). Implementation is on `codex/architecture-reliability`. No merge or deploy.
+
+Local completion gate, in order:
+
+| Check | Result |
+| --- | --- |
+| `npm run lint` | pass |
+| `npm run test` | 435 passed (21 files) |
+| `npm run balance` | pass; pooled Rule 7 35.4 / 27.5 / 37.1, same as the Phase 3 record |
+| `npm run build` | pass |
+| port 4173 before e2e | free |
+| `npm run e2e` | 77 passed, including the 3-second What-if gate |
+| `du -sk dist` | 2024 KB (limit 16,384 KB) |
+
+Task 0 seed endings and scores still match for WORKSHOP, WORKSHOP-9, K7Q2-M9XD, STALE-PICK, FINAL-RAIL, and facilitator-edited WORKSHOP (`weights.hard = 60`, `facts.benign.cyberOffenceLed = 5`). Authored forecast chances match the supported within-profile product. No new runtime dependencies. Screens still cannot import raw session state (lint). Human-only playtest and design-review items in `docs/plan.md` stay open. Section 7 remains unimplemented.
 
 ## 4. Why these modules earn their depth
 

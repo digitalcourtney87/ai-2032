@@ -1,6 +1,6 @@
 # AI 2032 Implementation Plan
 
-**Overall Progress:** `100%` of build steps (63 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. The items only people can complete are listed at the end and remain open.
+**Overall Progress:** `100%` of build steps (63 of 63). Phases 0 to 7, the original build, are complete; Phases 8 to 15 are the public-audience redesign. Architecture reliability (calculation recovery, effective configuration, condition contract, completed-turn ownership) is implemented on `codex/architecture-reliability` from [docs/plans/2026-09-20-architecture-reliability.md](plans/2026-09-20-architecture-reliability.md); it is not a new numbered phase and does not close any human-only item. The items only people can complete are listed at the end and remain open.
 
 Sources: `docs/spec.md` (Game Design Specification v2) and `docs/handoff.md` (Claude Code Build Handoff). Where they disagree the spec wins. Every decision below is copied into `DECISIONS.md` in Phase 0.
 
