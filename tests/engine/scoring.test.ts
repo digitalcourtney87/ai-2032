@@ -1,7 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { createGame, type GameState } from "../../src/engine";
 import { composites } from "../../src/engine/resolve";
-import { brier, endingScore, luckDelta, luckTag, resolveEnding, scoreImpact } from "../../src/engine/scoring";
+import { priorChance } from "../../src/engine/conditions";
+import { brier, endingScore, luckDelta, luckLinks, luckTag, resolveEnding, scoreImpact } from "../../src/engine/scoring";
 import { first, fixture, playThrough } from "./fixture";
 
 const withMetrics = (state: GameState, metrics: Partial<GameState["metrics"]>): GameState => ({
@@ -92,5 +93,16 @@ describe("luck", () => {
     expect(attack.probability).toBe(final.history[0]!.oddsAtTheTime.find((o) => o.eventId === "attack")!.probability);
     expect(attack.happened).toBe(final.outcomes.find((o) => o.eventId === "attack")!.fired);
     expect(s1.fortunate).toBe(!attack.happened);
+  });
+
+  test("a hidden choice-effect luck link uses the published prior, not a realised-world fallback", () => {
+    const content = structuredClone(fixture);
+    content.scenarios[0]!.choices[0]!.conditionalEffects = [
+      { when: [{ seedFact: "cyberOffenceLed" }], effects: { economy: 1 } },
+    ];
+    const final = playThrough(createGame("LUCK-FACT", content), content, first).at(-1)!;
+    const fact = luckLinks(final.history[0]!, final, content).find((link) => link.kind === "fact")!;
+    expect(fact.probability).toBeCloseTo(priorChance([{ seedFact: "cyberOffenceLed" }], content.config));
+    expect(fact.happened).toBe(final.world.cyberOffenceLed);
   });
 });

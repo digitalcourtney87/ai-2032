@@ -1,14 +1,19 @@
 import { describe, expect, test } from "vitest";
-import type { Condition, Content } from "../../src/engine";
+import { createGame, type Condition, type Content } from "../../src/engine";
 import {
+  allHold,
+  chanceOf,
   contentConditionProblems,
   dependsOnHidden,
   expressionProblems,
+  holds,
   isEmptyCondition,
   isSupportedProbabilityExpression,
+  priorChance,
 } from "../../src/engine/conditions";
 import { loadContent } from "../../src/content/load";
-import { fixture } from "./fixture";
+import { applyOverrides } from "../../src/content/overrides";
+import { first, fixture, playThrough } from "./fixture";
 
 const nested: Condition[] = [{
   any: [
@@ -148,5 +153,100 @@ describe("contentConditionProblems walks every consumer with a location", () => 
 
   test("the bundled content uses only supported sites", () => {
     expect(contentConditionProblems(loadContent())).toEqual([]);
+  });
+});
+
+describe("truth evaluation", () => {
+  const state = createGame("COND-HOLD", fixture);
+  const frontier: Condition = {
+    any: [{ seedFact: "sandbaggingStrategic" }, { flag: "sandbagging-resolved", not: true }],
+  };
+
+  test("fields on a node are conjoined; any is recursive; not negates the node", () => {
+    const flagged = { ...state, flags: ["sandbagging-resolved"] };
+    expect(holds({ flag: "sandbagging-resolved" }, flagged)).toBe(true);
+    expect(holds({ flag: "sandbagging-resolved", not: true }, flagged)).toBe(false);
+    expect(allHold([], state)).toBe(true);
+  });
+
+  test("truth-only nested alternatives resolve recursively", () => {
+    const strategic = { ...state, world: { ...state.world, sandbaggingStrategic: true }, flags: ["sandbagging-resolved"] };
+    const unresolved = { ...state, world: { ...state.world, sandbaggingStrategic: false }, flags: [] };
+    const resolved = { ...state, world: { ...state.world, sandbaggingStrategic: false }, flags: ["sandbagging-resolved"] };
+    expect(holds(frontier, strategic)).toBe(true);
+    expect(holds(frontier, unresolved)).toBe(true);
+    expect(holds(frontier, resolved)).toBe(false);
+  });
+});
+
+describe("supported chance", () => {
+  const state = createGame("COND-CHANCE", fixture);
+  const facts = fixture.config.profiles[state.world.profile].facts;
+
+  test("within-profile chance is the product of each atom's marginal", () => {
+    expect(chanceOf([{ seedFact: "cyberOffenceLed" }], state, fixture.config)).toBeCloseTo(facts.cyberOffenceLed / 100);
+    expect(chanceOf([{ seedFact: "cyberOffenceLed", not: true }], state, fixture.config)).toBeCloseTo(1 - facts.cyberOffenceLed / 100);
+    expect(chanceOf([
+      { seedFact: "cyberOffenceLed" },
+      { seedFact: "bioUpliftReal" },
+    ], state, fixture.config)).toBeCloseTo((facts.cyberOffenceLed / 100) * (facts.bioUpliftReal / 100));
+    expect(chanceOf([{ draw: { key: "same", probability: 30 } }], state, fixture.config)).toBeCloseTo(0.3);
+  });
+
+  test("the published prior is the weighted sum of within-profile conjunctions, not a product of averages", () => {
+    expect(priorChance([{ seedFact: "cyberOffenceLed" }], fixture.config)).toBeCloseTo(0.5);
+    // Profile-correlated product: 0.21625. Averaging first then multiplying would give 0.1825.
+    expect(priorChance([
+      { seedFact: "cyberOffenceLed" },
+      { seedFact: "bioUpliftReal" },
+    ], fixture.config)).toBeCloseTo(0.21625);
+    expect(priorChance([{ seedFact: "cyberOffenceLed", not: true }], fixture.config)).toBeCloseTo(0.5);
+  });
+
+  test("direct probability calls reject nested alternatives and repeated identities", () => {
+    expect(() => chanceOf(nested, state, fixture.config)).toThrow(/unsupported/);
+    expect(() => chanceOf(repeatedFact, { ...state, world: { ...state.world, profile: "hard" } }, fixture.config)).toThrow(/unsupported/);
+    expect(() => priorChance(repeatedFact, fixture.config)).toThrow(/unsupported/);
+    expect(() => priorChance(repeatedDraw, fixture.config)).toThrow(/unsupported/);
+    expect(() => chanceOf(observableAny, state, fixture.config)).toThrow(/unsupported/);
+  });
+});
+
+describe("authored outputs stay on the Task 0 baseline", () => {
+  const content = loadContent();
+
+  test("every authored forecast chance matches the supported within-profile product", () => {
+    const state = createGame("WORKSHOP", content);
+    const facts = content.config.profiles[state.world.profile].facts;
+    for (const scenario of content.scenarios) {
+      const resolution = scenario.forecast.resolution;
+      if (!Array.isArray(resolution)) continue;
+      const expected = resolution.reduce((product, condition) => {
+        const chance = condition.seedFact
+          ? facts[condition.seedFact] / 100
+          : condition.draw!.probability / 100;
+        return product * (condition.not ? 1 - chance : chance);
+      }, 1);
+      expect(chanceOf(resolution, state, content.config), scenario.id).toBeCloseTo(expected);
+    }
+  });
+
+  test.each([
+    ["WORKSHOP", "deregulated-frontier", 44.333333333333336],
+    ["WORKSHOP-9", "deregulated-frontier", 40.55555555555555],
+    ["K7Q2-M9XD", "deregulated-frontier", 45.444444444444436],
+    ["STALE-PICK", "dependent-state", 44.333333333333336],
+    ["FINAL-RAIL", "deregulated-frontier", 50.11111111111111],
+  ] as const)("%s keeps its ending and score", (seed, ending, score) => {
+    const final = playThrough(createGame(seed, content), content, first).at(-1)!;
+    expect(final.debrief!.endingId).toBe(ending);
+    expect(final.debrief!.endingScore).toBeCloseTo(score);
+  });
+
+  test("facilitator-edited weights and facts keep the edited WORKSHOP ending", () => {
+    const edited = applyOverrides(content, { weights: { hard: 60 }, facts: { benign: { cyberOffenceLed: 5 } } });
+    const final = playThrough(createGame("WORKSHOP", edited), edited, first).at(-1)!;
+    expect(final.debrief!.endingId).toBe("deregulated-frontier");
+    expect(final.debrief!.endingScore).toBeCloseTo(41.77777777777778);
   });
 });

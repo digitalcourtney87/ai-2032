@@ -1,21 +1,20 @@
-// Conditions, event odds, effects and event-queue resolution.
+// Event odds, effects and event-queue resolution. Condition truth and chance
+// live in conditions.ts.
 //
 // Choices never trigger events directly (spec Section 6). Each queued event has a
 // base probability, adjusted by decision modifiers and investment tracks, clamped,
 // and rolled exactly once with a keyed draw.
 
+import { allHold } from "./conditions";
 import { keyedInt, keyedUniform } from "./rng";
 import type {
   BaseProbability,
   CapacityLabel,
-  CompositeKey,
-  Condition,
   Content,
   Domain,
   Effects,
   EventDef,
   EventOutcome,
-  GameConfig,
   GameState,
   IntelReport,
   MetricKey,
@@ -46,13 +45,8 @@ export function findEvent(content: Content, id: string): EventDef {
 // ---------------------------------------------------------------- composites and labels
 
 /** The three composites behind the endings (spec Section 10). */
-export function composites(metrics: Record<MetricKey, number>): Record<CompositeKey, number> {
-  return {
-    control: (metrics.nationalSecurity + metrics.stateCapacity + (100 - metrics.systemicRisk)) / 3,
-    prosperity: (metrics.economy + metrics.innovation + metrics.socialStability) / 3,
-    legitimacy: metrics.publicTrust,
-  };
-}
+export { composites } from "./composites";
+export { allHold, chanceOf, drawHolds, holds } from "./conditions";
 
 export function capacityLabel(
   stateCapacity: number,
@@ -60,47 +54,6 @@ export function capacityLabel(
 ): CapacityLabel {
   if (stateCapacity >= thresholds.strongFrom) return "Strong";
   return stateCapacity >= thresholds.adequateFrom ? "Adequate" : "Thin";
-}
-
-// ---------------------------------------------------------------- conditions
-
-const compare = (actual: number, op: ">=" | "<=", value: number) => (op === ">=" ? actual >= value : actual <= value);
-
-/** A keyed yes/no fact: fixed for the seed, identical wherever the key is named. */
-export function drawHolds(seed: number, draw: { key: string; probability: number }): boolean {
-  return keyedUniform(seed, `draw:${draw.key}`) * 100 < draw.probability;
-}
-
-export function holds(condition: Condition, state: GameState): boolean {
-  let result = true;
-  if (condition.metric) result &&= compare(state.metrics[condition.metric.key], condition.metric.op, condition.metric.value);
-  if (condition.composite) {
-    result &&= compare(composites(state.metrics)[condition.composite.key], condition.composite.op, condition.composite.value);
-  }
-  if (condition.track) result &&= state.tracks[condition.track.key] >= condition.track.minLevel;
-  if (condition.flag !== undefined) result &&= state.flags.includes(condition.flag);
-  if (condition.seedFact) result &&= state.world[condition.seedFact];
-  if (condition.draw) result &&= drawHolds(state.world.seed, condition.draw);
-  if (condition.any) result &&= condition.any.some((c) => holds(c, state));
-  return condition.not ? !result : result;
-}
-
-export const allHold = (conditions: Condition[], state: GameState) => conditions.every((c) => holds(c, state));
-
-/**
- * The chance (0..1) that the conditions hold, as seen from inside this world's
- * profile without knowing its hidden facts. Advisers reason from this, so their
- * forecasts cannot leak a fact. Observable parts (metrics, tracks, flags) count as known.
- */
-export function chanceOf(conditions: Condition[], state: GameState, config: GameConfig): number {
-  const factOdds = config.profiles[state.world.profile].facts;
-  return conditions.reduce((product, condition) => {
-    const { seedFact, draw, not, ...observable } = condition;
-    let chance = holds(observable, state) ? 1 : 0;
-    if (seedFact) chance *= factOdds[seedFact] / 100;
-    if (draw) chance *= draw.probability / 100;
-    return product * (not ? 1 - chance : chance);
-  }, 1);
 }
 
 // ---------------------------------------------------------------- effects

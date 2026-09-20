@@ -1,8 +1,17 @@
-// Shared condition inspection: truth versus the supported probability subset.
-// Validation and chance/luck evaluation use these rules so content cannot name
-// an expression the debrief cannot correctly explain.
+// Shared condition inspection and evaluation: truth versus the supported
+// probability subset. Validation and chance/luck use these rules so content
+// cannot name an expression the debrief cannot correctly explain.
+//
+// Observable-gated luck stays unsupported. A condition such as "the fact holds
+// only if a metric is already high" would need a decision-time snapshot to
+// score fairly later; this implementation only explains immutable seed facts
+// and keyed draws.
 
-import type { Condition, Content } from "./types";
+import { composites } from "./composites";
+import { keyedUniform } from "./rng";
+import type { Condition, Content, GameConfig, GameState, Profile, SeedFact } from "./types";
+
+const PROFILES: Profile[] = ["benign", "contested", "hard"];
 
 export type ConditionUse = "truth" | "probability" | "luck";
 
@@ -145,4 +154,65 @@ export function contentConditionProblems(content: Content): string[] {
 
   for (const ending of content.endings) add(problems, `ending ${ending.id}.when`, "truth", ending.when);
   return problems;
+}
+
+// ---------------------------------------------------------------- evaluation
+
+const compare = (actual: number, op: ">=" | "<=", value: number) => (op === ">=" ? actual >= value : actual <= value);
+
+/** A keyed yes/no fact: fixed for the seed, identical wherever the key is named. */
+export function drawHolds(seed: number, draw: { key: string; probability: number }): boolean {
+  return keyedUniform(seed, `draw:${draw.key}`) * 100 < draw.probability;
+}
+
+export function holds(condition: Condition, state: GameState): boolean {
+  let result = true;
+  if (condition.metric) result &&= compare(state.metrics[condition.metric.key], condition.metric.op, condition.metric.value);
+  if (condition.composite) {
+    result &&= compare(composites(state.metrics)[condition.composite.key], condition.composite.op, condition.composite.value);
+  }
+  if (condition.track) result &&= state.tracks[condition.track.key] >= condition.track.minLevel;
+  if (condition.flag !== undefined) result &&= state.flags.includes(condition.flag);
+  if (condition.seedFact) result &&= state.world[condition.seedFact];
+  if (condition.draw) result &&= drawHolds(state.world.seed, condition.draw);
+  if (condition.any) result &&= condition.any.some((child) => holds(child, state));
+  return condition.not ? !result : result;
+}
+
+export const allHold = (conditions: Condition[], state: GameState) => conditions.every((condition) => holds(condition, state));
+
+function requireSupported(conditions: Condition[]): void {
+  if (!isSupportedProbabilityExpression(conditions)) {
+    throw new Error("unsupported probabilistic condition");
+  }
+}
+
+function chanceInProfile(conditions: Condition[], facts: Record<SeedFact, number>): number {
+  return conditions.reduce((product, condition) => {
+    let chance = 1;
+    if (condition.seedFact) chance = facts[condition.seedFact] / 100;
+    if (condition.draw) chance = condition.draw.probability / 100;
+    return product * (condition.not ? 1 - chance : chance);
+  }, 1);
+}
+
+/**
+ * The chance (0..1) that a supported hidden conjunction holds inside this
+ * world's profile, without reading the realised facts.
+ */
+export function chanceOf(conditions: Condition[], state: GameState, config: GameConfig): number {
+  requireSupported(conditions);
+  return chanceInProfile(conditions, config.profiles[state.world.profile].facts);
+}
+
+/**
+ * The chance of a supported hidden conjunction as the player could know it:
+ * the published prior, a weight-sum of complete within-profile products.
+ */
+export function priorChance(conditions: Condition[], config: GameConfig): number {
+  requireSupported(conditions);
+  const totalWeight = PROFILES.reduce((sum, profile) => sum + config.profiles[profile].weight, 0);
+  return PROFILES.reduce((sum, profile) => (
+    sum + (config.profiles[profile].weight / totalWeight) * chanceInProfile(conditions, config.profiles[profile].facts)
+  ), 0);
 }

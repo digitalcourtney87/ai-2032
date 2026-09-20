@@ -5,7 +5,9 @@
 // simulated rollouts and arrives with the counterfactual worker in Phase 6.
 
 import { keyedUniform } from "./rng";
-import { allHold, composites, findEvent, findScenario } from "./resolve";
+import { allHold, dependsOnHidden, priorChance } from "./conditions";
+import { composites } from "./composites";
+import { findEvent, findScenario } from "./resolve";
 import type {
   Condition,
   Content,
@@ -13,17 +15,13 @@ import type {
   DecisionRecord,
   Effects,
   Ending,
-  GameConfig,
   GameState,
   IntelReport,
   IntelReview,
   LuckLink,
   MetricKey,
-  Profile,
   SeedFact,
 } from "./types";
-
-const PROFILES: Profile[] = ["benign", "contested", "hard"];
 
 // ---------------------------------------------------------------- ending
 
@@ -75,22 +73,6 @@ export function forecastOutcome(record: DecisionRecord, state: GameState, conten
 
 // ---------------------------------------------------------------- luck
 
-/** The chance of a hidden-fact condition as the player could know it: the published prior. */
-function priorChance(conditions: Condition[], config: GameConfig): number {
-  const totalWeight = PROFILES.reduce((sum, p) => sum + config.profiles[p].weight, 0);
-  return PROFILES.reduce((sum, profile) => {
-    const inProfile = conditions.reduce((product, c) => {
-      let chance = 1;
-      if (c.seedFact) chance *= config.profiles[profile].facts[c.seedFact] / 100;
-      if (c.draw) chance *= c.draw.probability / 100;
-      return product * (c.not ? 1 - chance : chance);
-    }, 1);
-    return sum + (config.profiles[profile].weight / totalWeight) * inProfile;
-  }, 0);
-}
-
-const dependsOnHiddenFact = (conditions: Condition[]) => conditions.some((c) => c.seedFact || c.draw);
-
 /** Every chance outcome linked to a decision: what it faced, and what was drawn. */
 export function luckLinks(record: DecisionRecord, state: GameState, content: Content): LuckLink[] {
   const links: LuckLink[] = [];
@@ -103,7 +85,7 @@ export function luckLinks(record: DecisionRecord, state: GameState, content: Con
   const choice = findScenario(content, record.scenarioId).choices.find((c) => c.id === record.choiceId);
   if (choice && record.succeeded) {
     choice.conditionalEffects.forEach((conditional, index) => {
-      if (!dependsOnHiddenFact(conditional.when)) return;
+      if (!dependsOnHidden(conditional.when)) return;
       links.push({
         kind: "fact",
         id: `${record.scenarioId}:${record.choiceId}:${index}`,
