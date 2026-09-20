@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { createGame } from "../../src/engine";
 import { findProblems, loadContent } from "../../src/content/load";
-import { applyOverrides, baseSlots, countOverrides, decodeOverrides, encodeOverrides, type Overrides } from "../../src/content/overrides";
+import { applyOverrides, baseSlots, countOverrides, decodeOverrides, encodeOverrides, resolveEffectiveConfiguration, type Overrides } from "../../src/content/overrides";
 import { deepFreeze, first, playThrough } from "../engine/fixture";
 
 const content = loadContent();
@@ -52,6 +52,49 @@ describe("facilitator overrides (DECISIONS.md, decision 7)", () => {
 
   test("a world with no possible profile is refused", () => {
     expect(() => applyOverrides(content, { weights: { benign: 0, contested: 0, hard: 0 } })).toThrow();
+  });
+
+  test("shared URL configuration with all-zero weights falls back to the published bundle", () => {
+    const invalid = { weights: { benign: 0, contested: 0, hard: 0 } };
+    const frozen = deepFreeze(structuredClone(content));
+    const resolved = resolveEffectiveConfiguration(encodeOverrides(invalid), frozen);
+    expect(resolved.content).toEqual(content);
+    expect(resolved.overrides).toEqual({});
+    expect(countOverrides(resolved.overrides)).toBe(0);
+    expect(frozen).toEqual(content);
+    expect(() => applyOverrides(content, invalid)).toThrow(/weight above zero/);
+  });
+
+  test("a partial override whose effective weights are all zero is also discarded", () => {
+    const alreadyNarrow = applyOverrides(content, { weights: { benign: 0, contested: 0 } });
+    const resolved = resolveEffectiveConfiguration(encodeOverrides({ weights: { hard: 0 } }), alreadyNarrow);
+    expect(resolved.content).toEqual(alreadyNarrow);
+    expect(resolved.overrides).toEqual({});
+    expect(() => applyOverrides(alreadyNarrow, { weights: { hard: 0 } })).toThrow(/weight above zero/);
+  });
+
+  test("valid partial weights, facts and events apply as a whole", () => {
+    const resolved = resolveEffectiveConfiguration(encodeOverrides(edits), content);
+    expect(resolved.overrides).toEqual(edits);
+    expect(resolved.content.config.profiles.hard.weight).toBe(60);
+    expect(resolved.content.config.profiles.benign.weight).toBe(30);
+    expect(resolved.content.config.profiles.benign.facts.cyberOffenceLed).toBe(5);
+    expect(resolved.content.events.find((e) => e.id === "infra-attack")!.base).toEqual({
+      fact: "cyberOffenceLed", whenTrue: 95, whenFalse: 95,
+    });
+    expect(content.config.profiles.hard.weight).toBe(30);
+  });
+
+  test("malformed encoding yields the published bundle with no accepted edits", () => {
+    const resolved = resolveEffectiveConfiguration("not base64 json", content);
+    expect(resolved.content).toEqual(content);
+    expect(resolved.overrides).toEqual({});
+  });
+
+  test("an empty or missing parameter leaves the bundled content untouched", () => {
+    expect(resolveEffectiveConfiguration(null, content)).toEqual({ content, overrides: {} });
+    expect(resolveEffectiveConfiguration("", content)).toEqual({ content, overrides: {} });
+    expect(resolveEffectiveConfiguration(encodeOverrides({}), content)).toEqual({ content, overrides: {} });
   });
 
   test("edited odds change what happens: an attack made near-certain nearly always fires", () => {

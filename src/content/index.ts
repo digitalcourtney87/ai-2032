@@ -6,5 +6,14 @@
 export { loadContent } from "./load";
 export { assumptionsOf, publicContent } from "./public";
 export type { Assumptions, PublicAdviser, PublicChoice, PublicContent, PublicEnding, PublicRules, PublicScenario } from "./public";
-export { applyOverrides, baseSlots, countOverrides, decodeOverrides, encodeOverrides } from "./overrides";
+export {
+  applyOverrides,
+  baseSlots,
+  countOverrides,
+  decodeOverrides,
+  encodeOverrides,
+  effectiveWeightsValid,
+  IMPOSSIBLE_PROFILE_WEIGHTS,
+  resolveEffectiveConfiguration,
+} from "./overrides";
 export type { Overrides } from "./overrides";

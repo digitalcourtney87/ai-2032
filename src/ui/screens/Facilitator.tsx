@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "../components/Button";
 import { describeConditions, FACT_LABEL, PROFILE_LABEL } from "../format";
 import { defaults, overrides as applied } from "../useGame";
-import { baseSlots, countOverrides, encodeOverrides, type Overrides } from "../../content";
+import { baseSlots, countOverrides, encodeOverrides, IMPOSSIBLE_PROFILE_WEIGHTS, type Overrides } from "../../content";
 import type { BaseProbability, Profile, SeedFact } from "../../engine";
 
 const PROFILES: Profile[] = ["benign", "contested", "hard"];
@@ -90,7 +90,13 @@ export function Facilitator({ seedCode }: { seedCode: string }) {
 
   const editable = Object.entries(defaults.events).filter(([, event]) => baseSlots(event.base).length > 0);
   const total = PROFILES.reduce((sum, p) => sum + weight(p), 0);
+  const weightsValid = PROFILES.some((p) => weight(p) > 0);
   const participantLink = linkFor(seedCode, draft, false);
+
+  function applyDraft() {
+    if (!weightsValid) return;
+    window.location.assign(linkFor(seedCode, draft, true));
+  }
 
   return (
     <section aria-labelledby="facilitator" className="mt-10 border border-ink p-5">
@@ -108,6 +114,7 @@ export function Facilitator({ seedCode }: { seedCode: string }) {
           {PROFILES.map((p) => (
             <NumberField key={p} id={`weight-${p}`} label={PROFILE_LABEL[p]} value={weight(p)} changed={draft.weights?.[p] !== undefined} onChange={(v) => setWeight(p, v)} />
           ))}
+          {!weightsValid && <p className="mt-2 text-sm" role="alert">{IMPOSSIBLE_PROFILE_WEIGHTS}</p>}
         </fieldset>
         {FACTS.map((f) => (
           <fieldset key={f} className="mt-3 border-t border-rule pt-2">
@@ -134,7 +141,7 @@ export function Facilitator({ seedCode }: { seedCode: string }) {
       </details>
 
       <div className="mt-5 flex flex-wrap gap-3">
-        <Button onClick={() => window.location.assign(linkFor(seedCode, draft, true))}>Apply to this page</Button>
+        <Button onClick={applyDraft} disabled={!weightsValid}>Apply to this page</Button>
         <Button
           variant="quiet"
           onClick={async () => { try { await navigator.clipboard.writeText(participantLink); setCopied(true); } catch { setCopied(false); } }}

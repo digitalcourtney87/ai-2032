@@ -37,6 +37,15 @@ function withSlots(base: BaseProbability, edits: Record<string, number>): BasePr
   return { benign: pick("benign", base.benign), contested: pick("contested", base.contested), hard: pick("hard", base.hard) };
 }
 
+export const IMPOSSIBLE_PROFILE_WEIGHTS = "At least one world profile must have a weight above zero";
+
+/** Whether applying these edits would leave every world profile at weight zero. */
+export function effectiveWeightsValid(content: Content, overrides: Overrides): boolean {
+  return (Object.keys(content.config.profiles) as Profile[]).some(
+    (name) => (overrides.weights?.[name] ?? content.config.profiles[name]!.weight) > 0,
+  );
+}
+
 /** Returns new content with the overrides applied. Unknown event ids and slots are ignored. */
 export function applyOverrides(content: Content, overrides: Overrides): Content {
   const profiles = structuredClone(content.config.profiles);
@@ -46,12 +55,28 @@ export function applyOverrides(content: Content, overrides: Overrides): Content 
       profiles[name].facts[fact] = overrides.facts?.[name]?.[fact] ?? profiles[name].facts[fact];
     }
   }
-  if (Object.values(profiles).every((p) => p.weight === 0)) throw new Error("At least one world profile must have a weight above zero");
+  if (Object.values(profiles).every((p) => p.weight === 0)) throw new Error(IMPOSSIBLE_PROFILE_WEIGHTS);
   const events = content.events.map((event) => {
     const edits = overrides.events?.[event.id];
     return edits && event.base !== undefined && event.base !== "certain" ? { ...event, base: withSlots(event.base, edits) } : event;
   });
   return { ...content, config: { ...content.config, profiles }, events };
+}
+
+/**
+ * Shared-link configuration: parse, check the effective weights against the supplied
+ * bundle, then apply. An invalid user configuration is discarded as a whole.
+ * Direct `applyOverrides` stays strict for trusted callers.
+ */
+export function resolveEffectiveConfiguration(
+  encoded: string | null,
+  bundled: Content,
+): { content: Content; overrides: Overrides } {
+  const overrides = decodeOverrides(encoded);
+  if (countOverrides(overrides) === 0 || !effectiveWeightsValid(bundled, overrides)) {
+    return { content: bundled, overrides: {} };
+  }
+  return { content: applyOverrides(bundled, overrides), overrides };
 }
 
 export function countOverrides(overrides: Overrides): number {

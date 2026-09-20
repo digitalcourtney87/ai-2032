@@ -13,7 +13,7 @@ import {
   type GameState,
   type OptionEstimate,
 } from "../engine";
-import { applyOverrides, assumptionsOf, countOverrides, decodeOverrides, loadContent, publicContent } from "../content";
+import { assumptionsOf, countOverrides, loadContent, publicContent, resolveEffectiveConfiguration } from "../content";
 import type { WorkerRequest, WorkerResponse } from "../workers/counterfactual.worker";
 
 // Content is validated once, when the module loads. Malformed content fails loudly here.
@@ -22,9 +22,10 @@ import type { WorkerRequest, WorkerResponse } from "../workers/counterfactual.wo
 const bundled = loadContent();
 /** The published assumptions before any facilitator edit, so the editor can show what changed. */
 export const defaults = assumptionsOf(bundled);
-export const overrides = decodeOverrides(new URLSearchParams(window.location.search).get("cfg"));
+const resolved = resolveEffectiveConfiguration(new URLSearchParams(window.location.search).get("cfg"), bundled);
+export const overrides = resolved.overrides;
 export const overrideCount = countOverrides(overrides);
-const content = applyOverrides(bundled, overrides);
+const content = resolved.content;
 export const pub = publicContent(content);
 /** The hidden half of the content. Imported by debrief screens only. */
 export const published = assumptionsOf(content);

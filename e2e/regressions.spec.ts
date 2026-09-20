@@ -56,3 +56,19 @@ test("the final turn never lists an investment step, even on its consequences", 
   await page.getByRole("button", { name: LABEL.next }).click();
   await expect(page.getByTestId("debrief")).toBeVisible();
 });
+
+test("a seed link with all-zero profile weights still starts, and a valid edit still applies", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  // encodeOverrides({ weights: { benign: 0, contested: 0, hard: 0 } })
+  await page.goto("/?seed=ZERO-CFG&cfg=eyJ3ZWlnaHRzIjp7ImJlbmlnbiI6MCwiY29udGVzdGVkIjowLCJoYXJkIjowfX0");
+  await expect(page.getByRole("heading", { name: "AI 2032", level: 1 })).toBeVisible();
+  await expect(page.getByText("This session uses edited assumptions.")).toHaveCount(0);
+  await page.getByRole("button", { name: LABEL.start }).click();
+  await expect(page.getByRole("button", { name: LABEL.continueToForecast })).toBeVisible();
+  expect(errors).toEqual([]);
+
+  await page.goto("/?seed=WORKSHOP&cfg=eyJldmVudHMiOnsiaW5mcmEtYXR0YWNrIjp7IndoZW5UcnVlIjo5MH19fQ");
+  await expect(page.getByText("This session uses edited assumptions.")).toBeVisible();
+  expect(new URL(page.url()).searchParams.get("cfg")).toBeTruthy();
+});
