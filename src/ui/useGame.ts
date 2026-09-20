@@ -14,7 +14,7 @@ import {
   type OptionEstimate,
 } from "../engine";
 import { assumptionsOf, countOverrides, loadContent, publicContent, resolveEffectiveConfiguration } from "../content";
-import type { WorkerRequest, WorkerResponse } from "../workers/counterfactual.worker";
+import { createDebriefCalculations, type DebriefCalculations } from "./debrief/calculations";
 
 // Content is validated once, when the module loads. Malformed content fails loudly here.
 // A facilitator's edits arrive in the URL beside the seed code (DECISIONS.md, decision 7),
@@ -78,44 +78,43 @@ export interface UnaffordableAt {
   options: { id: string; cost: number }[];
 }
 
-type Ask = WorkerRequest extends infer R ? (R extends { id: number } ? Omit<R, "id"> : never) : never;
+function newCalculations() {
+  return createDebriefCalculations({ overrides });
+}
 
 export function useGame() {
   const [session, dispatch] = useReducer(sessionReducer, EMPTY);
   const [rankings, setRankings] = useState<Rankings | null>(null);
-  const worker = useRef<Worker | null>(null);
-  const waiting = useRef(new Map<number, (response: WorkerResponse) => void>());
-  const nextId = useRef(0);
+  const calculations = useRef<DebriefCalculations | null>(null);
 
-  const ask = useCallback((request: Ask): Promise<WorkerResponse> => {
-    if (!worker.current) {
-      worker.current = new Worker(new URL("../workers/counterfactual.worker.ts", import.meta.url), { type: "module" });
-      worker.current.onmessage = (event: MessageEvent<WorkerResponse>) => {
-        waiting.current.get(event.data.id)?.(event.data);
-        waiting.current.delete(event.data.id);
-      };
-      // Messages are handled in order, so every later request sees the facilitator's numbers.
-      worker.current.postMessage({ id: nextId.current++, kind: "configure", overrides });
-    }
-    const id = nextId.current++;
-    return new Promise((resolve) => {
-      waiting.current.set(id, resolve);
-      worker.current!.postMessage({ ...request, id });
-    });
+  const currentCalculations = () => {
+    calculations.current ??= newCalculations();
+    return calculations.current;
+  };
+
+  const replaceCalculations = () => {
+    calculations.current?.dispose();
+    calculations.current = newCalculations();
+  };
+
+  useEffect(() => {
+    currentCalculations();
+    return () => {
+      calculations.current?.dispose();
+      calculations.current = null;
+    };
   }, []);
-
-  useEffect(() => () => worker.current?.terminate(), []);
 
   // When the game ends, judge every decision off the main thread.
   const over = session.game?.phase === "debrief";
   useEffect(() => {
     if (!over) return;
     let cancelled = false;
-    void ask({ kind: "soundness", decisionStates: session.decisionStates, rollouts: SOUND_ROLLOUTS }).then((response) => {
-      if (!cancelled && response.kind === "soundness") setRankings(response.estimates);
+    void currentCalculations().soundness(session.decisionStates, SOUND_ROLLOUTS).then((estimates) => {
+      if (!cancelled) setRankings(estimates);
     });
     return () => { cancelled = true; };
-  }, [over, ask, session.decisionStates]);
+  }, [over, session.decisionStates]);
 
   const view = useMemo(() => (session.game ? displayed(session.game) : null), [session.game]);
   // For each decision, the options the player could not afford at the time, so the debrief's What-if can
@@ -128,20 +127,26 @@ export function useGame() {
     })),
     [session.decisionStates],
   );
-  const start = useCallback((seedCode: string) => { setRankings(null); dispatch({ type: "START", seedCode }); }, []);
-  const reset = useCallback(() => { setRankings(null); dispatch({ type: "RESET" }); }, []);
+  const start = useCallback((seedCode: string) => {
+    setRankings(null);
+    replaceCalculations();
+    dispatch({ type: "START", seedCode });
+  }, []);
+  const reset = useCallback(() => {
+    setRankings(null);
+    replaceCalculations();
+    dispatch({ type: "RESET" });
+  }, []);
   const act = useCallback((...actions: Action[]) => dispatch({ type: "ENGINE", actions }), []);
 
   const whatIf = useCallback(async (changeAt: number, newChoiceId: string): Promise<WhatIfAnswer> => {
     const game = session.game;
     if (!game || game.phase !== "debrief") throw new Error("What-if reruns open with the debrief");
-    const response = await ask({
-      kind: "whatIf", history: game.history, changeAt, newChoiceId, runs: WHAT_IF_RUNS,
+    return currentCalculations().whatIf({
+      history: game.history, changeAt, newChoiceId, runs: WHAT_IF_RUNS,
       profile: game.world.profile, baseSeed: game.world.seed,
     });
-    if (response.kind !== "whatIf") throw new Error(response.kind === "error" ? response.message : "Unexpected reply");
-    return { result: response.result, milliseconds: response.milliseconds };
-  }, [ask, session.game]);
+  }, [session.game]);
 
   return { view, before: session.before, rankings, start, reset, act, whatIf, unaffordable };
 }
