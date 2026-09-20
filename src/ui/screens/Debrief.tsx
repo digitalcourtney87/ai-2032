@@ -15,12 +15,13 @@ import { sectionNumber, type DebriefSectionId } from "../debrief/sections";
 import { TalkItOver } from "../debrief/TalkItOver";
 import { WhatIfPanel } from "../debrief/WhatIfPanel";
 import { WorldPanel } from "../debrief/WorldPanel";
-import { overrideCount, pub, type Rankings, type UnaffordableAt, type WhatIfAnswer } from "../useGame";
+import { overrideCount, pub, type SoundnessState, type UnaffordableAt, type WhatIfAnswer } from "../useGame";
 import type { DisplayedState } from "../../engine";
 
 interface Props {
   view: DisplayedState;
-  rankings: Rankings | null;
+  soundness: SoundnessState;
+  onRetrySoundness: () => void;
   whatIf: (changeAt: number, newChoiceId: string) => Promise<WhatIfAnswer>;
   unaffordable: UnaffordableAt[];
   onRestart: () => void;
@@ -34,7 +35,7 @@ const section = (id: DebriefSectionId) => ({ id, number: sectionNumber(id) });
  * (spec Section 11). The six panels come in the order of DECISIONS.md section F: what
  * the player can try first, the reference panels closed until wanted, then sharing.
  */
-export function Debrief({ view, rankings, whatIf, unaffordable, onRestart }: Props) {
+export function Debrief({ view, soundness, onRetrySoundness, whatIf, unaffordable, onRestart }: Props) {
   const heading = useRef<HTMLHeadingElement>(null);
   const [copied, setCopied] = useState<"text" | "json" | "link" | "link-failed" | null>(null);
   const [showJson, setShowJson] = useState(false);
@@ -97,13 +98,13 @@ export function Debrief({ view, rankings, whatIf, unaffordable, onRestart }: Pro
       </header>
 
       <Panel {...section("panel-at-a-glance")} title="At a glance">
-        <AtAGlance view={view} rankings={rankings} onTryAnother={tryAnother} />
+        <AtAGlance view={view} soundness={soundness} onTryAnother={tryAnother} />
       </Panel>
       <Panel {...section("panel-what-if")} title="What if you had chosen differently?">
         <WhatIfPanel view={view} whatIf={whatIf} unaffordable={unaffordable} changeAt={whatIfAt} onChangeAt={setWhatIfAt} />
       </Panel>
       <Panel {...section("panel-quality")} title="Decision quality versus luck">
-        <QualityPanel view={view} rankings={rankings} />
+        <QualityPanel view={view} soundness={soundness} onRetry={onRetrySoundness} />
       </Panel>
       <Panel {...section("panel-world")} title="The world you were in" collapsible defaultOpen={false} teaser={TEASER.world}>
         <WorldPanel view={view} />

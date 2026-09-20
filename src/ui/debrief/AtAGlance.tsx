@@ -1,13 +1,12 @@
 import { compositeSentence, DEFEND_PROMPT, leastLikelyOutcome, linkSentence, outcomeSentence, pivotalDecision, pivotSentence, standing, tagText } from "./copy";
 import { Button } from "../components/Button";
 import { describeConditions, PROFILE_LABEL } from "../format";
-import { pub, type Rankings } from "../useGame";
+import { pub, type SoundnessState } from "../useGame";
 import type { DisplayedState } from "../../engine";
 
 interface Props {
   view: DisplayedState;
-  /** Arrives from the worker shortly after the debrief opens. */
-  rankings: Rankings | null;
+  soundness: SoundnessState;
   /** Opens the What if panel on this decision. */
   onTryAnother: (changeAt: number) => void;
 }
@@ -18,7 +17,7 @@ interface Props {
  * decision comes from the luck deltas alone, so it is there at once and does not
  * move when the soundness rankings arrive; only its tag appears later.
  */
-export function AtAGlance({ view, rankings, onTryAnother }: Props) {
+export function AtAGlance({ view, soundness, onTryAnother }: Props) {
   const debrief = view.debrief!;
   const history = view.history ?? [];
   const pivotal = pivotalDecision(debrief);
@@ -26,6 +25,7 @@ export function AtAGlance({ view, rankings, onTryAnother }: Props) {
   const luck = debrief.luck[pivotal];
   const scenario = record ? pub.scenarios[record.scenarioId] : undefined;
   const chosen = scenario?.choices.find((c) => c.id === record?.choiceId);
+  const rankings = soundness.status === "ready" ? soundness.rankings : null;
   const position = record ? standing(rankings?.[pivotal], record.choiceId) : null;
   const notable = leastLikelyOutcome(debrief);
   const notableRecord = notable ? history[notable.index] : undefined;

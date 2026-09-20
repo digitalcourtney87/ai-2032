@@ -1,12 +1,13 @@
-import { causalSentence, outcomeSentence, soundSentence, standing, tagText, tallySentence } from "./copy";
+import { causalSentence, outcomeSentence, SOUNDNESS_RETRY, SOUNDNESS_UNAVAILABLE, SOUNDNESS_WEIGHING, soundSentence, standing, tagText, tallySentence } from "./copy";
+import { Button } from "../components/Button";
 import { describeConditions } from "../format";
-import { pub, type Rankings } from "../useGame";
+import { pub, type SoundnessState } from "../useGame";
 import type { DisplayedState } from "../../engine";
 
 interface Props {
   view: DisplayedState;
-  /** Arrives from the worker shortly after the debrief opens. */
-  rankings: Rankings | null;
+  soundness: SoundnessState;
+  onRetry: () => void;
 }
 
 /**
@@ -15,11 +16,14 @@ interface Props {
  * one click away. The game never says a decision was right or wrong; it says how
  * the option ranked and how the dice fell.
  */
-export function QualityPanel({ view, rankings }: Props) {
+export function QualityPanel({ view, soundness, onRetry }: Props) {
   const debrief = view.debrief!;
   const history = view.history ?? [];
+  const failed = soundness.status === "error";
+  const rankings = soundness.status === "ready" ? soundness.rankings : null;
   const positions = history.map((record, index) => standing(rankings?.[index], record.choiceId));
   const tags = positions.flatMap((position, index) => (position ? [tagText(position, debrief.luck[index]!.fortunate)] : []));
+  const status = failed ? SOUNDNESS_UNAVAILABLE : rankings ? "" : SOUNDNESS_WEIGHING;
 
   return (
     <div className="space-y-4">
@@ -41,9 +45,14 @@ export function QualityPanel({ view, rankings }: Props) {
               <p className="text-sm text-muted">
                 Turn {record.turn}, {scenario?.title}: option {record.choiceId}
               </p>
-              <p className="mt-1 font-mono text-lg" data-testid="luck-tag">
-                {position ? tagText(position, luck.fortunate) : "Weighing the options you had…"}
-              </p>
+              {position && (
+                <p className="mt-1 font-mono text-lg" data-testid="luck-tag">
+                  {tagText(position, luck.fortunate)}
+                </p>
+              )}
+              {!position && !failed && (
+                <p className="mt-1 font-mono text-lg" data-testid="luck-tag">{SOUNDNESS_WEIGHING}</p>
+              )}
               {!record.succeeded && <p className="text-sm">The option did not take effect: its conditions were not met, and the cost was still paid.</p>}
               {position && <p className="mt-1 text-sm">{soundSentence(position.sound, position.rank, position.of)}</p>}
               <details className="mt-1 text-sm">
@@ -68,6 +77,8 @@ export function QualityPanel({ view, rankings }: Props) {
       </ol>
       {/* After the list and in plain text, so it reads as a summary, not a score to beat. */}
       {history.length > 0 && tags.length === history.length && <p className="text-sm">{tallySentence(tags)}</p>}
+      <p className={failed ? "" : "sr-only"} role="status">{status}</p>
+      {failed && <Button className="mt-2" onClick={onRetry}>{SOUNDNESS_RETRY}</Button>}
     </div>
   );
 }

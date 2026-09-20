@@ -2,7 +2,8 @@ import { describe, expect, test } from "vitest";
 import {
   BRIER_GLOSS, calibrationBins, causalSentence, compositeSentence, DEFEND_PROMPT, DISCUSSION_PROMPTS, INTEL_MATCHED, INTEL_MISSED,
   leastLikelyOutcome, linkSentence, outcomeSentence, pivotalDecision, pivotSentence, PREFIX, profileShareSentence, runSummaryText,
-  soundSentence, standing, TALK_INTRO, tallySentence, tagText, TEASER, whatIfEndingCaption, whatIfEndingRows, whatIfSentences,
+  SOUNDNESS_RETRY, SOUNDNESS_UNAVAILABLE, SOUNDNESS_WEIGHING, soundSentence, standing, TALK_INTRO, tallySentence, tagText, TEASER,
+  WHAT_IF_PREVIOUS, WHAT_IF_RETRY, WHAT_IF_UNAVAILABLE, whatIfEndingCaption, whatIfEndingRows, whatIfSentences,
 } from "../../src/ui/debrief/copy";
 import { counterfactual, createGame, displayed, reduce, type CounterfactualResult, type GameState, type LuckLink, type RunSummary } from "../../src/engine";
 import { loadContent } from "../../src/content";
@@ -40,6 +41,7 @@ describe("copy rules (spec Section 14)", () => {
     ...DISCUSSION_PROMPTS, DEFEND_PROMPT, TALK_INTRO, BRIER_GLOSS, ...Object.values(TEASER),
     profileShareSentence({ benign: 30, contested: 40, hard: 30 }),
     INTEL_MATCHED, INTEL_MISSED,
+    SOUNDNESS_UNAVAILABLE, SOUNDNESS_RETRY, SOUNDNESS_WEIGHING, WHAT_IF_UNAVAILABLE, WHAT_IF_RETRY, WHAT_IF_PREVIOUS,
   ];
 
   test("every simulated statistic is prefixed \"Under this game's assumptions\"", () => {
@@ -255,6 +257,17 @@ describe("decision quality in plain words", () => {
     expect(tallySentence(["Risky and unlucky", "Sound and fortunate", "Sound and fortunate"]))
       .toBe(`${PREFIX}, of your 3 decisions, 2 were sound and fortunate and 1 risky and unlucky.`);
     expect(tallySentence(["Sound and fortunate"])).toBe(`${PREFIX}, of your 1 decision, 1 was sound and fortunate.`);
+  });
+
+  test("calculation failures offer a retry and never invent a ranking", () => {
+    expect(SOUNDNESS_UNAVAILABLE).toBe("We couldn’t compare your decisions. Try again.");
+    expect(SOUNDNESS_RETRY).toBe("Retry decision comparison");
+    expect(SOUNDNESS_WEIGHING).toBe("Weighing the options you had…");
+    expect(WHAT_IF_UNAVAILABLE).toBe("We couldn’t complete the rerun. Try again.");
+    expect(WHAT_IF_RETRY).toBe("Retry rerun");
+    expect(WHAT_IF_PREVIOUS).toBe("Previous result for this comparison.");
+    expect(SOUNDNESS_UNAVAILABLE).not.toMatch(/sound|risky/i);
+    expect(WHAT_IF_PREVIOUS).not.toMatch(/latest result|new result/i);
   });
 
   test("the composites are named in words a newcomer can follow", () => {

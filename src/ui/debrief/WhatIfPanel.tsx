@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Assumptions } from "./Assumptions";
-import { whatIfEndingCaption, whatIfEndingRows, whatIfMethod, whatIfSentences } from "./copy";
+import { WHAT_IF_PREVIOUS, WHAT_IF_RETRY, WHAT_IF_UNAVAILABLE, whatIfEndingCaption, whatIfEndingRows, whatIfMethod, whatIfSentences } from "./copy";
+import { isCalculationCancelled } from "./calculations";
 import { Button } from "../components/Button";
 import { percent, PROFILE_LABEL } from "../format";
 import { pub, WHAT_IF_RUNS, type UnaffordableAt, type WhatIfAnswer } from "../useGame";
@@ -23,11 +24,14 @@ export function WhatIfPanel({ view, whatIf, unaffordable, changeAt, onChangeAt }
   const [picked, setPicked] = useState<{ at: number; choiceId: string } | null>(null);
   const [answer, setAnswer] = useState<(WhatIfAnswer & { changeAt: number }) | null>(null);
   const [running, setRunning] = useState(false);
+  const [failedFor, setFailedFor] = useState<string | null>(null);
 
   const record = history[changeAt]!;
   const scenario = pub.scenarios[record.scenarioId]!;
   const alternatives = scenario.choices.filter((c) => c.id !== record.choiceId && !record.lockedChoiceIds.includes(c.id));
   const chosenAlternative = alternatives.find((c) => picked?.at === changeAt && c.id === picked.choiceId) ?? alternatives[0];
+  const comparisonKey = `${changeAt}:${chosenAlternative?.id ?? ""}`;
+  const failed = failedFor === comparisonKey;
   // Unaffordable options stay on offer, labelled: hiding them would hide the capital lesson, and a silent
   // substitution would claim the replay took an option it did not. The result describes per-world substitution.
   const unaffordableAt = unaffordable[changeAt];
@@ -36,9 +40,12 @@ export function WhatIfPanel({ view, whatIf, unaffordable, changeAt, onChangeAt }
 
   async function run() {
     if (!chosenAlternative) return;
+    setFailedFor(null);
     setRunning(true);
     try {
       setAnswer({ ...(await whatIf(changeAt, chosenAlternative.id)), changeAt });
+    } catch (error) {
+      if (!isCalculationCancelled(error)) setFailedFor(comparisonKey);
     } finally {
       setRunning(false);
     }
@@ -88,14 +95,14 @@ export function WhatIfPanel({ view, whatIf, unaffordable, changeAt, onChangeAt }
         </div>
       </div>
       <Button onClick={run} disabled={running || !chosenAlternative}>
-        {running ? "Rerunning…" : `Rerun ${WHAT_IF_RUNS.toLocaleString("en-GB")} games`}
+        {running ? "Rerunning…" : failed ? WHAT_IF_RETRY : `Rerun ${WHAT_IF_RUNS.toLocaleString("en-GB")} games`}
       </Button>
-
-      {/* Announce the run and its headline only; the full result, table included, is there to read, not to be read out. */}
-      <p className="sr-only" role="status">
-        {running ? `Rerunning ${WHAT_IF_RUNS.toLocaleString("en-GB")} games.` : (sentences[0] ?? "")}
+      {/* Announce the run, a failure, or the headline only; the full result is there to read, not to be read out. */}
+      <p className={failed ? "" : "sr-only"} role="status">
+        {running ? `Rerunning ${WHAT_IF_RUNS.toLocaleString("en-GB")} games.` : failed ? WHAT_IF_UNAVAILABLE : (sentences[0] ?? "")}
       </p>
       <div>
+        {shown && (running || failed) && <p className="text-sm text-muted">{WHAT_IF_PREVIOUS}</p>}
         {shown && (
           <blockquote className="border-l-4 border-ink pl-4" data-testid="what-if-result" data-milliseconds={shown.milliseconds}>
             {sentences.map((sentence) => <p key={sentence} className="mt-1 first:mt-0">{sentence}</p>)}

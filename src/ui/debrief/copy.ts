@@ -17,6 +17,13 @@ import { METRIC_LABEL, percent, TRACK_LABEL } from "../format";
 
 export const PREFIX = "Under this game's assumptions";
 
+export const SOUNDNESS_WEIGHING = "Weighing the options you had…";
+export const SOUNDNESS_UNAVAILABLE = "We couldn’t compare your decisions. Try again.";
+export const SOUNDNESS_RETRY = "Retry decision comparison";
+export const WHAT_IF_UNAVAILABLE = "We couldn’t complete the rerun. Try again.";
+export const WHAT_IF_RETRY = "Retry rerun";
+export const WHAT_IF_PREVIOUS = "Previous result for this comparison.";
+
 /** A briefing or purchase, judged against the fact it was about — never as a right or wrong call. */
 export const INTEL_MATCHED = "Matched the fact";
 export const INTEL_MISSED = "Did not match the fact";

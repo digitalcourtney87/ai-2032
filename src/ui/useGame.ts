@@ -14,7 +14,7 @@ import {
   type OptionEstimate,
 } from "../engine";
 import { assumptionsOf, countOverrides, loadContent, publicContent, resolveEffectiveConfiguration } from "../content";
-import { createDebriefCalculations, type DebriefCalculations } from "./debrief/calculations";
+import { createDebriefCalculations, isCalculationCancelled, type DebriefCalculations } from "./debrief/calculations";
 
 // Content is validated once, when the module loads. Malformed content fails loudly here.
 // A facilitator's edits arrive in the URL beside the seed code (DECISIONS.md, decision 7),
@@ -67,6 +67,11 @@ function sessionReducer(session: Session, event: SessionAction): Session {
 
 /** For each decision, in order: every open option's expected ending score, best first. */
 export type Rankings = OptionEstimate[][];
+export type SoundnessStatus = "idle" | "loading" | "ready" | "error";
+export interface SoundnessState {
+  status: SoundnessStatus;
+  rankings: Rankings | null;
+}
 export interface WhatIfAnswer {
   result: CounterfactualResult;
   milliseconds: number;
@@ -82,10 +87,16 @@ function newCalculations() {
   return createDebriefCalculations({ overrides });
 }
 
+const IDLE_SOUNDNESS: SoundnessState = { status: "idle", rankings: null };
+const LOADING_SOUNDNESS: SoundnessState = { status: "loading", rankings: null };
+const ERROR_SOUNDNESS: SoundnessState = { status: "error", rankings: null };
+
 export function useGame() {
   const [session, dispatch] = useReducer(sessionReducer, EMPTY);
-  const [rankings, setRankings] = useState<Rankings | null>(null);
+  const [soundness, setSoundness] = useState<SoundnessState>(IDLE_SOUNDNESS);
+  const [soundnessEpoch, setSoundnessEpoch] = useState(0);
   const calculations = useRef<DebriefCalculations | null>(null);
+  const sessionToken = useRef(0);
 
   const currentCalculations = () => {
     calculations.current ??= newCalculations();
@@ -109,12 +120,19 @@ export function useGame() {
   const over = session.game?.phase === "debrief";
   useEffect(() => {
     if (!over) return;
+    const token = sessionToken.current;
     let cancelled = false;
-    void currentCalculations().soundness(session.decisionStates, SOUND_ROLLOUTS).then((estimates) => {
-      if (!cancelled) setRankings(estimates);
-    });
+    void currentCalculations().soundness(session.decisionStates, SOUND_ROLLOUTS).then(
+      (rankings) => {
+        if (!cancelled && token === sessionToken.current) setSoundness({ status: "ready", rankings });
+      },
+      (error) => {
+        if (cancelled || token !== sessionToken.current || isCalculationCancelled(error)) return;
+        setSoundness(ERROR_SOUNDNESS);
+      },
+    );
     return () => { cancelled = true; };
-  }, [over, session.decisionStates]);
+  }, [over, session.decisionStates, soundnessEpoch]);
 
   const view = useMemo(() => (session.game ? displayed(session.game) : null), [session.game]);
   // For each decision, the options the player could not afford at the time, so the debrief's What-if can
@@ -128,14 +146,20 @@ export function useGame() {
     [session.decisionStates],
   );
   const start = useCallback((seedCode: string) => {
-    setRankings(null);
+    sessionToken.current += 1;
+    setSoundness(IDLE_SOUNDNESS);
     replaceCalculations();
     dispatch({ type: "START", seedCode });
   }, []);
   const reset = useCallback(() => {
-    setRankings(null);
+    sessionToken.current += 1;
+    setSoundness(IDLE_SOUNDNESS);
     replaceCalculations();
     dispatch({ type: "RESET" });
+  }, []);
+  const retrySoundness = useCallback(() => {
+    setSoundness(LOADING_SOUNDNESS);
+    setSoundnessEpoch((epoch) => epoch + 1);
   }, []);
   const act = useCallback((...actions: Action[]) => dispatch({ type: "ENGINE", actions }), []);
 
@@ -148,5 +172,6 @@ export function useGame() {
     });
   }, [session.game]);
 
-  return { view, before: session.before, rankings, start, reset, act, whatIf, unaffordable };
+  const comparison: SoundnessState = over && soundness.status === "idle" ? LOADING_SOUNDNESS : soundness;
+  return { view, before: session.before, soundness: comparison, retrySoundness, start, reset, act, whatIf, unaffordable };
 }
