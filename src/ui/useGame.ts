@@ -1,20 +1,18 @@
-// The bridge between React and the engine. `useReducer` wraps the pure engine
-// (handoff Section 2: no state library). The raw GameState never leaves this
-// file: components receive only `displayed(state)` (handoff invariant 3).
+// The bridge between React and the engine. `useReducer` wraps the private session
+// (handoff Section 2: no state library). Raw game state stays inside the session
+// module and this hook: components receive only `displayed(state)` (handoff invariant 3).
 
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
-  createGame,
   displayed,
-  reduce,
   type Action,
   type CounterfactualResult,
-  type DisplayedState,
-  type GameState,
   type OptionEstimate,
 } from "../engine";
 import { assumptionsOf, countOverrides, loadContent, publicContent, resolveEffectiveConfiguration } from "../content";
 import { createDebriefCalculations, isCalculationCancelled, type DebriefCalculations } from "./debrief/calculations";
+// eslint-disable-next-line no-restricted-imports -- this hook is the session owner
+import { createSession, type Session } from "./session";
 
 // Content is validated once, when the module loads. Malformed content fails loudly here.
 // A facilitator's edits arrive in the URL beside the seed code (DECISIONS.md, decision 7),
@@ -34,34 +32,18 @@ export const published = assumptionsOf(content);
 const SOUND_ROLLOUTS = 300;
 export const WHAT_IF_RUNS = 1000;
 
-interface Session {
-  game: GameState | null;
-  /** The view just before the last ADVANCE, so the news screen can show what changed. */
-  before: DisplayedState | null;
-  /** The state at the moment of each decision, for judging it on what was knowable then. */
-  decisionStates: GameState[];
-}
+type SessionEvent = { type: "START"; seedCode: string } | { type: "RESET" } | { type: "ENGINE"; actions: Action[] };
 
-type SessionAction = { type: "START"; seedCode: string } | { type: "RESET" } | { type: "ENGINE"; actions: Action[] };
+const sessionApi = createSession(content);
 
-const EMPTY: Session = { game: null, before: null, decisionStates: [] };
-
-function sessionReducer(session: Session, event: SessionAction): Session {
+function sessionReducer(session: Session, event: SessionEvent): Session {
   switch (event.type) {
     case "START":
-      return { ...EMPTY, game: createGame(event.seedCode, content) };
+      return sessionApi.start(event.seedCode);
     case "RESET":
-      return EMPTY;
-    case "ENGINE": {
-      let { game, before, decisionStates } = session;
-      if (!game) return session;
-      for (const action of event.actions) {
-        if (action.type === "ADVANCE") before = displayed(game);
-        if (action.type === "DECIDE") decisionStates = [...decisionStates, game];
-        game = reduce(game, action, content);
-      }
-      return { game, before, decisionStates };
-    }
+      return sessionApi.empty();
+    case "ENGINE":
+      return sessionApi.apply(session, event.actions);
   }
 }
 
@@ -92,7 +74,7 @@ const LOADING_SOUNDNESS: SoundnessState = { status: "loading", rankings: null };
 const ERROR_SOUNDNESS: SoundnessState = { status: "error", rankings: null };
 
 export function useGame() {
-  const [session, dispatch] = useReducer(sessionReducer, EMPTY);
+  const [session, dispatch] = useReducer(sessionReducer, sessionApi.empty());
   const [soundness, setSoundness] = useState<SoundnessState>(IDLE_SOUNDNESS);
   const [soundnessEpoch, setSoundnessEpoch] = useState(0);
   const calculations = useRef<DebriefCalculations | null>(null);
@@ -173,5 +155,16 @@ export function useGame() {
   }, [session.game]);
 
   const comparison: SoundnessState = over && soundness.status === "idle" ? LOADING_SOUNDNESS : soundness;
-  return { view, before: session.before, soundness: comparison, retrySoundness, start, reset, act, whatIf, unaffordable };
+  return {
+    view,
+    before: session.completed?.before ?? null,
+    completed: session.completed,
+    soundness: comparison,
+    retrySoundness,
+    start,
+    reset,
+    act,
+    whatIf,
+    unaffordable,
+  };
 }

@@ -55,6 +55,7 @@ export default tseslint.config(
           patterns: [
             { group: ["**/engine/*", "!**/engine/index"], message: "Import the engine only through src/engine/index.ts." },
             { group: ["**/content/*", "!**/content/index"], message: "Import content only through src/content/index.ts, which hides hidden effects from components." },
+            { group: ["**/session", "**/session.ts"], message: "Raw session state stays inside src/ui/session.ts and useGame.ts." },
           ],
         },
       ],
@@ -75,6 +76,7 @@ export default tseslint.config(
           patterns: [
             { group: ["**/engine/*", "!**/engine/index"], message: "Import the engine only through src/engine/index.ts." },
             { group: ["**/content/*", "!**/content/index"], message: "Import content only through src/content/index.ts, which hides hidden effects from components." },
+            { group: ["**/session", "**/session.ts"], message: "Raw session state stays inside src/ui/session.ts and useGame.ts." },
             { group: ["**/useGame"], importNames: ["published", "defaults"], message: "The published assumptions are for the debrief and the facilitator panel only (DECISIONS.md B40)." },
             { group: ["**/content", "**/content/index"], importNames: ["assumptionsOf"], message: "assumptionsOf() is for the debrief and the facilitator panel only (DECISIONS.md B40)." },
           ],
