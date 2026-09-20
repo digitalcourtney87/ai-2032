@@ -8,6 +8,7 @@ import {
   type Action,
   type CounterfactualResult,
   type OptionEstimate,
+  type Track,
 } from "../engine";
 import { assumptionsOf, countOverrides, loadContent, publicContent, resolveEffectiveConfiguration } from "../content";
 import { createDebriefCalculations, isCalculationCancelled, type DebriefCalculations } from "./debrief/calculations";
@@ -144,6 +145,12 @@ export function useGame() {
     setSoundnessEpoch((epoch) => epoch + 1);
   }, []);
   const act = useCallback((...actions: Action[]) => dispatch({ type: "ENGINE", actions }), []);
+  const completeTurn = useCallback((track: Track) => {
+    dispatch({ type: "ENGINE", actions: [{ type: "INVEST", track }, { type: "ADVANCE" }] });
+  }, []);
+  const completeFinal = useCallback((choiceId: string) => {
+    dispatch({ type: "ENGINE", actions: [{ type: "DECIDE", choiceId }, { type: "ADVANCE" }] });
+  }, []);
 
   const whatIf = useCallback(async (changeAt: number, newChoiceId: string): Promise<WhatIfAnswer> => {
     const game = session.game;
@@ -164,6 +171,8 @@ export function useGame() {
     start,
     reset,
     act,
+    completeTurn,
+    completeFinal,
     whatIf,
     unaffordable,
   };

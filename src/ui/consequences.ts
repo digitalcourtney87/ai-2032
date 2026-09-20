@@ -51,8 +51,8 @@ export interface TurnConsequences {
 const band = ({ low, mid, high }: Band): Band => ({ low, mid, high });
 
 /**
- * `before` is the view captured just before ADVANCE (useGame.ts); `after` is the view
- * now. `resolved` names the turn and scenario that have just resolved.
+ * `before` and `after` are the snapshots on the session's completed turn; `resolved`
+ * is that turn's identity. App builds this once and hands the result to news/pause.
  */
 export function consequencesOf(
   before: DisplayedState,

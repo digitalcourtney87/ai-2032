@@ -16,6 +16,7 @@ import { Invest } from "./screens/Invest";
 import { News } from "./screens/News";
 import { Title } from "./screens/Title";
 import { AppShell } from "./shell/AppShell";
+import { consequencesOf } from "./consequences";
 import { pub, useGame } from "./useGame";
 
 /**
@@ -35,11 +36,10 @@ function seedFromUrl(): string | null {
 }
 
 export function App() {
-  const { view, before, soundness, retrySoundness, start, reset, act, whatIf, unaffordable } = useGame();
+  const { view, completed, soundness, retrySoundness, start, reset, act, completeTurn, completeFinal, whatIf, unaffordable } = useGame();
   const [stage, setStage] = useState<Stage>("briefing");
-  /** The turn and scenario whose consequences the news screen is reporting. */
-  const [resolved, setResolved] = useState<{ turn: number; scenarioId: string } | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
+  const consequences = completed ? consequencesOf(completed.before, completed.after, completed, pub) : null;
 
   // Move focus to the step heading whenever the step changes, for keyboard and screen-reader users.
   // Not on a first visit to the title: focusing its h1 by script on load draws the focus ring round
@@ -102,13 +102,17 @@ export function App() {
     );
   }
 
+  if ((stage === "news" || stage === "pause") && (!completed || !consequences)) {
+    throw new Error("News and the first-decision pause require a completed turn");
+  }
+
   // The pause is not a turn step: it has its own shell, rail and h1, so the next turn's clock and rail are untouched.
-  const pausedOn = stage === "pause" && resolved ? pub.scenarios[resolved.scenarioId] : undefined;
-  if (pausedOn && resolved && before) {
+  const pausedOn = stage === "pause" && completed ? pub.scenarios[completed.scenarioId] : undefined;
+  if (pausedOn && completed && consequences) {
     return (
       <AppShell
         skip={{ href: "#main", label: "Skip to the main content" }}
-        chrome={{ turn: resolved.turn, totalTurns: pub.totalTurns, dateLabel: formatMonth(pausedOn.date), seedCode: view.seedCode }}
+        chrome={{ turn: completed.turn, totalTurns: pub.totalTurns, dateLabel: formatMonth(pausedOn.date), seedCode: view.seedCode }}
         steps={PAUSE_STEPS}
         stepIndex={0}
         stepsLabel="Where you are"
@@ -118,10 +122,10 @@ export function App() {
         </h1>
         <div className="mt-6">
           <FirstDecision
-            view={view}
-            before={before}
+            consequences={consequences}
             scenario={pausedOn}
-            resolved={resolved}
+            turn={completed.turn}
+            seedCode={view.seedCode}
             onContinue={() => setStage("briefing")}
             onRestart={backToStart}
           />
@@ -130,12 +134,12 @@ export function App() {
     );
   }
 
-  const reporting = stage === "news" && resolved;
-  const scenarioId = reporting ? resolved.scenarioId : view.current?.scenarioId;
+  const reporting = stage === "news" && completed && consequences;
+  const scenarioId = reporting ? completed.scenarioId : view.current?.scenarioId;
   const scenario = scenarioId ? pub.scenarios[scenarioId] : undefined;
   if (!scenario) return null;
 
-  const turn = reporting ? resolved.turn : view.turn;
+  const turn = reporting ? completed.turn : view.turn;
   const isInterrupt = !pub.sequence.includes(scenario.id);
   const stepIndex = stage === "briefing" ? 0 : stage === "news" ? 4 : view.phase === "forecast" ? 1 : view.phase === "decide" ? 2 : 3;
   const current = view.current;
@@ -143,13 +147,12 @@ export function App() {
   // moved on: after the investment of the turn before the final one, `current` is the final turn,
   // and after the final decision it is cleared. So while reporting, the finished game is what marks
   // the final turn.
-  const finalTurn = reporting ? view.phase === "debrief" : Boolean(current?.isFinal);
+  const finalTurn = reporting ? completed.after.phase === "debrief" : Boolean(current?.isFinal);
   const visibleSteps = STEPS.filter((step) => !(step === "Investment" && finalTurn));
   const currentStep = STEPS[stepIndex] ?? "Briefing";
   const activeIndex = Math.max(0, visibleSteps.indexOf(currentStep));
 
   function toNews() {
-    if (current) setResolved({ turn: view!.turn, scenarioId: current.scenarioId });
     setStage("news");
   }
 
@@ -167,7 +170,7 @@ export function App() {
       stepsLabel="Steps in this turn"
       // On the forecast and decision steps the briefing is folded at the foot of the page (BriefingRecap).
       stepHrefs={stage === "play" && (view.phase === "forecast" || view.phase === "decide") ? ["#briefing-recap"] : undefined}
-      status={<StatusPanel view={view} before={reporting ? before : null} />}
+      status={<StatusPanel view={reporting ? completed.after : view} before={reporting ? completed.before : null} />}
     >
       {scenario.isCrisis && (
         <div className="mb-3">
@@ -191,7 +194,7 @@ export function App() {
             onDecide={(choiceId) => {
               // The final decision takes no investment, so it resolves at once.
               if (current?.isFinal) {
-                act({ type: "DECIDE", choiceId }, { type: "ADVANCE" });
+                completeFinal(choiceId);
                 toNews();
               } else act({ type: "DECIDE", choiceId });
             }}
@@ -201,18 +204,17 @@ export function App() {
           <Invest
             view={view}
             onInvest={(track) => {
-              act({ type: "INVEST", track }, { type: "ADVANCE" });
+              completeTurn(track);
               toNews();
             }}
           />
         )}
         {reporting && (
           <News
-            view={view}
-            before={before}
-            scenario={scenario}
-            resolvedTurn={resolved.turn}
-            onContinue={() => setStage(view.phase === "debrief" ? "debrief" : resolved.turn === 1 ? "pause" : "briefing")}
+            consequences={consequences}
+            over={completed.after.phase === "debrief"}
+            resolvedTurn={completed.turn}
+            onContinue={() => setStage(completed.after.phase === "debrief" ? "debrief" : completed.turn === 1 ? "pause" : "briefing")}
           />
         )}
       </div>
