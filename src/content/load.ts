@@ -2,7 +2,8 @@
 // for references that a schema alone cannot see. Bad content fails loudly at load:
 // the game never starts on data it does not fully understand.
 
-import type { Choice, Condition, Content, QueueSpec, Scenario } from "../engine/types";
+import type { Choice, Content, QueueSpec, Scenario } from "../engine/types";
+import { contentConditionProblems } from "../engine/conditions";
 import { adviserSchema, endingSchema, eventSchema, gameSchema, scenarioSchema } from "./schema";
 import { z } from "zod";
 
@@ -52,13 +53,6 @@ function duplicates(ids: string[]): string[] {
   return ids.filter((id, index) => ids.indexOf(id) !== index);
 }
 
-/** Forecast questions feed adviser estimates, so they may rest only on hidden facts, never on `any` or on metrics. */
-function isPlainFactCondition(condition: Condition): boolean {
-  const { seedFact, draw, not, ...rest } = condition;
-  void not;
-  return (seedFact !== undefined || draw !== undefined) && Object.keys(rest).length === 0;
-}
-
 /** Everything a schema cannot check. Returns one message per problem; empty means sound. */
 export function findProblems(content: Content): string[] {
   const problems: string[] = [];
@@ -93,9 +87,7 @@ export function findProblems(content: Content): string[] {
     for (const id of duplicates(choiceIds)) problems.push(`${where}: duplicate choice id "${id}"`);
 
     const { resolution } = scenario.forecast;
-    if (Array.isArray(resolution)) {
-      if (!resolution.every(isPlainFactCondition)) problems.push(`${where}: a forecast may rest only on seed facts and draws`);
-    } else needEvent(resolution.eventId, `${where} forecast`);
+    if (!Array.isArray(resolution)) needEvent(resolution.eventId, `${where} forecast`);
 
     for (const [adviser, view] of Object.entries(scenario.adviserViews)) {
       if (!choiceIds.includes(view.recommends)) problems.push(`${where}: ${adviser} recommends unknown choice "${view.recommends}"`);
@@ -122,6 +114,7 @@ export function findProblems(content: Content): string[] {
   }
 
   if (content.advisers.length !== 4) problems.push("there must be exactly four advisers");
+  problems.push(...contentConditionProblems(content));
   return problems;
 }
 

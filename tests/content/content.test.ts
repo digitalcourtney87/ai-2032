@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { createGame, reduce, type Choice, type Content, type Effects, type MetricKey, type Track } from "../../src/engine";
+import { createGame, reduce, type Choice, type Condition, type Content, type Effects, type MetricKey, type Track } from "../../src/engine";
 import { mulberry32 } from "../../src/engine/rng";
 import { findProblems, loadContent, parseContent, rawContent, type RawContent } from "../../src/content/load";
 import { scenarioSchema } from "../../src/content/schema";
@@ -47,6 +47,46 @@ describe("the loader fails loudly", () => {
   });
   test("on a non-integer effect", () => {
     expect(broken((raw) => { firstChoice(raw).visibleEffects = { innovation: 1.5 }; })).toThrow();
+  });
+});
+
+describe("supported condition contract", () => {
+  const nested: Condition[] = [{ any: [{ seedFact: "cyberOffenceLed" }, { seedFact: "bioUpliftReal" }] }];
+  const repeatedFact: Condition[] = [{ seedFact: "cyberOffenceLed" }, { seedFact: "cyberOffenceLed" }];
+  const repeatedDraw: Condition[] = [
+    { draw: { key: "same", probability: 30 } },
+    { draw: { key: "same", probability: 30 } },
+  ];
+
+  test("rejects nested hidden alternatives as a forecast or hidden choice effect", () => {
+    const forecastBroken = structuredClone(content);
+    const sandbagging = forecastBroken.scenarios.find((s) => s.id === "sandbagging-finding")!;
+    sandbagging.forecast.resolution = nested;
+    expect(findProblems(forecastBroken).join("\n")).toMatch(/sandbagging-finding.*forecast/);
+
+    const effectBroken = structuredClone(content);
+    const choice = effectBroken.scenarios.find((s) => s.id === "attribution-gap")!.choices[0]!;
+    choice.conditionalEffects = [{ when: nested, effects: { economy: 1 } }];
+    expect(findProblems(effectBroken).join("\n")).toMatch(/attribution-gap.*conditionalEffects/);
+  });
+
+  test("rejects repeated hidden identities in those same sites", () => {
+    const forecastBroken = structuredClone(content);
+    forecastBroken.scenarios.find((s) => s.id === "sandbagging-finding")!.forecast.resolution = repeatedFact;
+    expect(findProblems(forecastBroken).join("\n")).toMatch(/cyberOffenceLed/);
+
+    const effectBroken = structuredClone(content);
+    effectBroken.scenarios.find((s) => s.id === "attribution-gap")!.choices[0]!.conditionalEffects = [
+      { when: repeatedDraw, effects: { economy: 1 } },
+    ];
+    expect(findProblems(effectBroken).join("\n")).toMatch(/same/);
+  });
+
+  test("keeps nested alternatives valid on a truth-only ending", () => {
+    const copy = structuredClone(content);
+    const frontier = copy.endings.find((e) => e.id === "unknown-frontier")!;
+    frontier.when = nested;
+    expect(findProblems(copy)).toEqual([]);
   });
 });
 
